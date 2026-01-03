@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionFocus Hours · 专注时光投资</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-light: #FFF9F0;
+            --primary-warm: #FFEEDD;
+            --accent-pink: #FFB6C1;
+            --accent-gold: #FFD700;
+            --accent-purple: #DDA0DD;
+            --text-brown: #8B4513;
+            --text-dark: #5D4037;
+            --shadow-soft: rgba(255, 182, 193, 0.2);
+            --border-radius: 20px;
+            --transition-slow: 0.8s ease;
+            --transition-normal: 0.4s ease;
+            --planet-1: #4ECDC4;
+            --planet-2: #FF6B8B;
+            --planet-3: #45B7D1;
+            --planet-4: #96CEB4;
+            --planet-5: #FFEAA7;
+            --night-blue: #0A0A1A;
+            --time-coin: #FFD700;
+            --milestone-10: #87CEEB;      /* 星星点点效果 */
+            --milestone-30: #98FB98;      /* 微光荧光效果 */
+            --milestone-60: #FFD700;      /* 金色流光效果 */
+            --milestone-100: #9370DB;     /* 钻石七彩流光效果 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            background-color: var(--night-blue);
+            color: #F0F0F0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(106, 90, 205, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 107, 139, 0.1) 0%, transparent 40%);
+        }
+
+        /* 宇宙背景 */
+        .universe-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* 主容器 */
+        .focus-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 头部 */
+        .focus-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-family: 'ZCOOL QingKe HuangYou', cursive;
+            font-size: 2.5rem;
+            color: var(--planet-1);
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--planet-1);
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+            text-align: right;
+        }
+
+        .current-planet {
+            font-size: 1.2rem;
+            color: var(--planet-1);
+            font-weight: bold;
+        }
+
+        .progress-indicator {
+            font-size: 0.95rem;
+            color: #CCCCCC;
+            background: rgba(20, 20, 40, 0.7);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+        }
+
+        /* 引导区域 */
+        .guide-section {
+            text-align: center;
+            padding: 25px 15px;
+            margin-bottom: 20px;
+            position: relative;
+            background: rgba(20, 20, 40, 0.4);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .guide-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.8rem;
+            color: var(--planet-1);
+            margin-bottom: 15px;
+            text-shadow: 
+                0 0 10px rgba(78, 205, 196, 0.5),
+                0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .guide-subtitle {
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .guide-text {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+            color: #CCCCCC;
+        }
+
+        .highlight {
+            color: var(--planet-1);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+        }
+
+        /* 主工作区 */
+        .focus-workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 250px);
+            min-height: 650px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        /* 画布容器 */
+        .canvas-container {
+            flex: 1;
+            background-color: rgba(10, 10, 26, 0.4);
+            border-radius: 18px;
+            border: 2px solid rgba(255, 182, 193, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .canvas-header {
+            padding: 18px 25px;
+            background: rgba(20, 20, 40, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .canvas-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            color: var(--planet-1);
+        }
+
+        .canvas-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .canvas-btn {
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #CCCCCC;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .canvas-btn:hover {
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--planet-1);
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .canvas-btn.primary {
+            background: rgba(78, 205, 196, 0.25);
+            color: var(--planet-1);
+            font-weight: bold;
+        }
+
+        .canvas-btn.primary:hover {
+            background: rgba(78, 205, 196, 0.35);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.2);
+        }
+
+        /* 画布区域 - 优化鼠标光标 */
+        .canvas-area {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+            background-color: #FFF9F0;
+            position: relative;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23FFD700" stroke="%23FF8C00" stroke-width="2"/><circle cx="16" cy="16" r="8" fill="%23FFF" opacity="0.7"/><text x="16" y="22" text-anchor="middle" font-family="Arial" font-size="10" fill="%23000" font-weight="bold">+1</text></svg>') 16 16, pointer;
+        }
+
+        /* 全屏样式 */
+        body.fullscreen-mode {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body.fullscreen-mode .focus-container {
+            max-width: 100%;
+            padding: 0;
+        }
+
+        body.fullscreen-mode .guide-section,
+        body.fullscreen-mode .bottom-controls {
+            display: none;
+        }
+
+        body.fullscreen-mode .focus-header {
+            padding: 10px 20px;
+            background: rgba(20, 20, 40, 0.9);
+            margin-bottom: 0;
+        }
+
+        body.fullscreen-mode .focus-workspace {
+            height: calc(100vh - 70px);
+            margin-bottom: 0;
+        }
+
+        body.fullscreen-mode .canvas-container {
+            border-radius: 0;
+            border: none;
+        }
+
+        /* 愿景板画布 */
+        #visionboardCanvas {
+            width: 1200px;
+            height: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 愿景板上的元素样式 - 移除放大效果 */
+        .board-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .wish-item-container {
+            position: absolute;
+            z-index: 1;
+            transition: all 0.3s ease;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23FFD700" stroke="%23FF8C00" stroke-width="2"/><circle cx="16" cy="16" r="8" fill="%23FFF" opacity="0.7"/><text x="16" y="22" text-anchor="middle" font-family="Arial" font-size="10" fill="%23000" font-weight="bold">+1</text></svg>') 16 16, pointer;
+        }
+
+        .wish-item {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s, transform 0.1s;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23FFD700" stroke="%23FF8C00" stroke-width="2"/><circle cx="16" cy="16" r="8" fill="%23FFF" opacity="0.7"/><text x="16" y="22" text-anchor="middle" font-family="Arial" font-size="10" fill="%23000" font-weight="bold">+1</text></svg>') 16 16, pointer;
+        }
+
+        /* 优化：移除图片放大效果，只保留阴影变化 */
+        .wish-item:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .wish-item:active {
+            transform: scale(0.98);
+        }
+
+        .wish-image {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            background-color: #f5f5f5;
+        }
+
+        .wish-text {
+            padding: 15px;
+            height: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            text-align: center;
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            font-weight: 500;
+            line-height: 1.3;
+            overflow: hidden;
+        }
+
+        /* 专注时间显示 */
+        .focus-time {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: var(--text-dark);
+            font-weight: bold;
+            font-size: 1.1rem;
+            z-index: 3;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 0 0 12px 12px;
+        }
+
+        /* 优化：里程碑边框效果 - 保留原有相框，添加额外的动效层 */
+        .wish-frame {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 8px solid;
+            border-image-slice: 8;
+            border-image-width: 8px;
+            border-image-repeat: stretch;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .wish-frame.type-1 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23FFB6C1" stroke-width="5" rx="10"/></svg>');
+        }
+
+        .wish-frame.type-2 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23DDA0DD" stroke-width="5" rx="10" stroke-dasharray="10,5"/></svg>');
+        }
+
+        .wish-frame.type-3 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%234ECDC4" stroke-width="5" rx="10"/><circle cx="10" cy="10" r="3" fill="%234ECDC4"/><circle cx="90" cy="10" r="3" fill="%234ECDC4"/><circle cx="10" cy="90" r="3" fill="%234ECDC4"/><circle cx="90" cy="90" r="3" fill="%234ECDC4"/></svg>');
+        }
+
+        .wish-frame.type-4 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23FFD700" stroke-width="5" rx="10"/><path d="M10,10 L90,10 M90,10 L90,90 M90,90 L10,90 M10,90 L10,10" stroke="%23FFD700" stroke-width="2"/></svg>');
+        }
+
+        /* 新增：里程碑边框动效层 */
+        .milestone-effects {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border-radius: 20px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .milestone-effects.active {
+            opacity: 1;
+        }
+
+        /* 10小时：小亮片效果 */
+        .milestone-10 .milestone-effects {
+            background: radial-gradient(circle at 20% 30%, rgba(135, 206, 235, 0.3) 0%, transparent 50%),
+                       radial-gradient(circle at 80% 70%, rgba(135, 206, 235, 0.3) 0%, transparent 50%);
+            animation: sparkleTwinkle 3s infinite;
+        }
+
+        @keyframes sparkleTwinkle {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(135, 206, 235, 0.5);
+                background-position: 20% 30%, 80% 70%;
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(135, 206, 235, 0.8);
+                background-position: 30% 40%, 70% 60%;
+            }
+        }
+
+        /* 30小时：星星围绕效果 */
+        .milestone-30 .milestone-effects {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><path d="M20,20 L40,20 L50,5 L60,20 L80,20 L65,35 L70,55 L50,45 L30,55 L35,35 Z" fill="%2398FB98" opacity="0.8"/><path d="M120,30 L140,30 L150,15 L160,30 L180,30 L165,45 L170,65 L150,55 L130,65 L135,45 Z" fill="%2398FB98" opacity="0.8"/><path d="M30,120 L50,120 L60,105 L70,120 L90,120 L75,135 L80,155 L60,145 L40,155 L45,135 Z" fill="%2398FB98" opacity="0.8"/><path d="M130,130 L150,130 L160,115 L170,130 L190,130 L175,145 L180,165 L160,155 L140,165 L145,145 Z" fill="%2398FB98" opacity="0.8"/></svg>');
+            background-size: 200px 200px;
+            animation: starsRotate 20s linear infinite;
+        }
+
+        @keyframes starsRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 60小时：碎钻闪耀效果 */
+        .milestone-60 .milestone-effects {
+            background: 
+                conic-gradient(from 0deg, rgba(255, 215, 0, 0) 0%, rgba(255, 215, 0, 0.3) 25%, rgba(255, 215, 0, 0) 50%, rgba(255, 215, 0, 0.3) 75%, rgba(255, 215, 0, 0) 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 215, 0, 0.1) 10px, rgba(255, 215, 0, 0.1) 20px);
+            animation: diamondShine 4s linear infinite;
+        }
+
+        @keyframes diamondShine {
+            0% { 
+                background-position: 0% 0%, 0 0;
+                filter: hue-rotate(0deg);
+            }
+            100% { 
+                background-position: 100% 100%, 40px 40px;
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        /* 100小时：七彩金光围绕效果 */
+        .milestone-100 .milestone-effects {
+            background: 
+                linear-gradient(90deg, rgba(147, 112, 219, 0.3), rgba(255, 105, 180, 0.3), rgba(135, 206, 250, 0.3), rgba(152, 251, 152, 0.3), rgba(255, 215, 0, 0.3), rgba(147, 112, 219, 0.3));
+            background-size: 400% 400%;
+            animation: rainbowBorder 3s linear infinite, pulseGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes rainbowBorder {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 400% 50%; }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(147, 112, 219, 0.5), 0 0 40px rgba(255, 105, 180, 0.3); }
+            100% { box-shadow: 0 0 40px rgba(147, 112, 219, 0.8), 0 0 80px rgba(255, 105, 180, 0.5); }
+        }
+
+        /* 新增：小粒子效果 */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .particle.sparkle {
+            background-color: rgba(135, 206, 235, 0.9);
+            box-shadow: 0 0 10px rgba(135, 206, 235, 0.9);
+        }
+
+        .particle.star {
+            background-color: rgba(152, 251, 152, 0.9);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        .particle.diamond {
+            background-color: rgba(255, 215, 0, 0.9);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .particle.rainbow {
+            background: linear-gradient(45deg, rgba(147, 112, 219, 0.9), rgba(255, 105, 180, 0.9), rgba(135, 206, 250, 0.9));
+            border-radius: 50%;
+        }
+
+        /* 投币界面 */
+        .coin-interface {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .coin-display {
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--time-coin);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            min-width: 200px;
+        }
+
+        .coin-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            color: var(--time-coin);
+            text-align: center;
+        }
+
+        .coin-count {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--time-coin);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .coin-unit {
+            font-size: 1.2rem;
+            color: #CCCCCC;
+        }
+
+        .coin-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .coin-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid var(--time-coin);
+            color: var(--time-coin);
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .coin-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .coin-btn:active {
+            transform: scale(0.95);
+        }
+
+        .coin-btn.add {
+            background: rgba(78, 205, 196, 0.2);
+            border-color: var(--planet-1);
+            color: var(--planet-1);
+        }
+
+        .coin-btn.add:hover {
+            background: rgba(78, 205, 196, 0.3);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+
+        /* 投币动画 */
+        .coin-animation {
+            position: fixed;
+            pointer-events: none;
+            z-index: 200;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--time-coin), #FF8C00);
+            box-shadow: 0 0 20px var(--time-coin);
+            animation: coinFly 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes coinFly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        .coin-splash {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3), transparent 70%);
+            animation: splash 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: 199;
+        }
+
+        @keyframes splash {
+            0% {
+                transform: scale(0.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* 统计数据 */
+        .stats-panel {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--planet-1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            min-width: 250px;
+        }
+
+        .stats-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            color: var(--planet-1);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-label {
+            color: #CCCCCC;
+            font-size: 1rem;
+        }
+
+        .stat-value {
+            color: var(--planet-1);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .stat-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .stat-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--planet-1), var(--planet-3));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* 里程碑提示 */
+        .milestone-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 20, 40, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            border: 3px solid;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            text-align: center;
+            min-width: 400px;
+            animation: milestonePop 0.5s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes milestonePop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .milestone-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+
+        .milestone-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .milestone-desc {
+            font-size: 1.2rem;
+            color: #CCCCCC;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* 底部控制区 */
+        .bottom-controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(20, 20, 40, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .hand-drawn-btn {
+            background-color: var(--accent-pink);
+            color: var(--text-brown);
+            border: 2px solid var(--text-brown);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            padding: 12px 24px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .hand-drawn-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+            background-color: #FFA7B3;
+        }
+
+        .hand-drawn-btn.primary {
+            background-color: var(--planet-1);
+            color: var(--night-blue);
+            border-color: var(--planet-1);
+            font-weight: bold;
+        }
+
+        .hand-drawn-btn.primary:hover {
+            background-color: #3DBBB2;
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1400px) {
+            .focus-workspace {
+                height: calc(100vh - 220px);
+            }
+            
+            .coin-interface {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .stats-panel {
+                top: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .guide-title {
+                font-size: 2.2rem;
+            }
+            
+            .guide-subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .guide-text {
+                font-size: 1rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .header-info {
+                align-items: flex-start;
+                margin-top: 10px;
+            }
+            
+            #visionboardCanvas {
+                width: 100%;
+                height: 500px;
+            }
+            
+            .coin-interface {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin-top: 20px;
+                align-items: center;
+                width: 100%;
+            }
+            
+            .stats-panel {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            
+            .focus-workspace {
+                flex-direction: column;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .canvas-actions {
+                flex-wrap: wrap;
+            }
+            
+            .bottom-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                justify-content: center;
+            }
+            
+            .milestone-notification {
+                min-width: 90%;
+                padding: 20px;
+            }
+            
+            .milestone-title {
+                font-size: 1.8rem;
+            }
+            
+            .milestone-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 宇宙背景 -->
+    <div class="universe-bg" id="universeBg"></div>
+    
+    <!-- 主容器 -->
+    <div class="focus-container">
+        <!-- 头部 -->
+        <header class="focus-header">
+            <div class="logo">
+                <i class="fas fa-globe-americas logo-icon"></i>
+                <span>VisionFocus Hours</span>
+            </div>
+            <div class="header-info">
+                <div class="current-planet" id="planetDisplay">2026星球 · 专注时光投资</div>
+                <div class="progress-indicator">步骤 4/5 · 百炼成真许愿池</div>
+            </div>
+        </header>
+
+        <!-- 引导区域 -->
+        <section class="guide-section">
+            <h1 class="guide-title">专注时光投资池</h1>
+            <h2 class="guide-subtitle">用每一小时的专注，显化你的愿景</h2>
+            <p class="guide-text">
+                点击愿景碎片投入<span class="highlight">专注时光币</span>，每1小时专注让碎片更加璀璨。<br>
+                达到<span class="highlight">10/30/60/100小时</span>里程碑时，碎片将绽放独特的光辉效果。
+            </p>
+        </section>
+
+        <!-- 统计数据面板 -->
+        <div class="stats-panel">
+            <h3 class="stats-title">专注时光统计</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div>
+                        <div class="stat-label">总投入时间</div>
+                        <div class="stat-value" id="totalHours">0</div>
+                    </div>
+                    <i class="fas fa-clock" style="color: var(--planet-1); font-size: 1.5rem;"></i>
+                </div>
+                
+                <div class="stat-item">
+                    <div>
+                        <div class="stat-label">已完成碎片</div>
+                        <div class="stat-value" id="completedWishes">0/0</div>
+                    </div>
+                    <i class="fas fa-gem" style="color: var(--planet-1); font-size: 1.5rem;"></i>
+                </div>
+                
+                <div class="stat-item">
+                    <div>
+                        <div class="stat-label">今日投入</div>
+                        <div class="stat-value" id="todayHours">0</div>
+                    </div>
+                    <i class="fas fa-calendar-day" style="color: var(--planet-1); font-size: 1.5rem;"></i>
+                </div>
+                
+                <div class="stat-item">
+                    <div>
+                        <div class="stat-label">年度进度</div>
+                        <div class="stat-value" id="yearProgress">0%</div>
+                    </div>
+                    <div class="stat-progress">
+                        <div class="stat-progress-fill" id="yearProgressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主工作区 -->
+        <div class="focus-workspace">
+            <!-- 愿景板画布容器 -->
+            <div class="canvas-container">
+                <div class="canvas-header">
+                    <div class="canvas-title" id="canvasTitle">2026愿景板 · 专注时光池</div>
+                    <div class="canvas-actions">
+                        <button class="canvas-btn" id="zoomInBtn">
+                            <i class="fas fa-search-plus"></i> 放大
+                        </button>
+                        <button class="canvas-btn" id="zoomOutBtn">
+                            <i class="fas fa-search-minus"></i> 缩小
+                        </button>
+                        <button class="canvas-btn" id="fullscreenBtn">
+                            <i class="fas fa-expand"></i> 全屏
+                        </button>
+                        <button class="canvas-btn primary" id="autoInvestBtn">
+                            <i class="fas fa-bolt"></i> 快速投资
+                        </button>
+                    </div>
+                </div>
+                <div class="canvas-area">
+                    <div id="visionboardCanvas">
+                        <!-- 背景 -->
+                        <div class="board-background" id="boardBackground"></div>
+                        
+                        <!-- 愿望碎片和装饰元素将通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 投币界面 -->
+        <div class="coin-interface">
+            <div class="coin-display">
+                <h3 class="coin-title">专注时光币</h3>
+                <div class="coin-count" id="coinCount">0</div>
+                <div class="coin-unit">小时</div>
+                <div class="coin-controls">
+                    <button class="coin-btn" id="coinMinusBtn">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="coin-btn add" id="coinAddBtn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div style="font-size: 0.9rem; color: #AAAAAA; text-align: center;">
+                    每次点击投入 <span id="coinAmount" style="color: var(--time-coin); font-weight: bold;">1</span> 小时
+                </div>
+            </div>
+            
+            <button class="hand-drawn-btn primary" id="investAllBtn">
+                <i class="fas fa-coins"></i> 一键平均投资
+            </button>
+        </div>
+
+        <!-- 底部控制区 -->
+        <div class="bottom-controls">
+            <div class="control-group">
+                <button class="hand-drawn-btn" id="backBtn">
+                    <i class="fas fa-arrow-left"></i> 返回愿景板
+                </button>
+                <button class="hand-drawn-btn" id="resetBtn">
+                    <i class="fas fa-redo"></i> 重置今日
+                </button>
+            </div>
+            
+            <div style="color: #AAAAAA; font-size: 0.95rem; text-align: center;">
+                <span id="selectedWishInfo">点击愿景碎片开始投资专注时光</span>
+            </div>
+            
+            <div class="control-group">
+                <button class="hand-drawn-btn primary" id="completeFocusBtn">
+                    完成专注投资 <i class="fas fa-rocket"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LocalStorage管理
+        const STORAGE_PREFIX = 'vfh_';
+        
+        function getStorageData(key) {
+            try {
+                const data = localStorage.getItem(STORAGE_PREFIX + key);
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('Storage error:', e);
+                return null;
+            }
+        }
+        
+        function setStorageData(key, value) {
+            try {
+                localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+                return true;
+            } catch (e) {
+                console.error('Storage error:', e);
+                return false;
+            }
+        }
+        
+        function getPlanet(year) {
+            const planets = getStorageData('planets') || [];
+            return planets.find(p => p.year === parseInt(year));
+        }
+        
+        function updatePlanet(year, updates) {
+            const planets = getStorageData('planets') || [];
+            const index = planets.findIndex(p => p.year === parseInt(year));
+            
+            if (index !== -1) {
+                planets[index] = { ...planets[index], ...updates };
+                setStorageData('planets', planets);
+                return planets[index];
+            }
+            return null;
+        }
+        
+        // 专注投资数据
+        const focusData = {
+            currentYear: new Date().getFullYear(),
+            wishes: [],
+            selectedWishId: null,
+            coinAmount: 1,
+            totalHours: 0,
+            todayHours: 0,
+            todayDate: new Date().toDateString(),
+            canvasScale: 1,
+            
+            // 里程碑配置
+            milestones: [
+                { hours: 10, name: "星星点点", color: "var(--milestone-10)", icon: "fas fa-star", class: "milestone-10", particleType: "sparkle" },
+                { hours: 30, name: "微光荧光", color: "var(--milestone-30)", icon: "fas fa-sparkles", class: "milestone-30", particleType: "star" },
+                { hours: 60, name: "金色流光", color: "var(--milestone-60)", icon: "fas fa-sun", class: "milestone-60", particleType: "diamond" },
+                { hours: 100, name: "钻石七彩", color: "var(--milestone-100)", icon: "fas fa-gem", class: "milestone-100", particleType: "rainbow" }
+            ]
+        };
+
+        // DOM元素
+        const universeBg = document.getElementById('universeBg');
+        const visionboardCanvas = document.getElementById('visionboardCanvas');
+        const boardBackground = document.getElementById('boardBackground');
+        const coinCount = document.getElementById('coinCount');
+        const coinAmount = document.getElementById('coinAmount');
+        const totalHours = document.getElementById('totalHours');
+        const completedWishes = document.getElementById('completedWishes');
+        const todayHours = document.getElementById('todayHours');
+        const yearProgress = document.getElementById('yearProgress');
+        const yearProgressFill = document.getElementById('yearProgressFill');
+        const selectedWishInfo = document.getElementById('selectedWishInfo');
+        
+        // 按钮
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const autoInvestBtn = document.getElementById('autoInvestBtn');
+        const coinMinusBtn = document.getElementById('coinMinusBtn');
+        const coinAddBtn = document.getElementById('coinAddBtn');
+        const investAllBtn = document.getElementById('investAllBtn');
+        const backBtn = document.getElementById('backBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const completeFocusBtn = document.getElementById('completeFocusBtn');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+            setupEventListeners();
+            createStarBackground();
+            loadVisionBoardData();
+            updateStats();
+        });
+
+        function initApp() {
+            // 从URL获取年份参数
+            const urlParams = new URLSearchParams(window.location.search);
+            focusData.currentYear = parseInt(urlParams.get('year')) || new Date().getFullYear();
+            
+            // 更新页面显示
+            document.getElementById('planetDisplay').textContent = `${focusData.currentYear}星球 · 专注时光投资`;
+            document.getElementById('canvasTitle').textContent = `${focusData.currentYear}愿景板 · 专注时光池`;
+            
+            // 设置画布大小
+            visionboardCanvas.style.width = `${1200}px`;
+            visionboardCanvas.style.height = `${800}px`;
+            
+            // 检查今天是否是新的一天，重置今日数据
+            checkNewDay();
+            
+            // 更新币值显示
+            coinAmount.textContent = focusData.coinAmount;
+        }
+
+        function createStarBackground() {
+            const starCount = 150;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机位置
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // 随机大小
+                const size = Math.random() * 3 + 1;
+                
+                // 随机闪烁延迟
+                const delay = Math.random() * 3;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.animationDelay = `${delay}s`;
+                
+                universeBg.appendChild(star);
+            }
+        }
+
+        function loadVisionBoardData() {
+            try {
+                // 从LocalStorage加载对应年份的愿景板数据
+                const boardStateKey = `visionboard_${focusData.currentYear}`;
+                const savedState = getStorageData(boardStateKey);
+                
+                if (savedState && savedState.wishes && savedState.wishes.length > 0) {
+                    // 加载已保存的专注时间数据
+                    const focusDataKey = `focus_${focusData.currentYear}`;
+                    const savedFocusData = getStorageData(focusDataKey);
+                    
+                    // 合并愿景板数据和专注时间数据
+                    focusData.wishes = savedState.wishes.map(wish => {
+                        // 查找是否有已保存的专注时间数据
+                        const savedWish = savedFocusData?.wishes?.find(w => w.id === wish.id);
+                        return {
+                            ...wish,
+                            focusHours: savedWish?.focusHours || wish.focusHours || 0,
+                            lastInvested: savedWish?.lastInvested || wish.lastInvested || null,
+                            milestoneReached: savedWish?.milestoneReached || wish.milestoneReached || 0
+                        };
+                    });
+                    
+                    // 计算总时间
+                    focusData.totalHours = focusData.wishes.reduce((sum, wish) => sum + (wish.focusHours || 0), 0);
+                    
+                    // 加载今日数据
+                    loadTodayData();
+                    
+                    // 渲染愿望碎片
+                    renderWishItems();
+                    
+                    // 更新背景
+                    updateCanvasBackground(savedState.backgroundType || '1');
+                    
+                    // 默认选中第一个愿望
+                    if (focusData.wishes.length > 0) {
+                        selectWish(focusData.wishes[0].id);
+                    }
+                } else {
+                    // 如果没有愿景板数据，显示提示并跳转回愿景板页面
+                    showNotification('请先完成愿景板制作', 'info');
+                    setTimeout(() => {
+                        window.location.href = `visionboard.html?year=${focusData.currentYear}`;
+                    }, 2000);
+                }
+            } catch (e) {
+                console.error('加载愿景板数据失败:', e);
+                showNotification('加载数据失败，请重新开始', 'error');
+                setTimeout(() => {
+                    window.location.href = `visionboard.html?year=${focusData.currentYear}`;
+                }, 2000);
+            }
+        }
+
+        function createSampleWishes() {
+            // 创建示例愿望数据
+            const sampleWishes = [
+                { id: 1, text: "健康有活力的身体", image: null, frameType: '1', position: { x: 100, y: 100 }, size: { width: 250, height: 300 }, rotation: 0, focusHours: 0 },
+                { id: 2, text: "掌握一门新技能", image: null, frameType: '2', position: { x: 400, y: 100 }, size: { width: 250, height: 300 }, rotation: 0, focusHours: 0 },
+                { id: 3, text: "完成一次深度旅行", image: null, frameType: '3', position: { x: 700, y: 100 }, size: { width: 250, height: 300 }, rotation: 0, focusHours: 0 },
+                { id: 4, text: "改善财务状况", image: null, frameType: '4', position: { x: 200, y: 450 }, size: { width: 250, height: 300 }, rotation: 0, focusHours: 0 },
+                { id: 5, text: "建立深度关系", image: null, frameType: '1', position: { x: 500, y: 450 }, size: { width: 250, height: 300 }, rotation: 0, focusHours: 0 }
+            ];
+            
+            focusData.wishes = sampleWishes;
+            focusData.totalHours = 0;
+            
+            // 保存示例数据
+            saveFocusData();
+            
+            // 渲染愿望碎片
+            renderWishItems();
+            
+            if (focusData.wishes.length > 0) {
+                selectWish(focusData.wishes[0].id);
+            }
+        }
+
+        function renderWishItems() {
+            // 清空画布
+            visionboardCanvas.innerHTML = '';
+            
+            // 添加背景
+            const bgDiv = document.createElement('div');
+            bgDiv.className = 'board-background';
+            bgDiv.id = 'boardBackground';
+            visionboardCanvas.appendChild(bgDiv);
+            
+            // 创建每个愿望碎片
+            focusData.wishes.forEach(wish => {
+                createWishItemElement(wish);
+            });
+        }
+
+        function createWishItemElement(wish) {
+            // 创建容器
+            const container = document.createElement('div');
+            container.className = 'wish-item-container';
+            container.dataset.wishId = wish.id;
+            container.style.left = `${wish.position.x}px`;
+            container.style.top = `${wish.position.y}px`;
+            container.style.width = `${wish.size.width}px`;
+            container.style.height = `${wish.size.height}px`;
+            container.style.transform = `rotate(${wish.rotation}deg)`;
+            
+            // 应用里程碑类
+            applyMilestoneClass(container, wish.focusHours);
+            
+            // 创建愿望项目
+            const wishItem = document.createElement('div');
+            wishItem.className = 'wish-item';
+            
+            // 图片区域
+            const imageDiv = document.createElement('div');
+            imageDiv.className = 'wish-image';
+            
+            if (wish.image) {
+                imageDiv.style.backgroundImage = `url(${wish.image})`;
+                imageDiv.style.backgroundSize = 'cover';
+                imageDiv.style.backgroundPosition = 'center';
+            } else {
+                imageDiv.classList.add('placeholder');
+                imageDiv.innerHTML = `<i class="fas fa-image"></i>`;
+            }
+            
+            // 文字区域
+            const textDiv = document.createElement('div');
+            textDiv.className = 'wish-text';
+            textDiv.textContent = wish.text || '愿望碎片';
+            
+            // 专注时间显示
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'focus-time';
+            timeDiv.textContent = `${wish.focusHours}小时`;
+            timeDiv.id = `focusTime-${wish.id}`;
+            
+            // 相框
+            const frameDiv = document.createElement('div');
+            frameDiv.className = `wish-frame type-${wish.frameType || '1'}`;
+            
+            // 里程碑动效层
+            const effectsDiv = document.createElement('div');
+            effectsDiv.className = 'milestone-effects';
+            effectsDiv.id = `effects-${wish.id}`;
+            
+            // 组装
+            wishItem.appendChild(imageDiv);
+            wishItem.appendChild(textDiv);
+            container.appendChild(wishItem);
+            container.appendChild(timeDiv);
+            container.appendChild(frameDiv);
+            container.appendChild(effectsDiv);
+            
+            // 添加到画布
+            visionboardCanvas.appendChild(container);
+            
+            // 添加事件监听器
+            setupWishItemEvents(container, wish);
+            
+            // 如果已达到里程碑，激活动效
+            if (wish.focusHours >= 10) {
+                effectsDiv.classList.add('active');
+                
+                // 如果达到较高里程碑，创建粒子效果
+                const milestone = getCurrentMilestone(wish.focusHours);
+                if (milestone && milestone.hours >= 30) {
+                    createParticleEffects(container, milestone);
+                }
+            }
+            
+            return container;
+        }
+
+        function applyMilestoneClass(container, hours) {
+            // 移除所有里程碑类
+            focusData.milestones.forEach(milestone => {
+                container.classList.remove(milestone.class);
+            });
+            
+            // 应用当前达到的最高里程碑
+            let highestMilestone = null;
+            for (let i = focusData.milestones.length - 1; i >= 0; i--) {
+                if (hours >= focusData.milestones[i].hours) {
+                    highestMilestone = focusData.milestones[i];
+                    break;
+                }
+            }
+            
+            if (highestMilestone) {
+                container.classList.add(highestMilestone.class);
+            }
+        }
+
+        function getCurrentMilestone(hours) {
+            for (let i = focusData.milestones.length - 1; i >= 0; i--) {
+                if (hours >= focusData.milestones[i].hours) {
+                    return focusData.milestones[i];
+                }
+            }
+            return null;
+        }
+
+        function createParticleEffects(container, milestone) {
+            // 根据里程碑类型创建不同的粒子效果
+            const containerRect = container.getBoundingClientRect();
+            const particleCount = milestone.hours >= 100 ? 15 : milestone.hours >= 60 ? 10 : milestone.hours >= 30 ? 6 : 0;
+            
+            for (let i = 0; i < particleCount; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = `particle ${milestone.particleType}`;
+                    
+                    // 随机位置在容器周围
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const radius = 80;
+                    const x = Math.cos(angle) * radius + containerRect.width / 2;
+                    const y = Math.sin(angle) * radius + containerRect.height / 2;
+                    
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    
+                    // 随机大小
+                    const size = 4 + Math.random() * 4;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // 添加到容器
+                    container.appendChild(particle);
+                    
+                    // 粒子动画
+                    animateParticle(particle, container, angle, radius);
+                }, i * 100);
+            }
+        }
+
+        function animateParticle(particle, container, startAngle, radius) {
+            let angle = startAngle;
+            let currentRadius = radius;
+            let direction = 1;
+            let opacity = 1;
+            
+            const animation = setInterval(() => {
+                angle += 0.05 * direction;
+                
+                // 随机改变半径
+                currentRadius += (Math.random() - 0.5) * 10;
+                currentRadius = Math.max(70, Math.min(90, currentRadius));
+                
+                // 计算新位置
+                const x = Math.cos(angle) * currentRadius + container.offsetWidth / 2;
+                const y = Math.sin(angle) * currentRadius + container.offsetHeight / 2;
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                // 随机改变方向
+                if (Math.random() < 0.01) {
+                    direction *= -1;
+                }
+                
+                // 闪烁效果
+                opacity = 0.7 + Math.sin(Date.now() / 500) * 0.3;
+                particle.style.opacity = opacity;
+                
+            }, 50);
+            
+            // 10秒后移除粒子
+            setTimeout(() => {
+                clearInterval(animation);
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, 10000);
+        }
+
+        function setupWishItemEvents(container, wish) {
+            // 选中愿望并投资
+            container.addEventListener('click', function(e) {
+                selectWish(wish.id);
+                
+                // 如果当前有选中的币值，立即投资
+                if (focusData.coinAmount > 0) {
+                    investInWish(wish.id, focusData.coinAmount, container);
+                }
+            });
+        }
+
+        function selectWish(wishId) {
+            // 更新选中的愿望ID
+            focusData.selectedWishId = wishId;
+            
+            // 更新UI
+            document.querySelectorAll('.wish-item-container').forEach(container => {
+                container.style.opacity = '1';
+            });
+            
+            // 高亮选中的愿望
+            const selectedContainer = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+            if (selectedContainer) {
+                selectedContainer.style.opacity = '0.9';
+                
+                // 更新选中信息
+                const wish = focusData.wishes.find(w => w.id === wishId);
+                if (wish) {
+                    selectedWishInfo.textContent = `选中: "${wish.text}" (已投资: ${wish.focusHours}小时)`;
+                }
+            }
+        }
+
+        function investInWish(wishId, amount, containerElement = null) {
+            const wishIndex = focusData.wishes.findIndex(w => w.id === wishId);
+            if (wishIndex === -1) return;
+            
+            const wish = focusData.wishes[wishIndex];
+            const previousHours = wish.focusHours;
+            const newHours = previousHours + amount;
+            const previousMilestone = getCurrentMilestone(previousHours);
+            const newMilestone = getCurrentMilestone(newHours);
+            
+            // 更新数据
+            wish.focusHours = newHours;
+            wish.lastInvested = new Date().toISOString();
+            focusData.totalHours += amount;
+            focusData.todayHours += amount;
+            
+            // 保存数据
+            saveFocusData();
+            
+            // 更新UI
+            const timeElement = document.getElementById(`focusTime-${wishId}`);
+            if (timeElement) {
+                timeElement.textContent = `${newHours}小时`;
+                
+                // 数字增长动画
+                animateNumber(timeElement, previousHours, newHours, 500);
+            }
+            
+            // 应用里程碑效果
+            const container = containerElement || document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+            if (container) {
+                applyMilestoneClass(container, newHours);
+                
+                // 激活动效层
+                const effectsDiv = document.getElementById(`effects-${wishId}`);
+                if (effectsDiv) {
+                    effectsDiv.classList.add('active');
+                }
+                
+                // 检查是否达到新的里程碑，如果是，创建粒子效果
+                if (newMilestone && (!previousMilestone || newMilestone.hours > previousMilestone.hours)) {
+                    // 如果是达到新的里程碑，创建粒子效果
+                    if (newMilestone.hours >= 30) {
+                        createParticleEffects(container, newMilestone);
+                    }
+                    
+                    // 显示里程碑通知
+                    showMilestoneNotification(wish, newMilestone);
+                }
+            }
+            
+            // 播放投币动画
+            playCoinAnimation(wishId, amount);
+            
+            // 更新统计数据
+            updateStats();
+            
+            // 播放音效（模拟）
+            playCoinSound();
+            
+            showNotification(`成功投资 ${amount} 小时到 "${wish.text}"`, 'success');
+        }
+
+        function playCoinAnimation(wishId, amount) {
+            // 创建硬币元素
+            const coin = document.createElement('div');
+            coin.className = 'coin-animation';
+            
+            // 获取投币按钮位置
+            const coinBtn = document.getElementById('coinAddBtn');
+            const coinBtnRect = coinBtn.getBoundingClientRect();
+            
+            // 获取目标愿望位置
+            const targetContainer = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+            if (!targetContainer) return;
+            
+            const targetRect = targetContainer.getBoundingClientRect();
+            
+            // 计算起始位置（投币按钮中心）
+            const startX = coinBtnRect.left + coinBtnRect.width / 2;
+            const startY = coinBtnRect.top + coinBtnRect.height / 2;
+            
+            // 计算目标位置（愿望中心）
+            const targetX = targetRect.left + targetRect.width / 2;
+            const targetY = targetRect.top + targetRect.height / 2;
+            
+            // 计算移动距离
+            const deltaX = targetX - startX;
+            const deltaY = targetY - startY;
+            
+            // 设置起始位置
+            coin.style.left = `${startX}px`;
+            coin.style.top = `${startY}px`;
+            
+            // 设置CSS变量用于动画
+            coin.style.setProperty('--tx', `${deltaX}px`);
+            coin.style.setProperty('--ty', `${deltaY}px`);
+            
+            // 根据金额设置硬币大小
+            const size = 30 + Math.min(amount, 10) * 2;
+            coin.style.width = `${size}px`;
+            coin.style.height = `${size}px`;
+            
+            // 添加到页面
+            document.body.appendChild(coin);
+            
+            // 创建涟漪效果
+            setTimeout(() => {
+                const splash = document.createElement('div');
+                splash.className = 'coin-splash';
+                splash.style.left = `${targetX - 50}px`;
+                splash.style.top = `${targetY - 50}px`;
+                document.body.appendChild(splash);
+                
+                // 移除涟漪效果
+                setTimeout(() => {
+                    if (splash.parentNode) {
+                        splash.parentNode.removeChild(splash);
+                    }
+                }, 800);
+            }, 900);
+            
+            // 移除硬币元素
+            setTimeout(() => {
+                if (coin.parentNode) {
+                    coin.parentNode.removeChild(coin);
+                }
+            }, 1000);
+        }
+
+        function playCoinSound() {
+            // 创建音频上下文（模拟音效）
+            try {
+                // 在实际应用中，这里会播放真实的音效文件
+                // 现在使用Web Audio API生成一个简单的投币音效
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('音频播放失败:', e);
+            }
+        }
+
+        function showMilestoneNotification(wish, milestone) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = 'milestone-notification';
+            notification.style.borderColor = milestone.color;
+            
+            notification.innerHTML = `
+                <div class="milestone-icon" style="color: ${milestone.color};">
+                    <i class="${milestone.icon}"></i>
+                </div>
+                <h2 class="milestone-title" style="color: ${milestone.color};">${milestone.name} ✨</h2>
+                <p class="milestone-desc">"${wish.text}" 已达到 ${milestone.hours} 小时专注里程碑！</p>
+                <button class="hand-drawn-btn primary" id="closeMilestoneBtn" style="margin-top: 10px;">
+                    太棒了！继续投资
+                </button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 添加关闭按钮事件
+            document.getElementById('closeMilestoneBtn').addEventListener('click', function() {
+                document.body.removeChild(notification);
+            });
+            
+            // 5秒后自动关闭
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            }, 5000);
+        }
+
+        function updateCanvasBackground(bgType) {
+            switch(bgType) {
+                case '1':
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+                    boardBackground.style.backgroundImage = 'none';
+                    break;
+                case '2':
+                    boardBackground.style.background = 'linear-gradient(135deg, #FFEEDD, #FFF9F0)';
+                    break;
+                case '3':
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+                    boardBackground.style.backgroundImage = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%23FFB6C1" opacity="0.2"/></svg>\')';
+                    break;
+                case '4':
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+                    boardBackground.style.backgroundImage = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="0.5" fill="%234ECDC4" opacity="0.1"/></svg>\')';
+                    break;
+                default:
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+            }
+        }
+
+        function updateStats() {
+            // 更新总时间
+            totalHours.textContent = focusData.totalHours;
+            
+            // 更新今日时间
+            todayHours.textContent = focusData.todayHours;
+            
+            // 更新币值显示
+            coinCount.textContent = focusData.coinAmount;
+            
+            // 计算完成度
+            const totalWishes = focusData.wishes.length;
+            const completedCount = focusData.wishes.filter(w => w.focusHours >= 100).length;
+            completedWishes.textContent = `${completedCount}/${totalWishes}`;
+            
+            // 计算年度进度（假设年度目标是1000小时）
+            const yearGoal = 1000;
+            const yearProgressPercent = Math.min(100, Math.floor((focusData.totalHours / yearGoal) * 100));
+            yearProgress.textContent = `${yearProgressPercent}%`;
+            yearProgressFill.style.width = `${yearProgressPercent}%`;
+        }
+
+        function animateNumber(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentValue = Math.floor(progress * (end - start) + start);
+                element.textContent = `${currentValue}小时`;
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function checkNewDay() {
+            const today = new Date().toDateString();
+            if (today !== focusData.todayDate) {
+                // 新的一天，重置今日数据
+                focusData.todayDate = today;
+                focusData.todayHours = 0;
+                saveFocusData();
+            }
+        }
+
+        function loadTodayData() {
+            try {
+                const todayKey = `today_${focusData.currentYear}`;
+                const savedToday = getStorageData(todayKey);
+                if (savedToday) {
+                    if (savedToday.date === new Date().toDateString()) {
+                        focusData.todayHours = savedToday.hours || 0;
+                        focusData.todayDate = savedToday.date;
+                    }
+                }
+            } catch (e) {
+                console.error('加载今日数据失败:', e);
+            }
+        }
+
+        function saveFocusData() {
+            try {
+                // 保存愿望数据（包含专注时间）- 使用年份相关的key
+                const focusDataKey = `focus_${focusData.currentYear}`;
+                const saveData = {
+                    wishes: focusData.wishes,
+                    totalHours: focusData.totalHours,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                setStorageData(focusDataKey, saveData);
+                
+                // 保存今日数据 - 使用年份相关的key
+                const todayKey = `today_${focusData.currentYear}`;
+                const todayData = {
+                    date: focusData.todayDate,
+                    hours: focusData.todayHours
+                };
+                
+                setStorageData(todayKey, todayData);
+                
+                // 更新星球状态
+                updatePlanet(focusData.currentYear, {
+                    totalFocusHours: focusData.totalHours,
+                    focusData: saveData
+                });
+                
+                return true;
+            } catch (e) {
+                console.error('保存专注数据失败:', e);
+                return false;
+            }
+        }
+
+        function setupEventListeners() {
+            // 缩放按钮
+            zoomInBtn.addEventListener('click', function() {
+                if (focusData.canvasScale < 2) {
+                    focusData.canvasScale += 0.1;
+                    visionboardCanvas.style.transform = `scale(${focusData.canvasScale})`;
+                    visionboardCanvas.style.transformOrigin = 'center';
+                }
+            });
+            
+            zoomOutBtn.addEventListener('click', function() {
+                if (focusData.canvasScale > 0.5) {
+                    focusData.canvasScale -= 0.1;
+                    visionboardCanvas.style.transform = `scale(${focusData.canvasScale})`;
+                    visionboardCanvas.style.transformOrigin = 'center';
+                }
+            });
+            
+            // 全屏按钮
+            fullscreenBtn.addEventListener('click', function() {
+                toggleFullscreen();
+            });
+            
+            // 快速投资按钮
+            autoInvestBtn.addEventListener('click', function() {
+                if (focusData.selectedWishId) {
+                    investInWish(focusData.selectedWishId, 5);
+                } else {
+                    showNotification('请先选择一个愿望碎片', 'info');
+                }
+            });
+            
+            // 币值控制按钮
+            coinMinusBtn.addEventListener('click', function() {
+                if (focusData.coinAmount > 1) {
+                    focusData.coinAmount--;
+                    coinAmount.textContent = focusData.coinAmount;
+                }
+            });
+            
+            coinAddBtn.addEventListener('click', function() {
+                if (focusData.coinAmount < 10) {
+                    focusData.coinAmount++;
+                    coinAmount.textContent = focusData.coinAmount;
+                }
+            });
+            
+            // 一键平均投资按钮
+            investAllBtn.addEventListener('click', function() {
+                if (focusData.wishes.length === 0) {
+                    showNotification('没有可投资的愿望碎片', 'info');
+                    return;
+                }
+                
+                const totalInvestment = focusData.coinAmount * 3; // 每个碎片投资3倍当前币值
+                const investmentPerWish = Math.floor(totalInvestment / focusData.wishes.length);
+                
+                if (investmentPerWish < 1) {
+                    showNotification('币值太小，无法平均分配', 'info');
+                    return;
+                }
+                
+                // 为每个愿望投资
+                focusData.wishes.forEach(wish => {
+                    investInWish(wish.id, investmentPerWish);
+                });
+                
+                showNotification(`已为所有${focusData.wishes.length}个愿望各投资${investmentPerWish}小时`, 'success');
+            });
+            
+            // 返回按钮
+            backBtn.addEventListener('click', function() {
+                if (confirm('返回愿景板编辑页面会保存当前进度，确定要返回吗？')) {
+                    saveFocusData();
+                    showNotification('专注数据已保存，返回愿景板编辑...', 'info');
+                    setTimeout(() => {
+                        window.location.href = `visionboard.html?year=${focusData.currentYear}`;
+                    }, 1000);
+                }
+            });
+            
+            // 重置今日按钮
+            resetBtn.addEventListener('click', function() {
+                if (confirm('确定要重置今日的投资数据吗？此操作不可撤销。')) {
+                    focusData.todayHours = 0;
+                    saveFocusData();
+                    updateStats();
+                    showNotification('今日数据已重置', 'info');
+                }
+            });
+            
+            // 完成按钮
+            completeFocusBtn.addEventListener('click', function() {
+                // 检查是否有投资
+                if (focusData.totalHours === 0) {
+                    showNotification('请先投资一些专注时间再完成', 'info');
+                    return;
+                }
+                
+                // 保存数据
+                saveFocusData();
+                
+                // 更新星球状态
+                updatePlanet(focusData.currentYear, {
+                    focusHoursCompleted: true,
+                    focusHoursCompletedAt: new Date().toISOString(),
+                    totalFocusHours: focusData.totalHours
+                });
+                
+                // 显示加载状态
+                completeFocusBtn.disabled = true;
+                completeFocusBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成年度报告...';
+                
+                // 处理过程
+                setTimeout(() => {
+                    showNotification('🎉 专注时光投资完成！正在生成年终彩蛋结算画面...', 'success');
+                    
+                    setTimeout(() => {
+                        // 跳转到NFT生成页面
+                        window.location.href = `NFT.html?year=${focusData.currentYear}`;
+                    }, 1500);
+                }, 1500);
+            });
+            
+            // 键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                // 数字键1-9设置币值
+                if (e.key >= '1' && e.key <= '9') {
+                    focusData.coinAmount = parseInt(e.key);
+                    coinAmount.textContent = focusData.coinAmount;
+                    showNotification(`投币金额设置为 ${focusData.coinAmount} 小时`, 'info');
+                }
+                
+                // 空格键快速投币到选中的愿望
+                if (e.key === ' ' && focusData.selectedWishId) {
+                    e.preventDefault();
+                    investInWish(focusData.selectedWishId, focusData.coinAmount);
+                }
+                
+                // F键进入/退出全屏
+                if (e.key === 'f' || e.key === 'F') {
+                    e.preventDefault();
+                    toggleFullscreen();
+                }
+                
+                // + 键增加币值
+                if (e.key === '+' || e.key === '=') {
+                    e.preventDefault();
+                    if (focusData.coinAmount < 10) {
+                        focusData.coinAmount++;
+                        coinAmount.textContent = focusData.coinAmount;
+                    }
+                }
+                
+                // - 键减少币值
+                if (e.key === '-' || e.key === '_') {
+                    e.preventDefault();
+                    if (focusData.coinAmount > 1) {
+                        focusData.coinAmount--;
+                        coinAmount.textContent = focusData.coinAmount;
+                    }
+                }
+            });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                document.body.classList.add('fullscreen-mode');
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> 退出全屏';
+            } else {
+                document.exitFullscreen();
+                document.body.classList.remove('fullscreen-mode');
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> 全屏';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 25px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: ${type === 'error' ? 'rgba(255, 107, 139, 0.95)' : type === 'success' ? 'rgba(78, 205, 196, 0.95)' : 'rgba(20, 20, 40, 0.95)'};
+                padding: 15px 25px;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+                z-index: 10000;
+                border: 1px solid ${type === 'error' ? 'rgba(255, 107, 139, 0.3)' : type === 'success' ? 'rgba(78, 205, 196, 0.3)' : 'rgba(255, 215, 0, 0.3)'};
+                animation: slideDown 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+                max-width: 500px;
+                font-family: 'Ma Shan Zheng', cursive;
+                text-align: center;
+                backdrop-filter: blur(10px);
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}" 
+                       style="font-size: 1.4rem; color: ${type === 'error' ? '#FF6B8B' : type === 'success' ? '#4ECDC4' : '#FFD700'};"></i>
+                    <div style="color: white; font-size: 1.05rem; line-height: 1.4;">${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后移除通知
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+            
+            // 添加CSS动画
+            if (!document.getElementById('notification-animations')) {
+                const style = document.createElement('style');
+                style.id = 'notification-animations';
+                style.textContent = `
+                    @keyframes slideDown {
+                        from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    }
+                    @keyframes fadeOut {
+                        from { opacity: 1; }
+                        to { opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    </script>
+</body>
+</html>

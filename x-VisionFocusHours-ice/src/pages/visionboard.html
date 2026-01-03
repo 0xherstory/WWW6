@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionFocus Hours · 沉浸式愿景板编辑</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-light: #FFF9F0;
+            --primary-warm: #FFEEDD;
+            --accent-pink: #FFB6C1;
+            --accent-gold: #FFD700;
+            --accent-purple: #DDA0DD;
+            --text-brown: #8B4513;
+            --text-dark: #5D4037;
+            --shadow-soft: rgba(255, 182, 193, 0.2);
+            --border-radius: 20px;
+            --transition-slow: 0.8s ease;
+            --transition-normal: 0.4s ease;
+            --planet-1: #4ECDC4;
+            --planet-2: #FF6B8B;
+            --planet-3: #45B7D1;
+            --planet-4: #96CEB4;
+            --planet-5: #FFEAA7;
+            --night-blue: #0A0A1A;
+            --board-bg-1: rgba(255, 182, 193, 0.1);
+            --board-bg-2: rgba(221, 160, 221, 0.1);
+            --frame-color-1: #FFB6C1;
+            --frame-color-2: #DDA0DD;
+            --frame-color-3: #4ECDC4;
+            --frame-color-4: #FFD700;
+            --sidebar-width: 340px;
+            --canvas-padding: 40px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            background-color: var(--night-blue);
+            color: #F0F0F0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(106, 90, 205, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 107, 139, 0.1) 0%, transparent 40%);
+        }
+
+        /* 宇宙背景 */
+        .universe-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* 主容器 */
+        .visionboard-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 头部 */
+        .visionboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-family: 'ZCOOL QingKe HuangYou', cursive;
+            font-size: 2.5rem;
+            color: var(--planet-1);
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--planet-1);
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+            text-align: right;
+        }
+
+        .current-planet {
+            font-size: 1.2rem;
+            color: var(--planet-1);
+            font-weight: bold;
+        }
+
+        .progress-indicator {
+            font-size: 0.95rem;
+            color: #CCCCCC;
+            background: rgba(20, 20, 40, 0.7);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+        }
+
+        /* 引导区域 */
+        .guide-section {
+            text-align: center;
+            padding: 25px 15px;
+            margin-bottom: 20px;
+            position: relative;
+            background: rgba(20, 20, 40, 0.4);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .guide-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.8rem;
+            color: var(--planet-1);
+            margin-bottom: 15px;
+            text-shadow: 
+                0 0 10px rgba(78, 205, 196, 0.5),
+                0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .guide-subtitle {
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .guide-text {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+            color: #CCCCCC;
+        }
+
+        .highlight {
+            color: var(--planet-1);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+        }
+
+        /* 主编辑工作区 - 核心重构部分 */
+        .editor-workspace {
+            display: flex;
+            height: calc(100vh - 250px);
+            min-height: 650px;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* 侧边工具栏 - 紧凑设计 */
+        .editor-sidebar {
+            width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        /* 侧边栏面板通用样式 */
+        .sidebar-panel {
+            background: rgba(20, 20, 40, 0.85);
+            border-radius: 16px;
+            border: 2px solid rgba(255, 182, 193, 0.2);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.4rem;
+            color: var(--planet-1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            font-size: 1.3rem;
+        }
+
+        /* 工具图标栏 */
+        .tools-panel {
+            padding: 20px 15px;
+        }
+
+        .toolbar-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .tool-btn {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid transparent;
+            color: #CCCCCC;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .tool-btn:hover {
+            background: rgba(78, 205, 196, 0.15);
+            color: var(--planet-1);
+            transform: translateY(-3px);
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .tool-btn.active {
+            background: rgba(78, 205, 196, 0.25);
+            border-color: var(--planet-1);
+            color: var(--planet-1);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .tool-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* 愿望列表 */
+        .wishes-panel {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wishes-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .wish-list-item {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .wish-list-item:hover {
+            background: rgba(78, 205, 196, 0.1);
+            transform: translateX(3px);
+        }
+
+        .wish-list-item.active {
+            background: rgba(78, 205, 196, 0.2);
+            border-left-color: var(--planet-1);
+            box-shadow: 0 3px 10px rgba(78, 205, 196, 0.15);
+        }
+
+        .wish-number {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            border-radius: 50%;
+            background-color: var(--planet-1);
+            color: var(--night-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-right: 14px;
+        }
+
+        .wish-text {
+            flex: 1;
+            font-size: 1rem;
+            color: #E0E0E0;
+            line-height: 1.3;
+            word-break: break-word;
+            max-height: 2.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .wish-status {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .wish-status:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: scale(1.1);
+        }
+
+        .wish-status.has-image {
+            background: rgba(78, 205, 196, 0.25);
+            color: var(--planet-1);
+        }
+
+        /* 装饰元素 */
+        .decorations-panel {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .decorations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .decoration-item {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.8rem;
+        }
+
+        .decoration-item:hover {
+            background: rgba(78, 205, 196, 0.15);
+            transform: scale(1.1) translateY(-3px);
+        }
+
+        /* 属性面板 */
+        .properties-panel {
+            min-height: 180px;
+        }
+
+        .properties-content {
+            display: none;
+        }
+
+        .properties-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .property-group {
+            margin-bottom: 20px;
+        }
+
+        .property-title {
+            font-size: 1rem;
+            color: #AAAAAA;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .property-option {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .property-option:hover {
+            transform: scale(1.05);
+        }
+
+        .property-option.active {
+            border-color: var(--planet-1);
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+        }
+
+        .frame-option {
+            border: 3px solid;
+            border-radius: 5px;
+        }
+
+        .frame-option.type-1 {
+            border-color: var(--frame-color-1);
+        }
+
+        .frame-option.type-2 {
+            border-color: var(--frame-color-2);
+            border-style: dashed;
+        }
+
+        .frame-option.type-3 {
+            border-color: var(--frame-color-3);
+        }
+
+        .frame-option.type-4 {
+            border-color: var(--frame-color-4);
+        }
+
+        .bg-option {
+            background-size: cover;
+            background-position: center;
+        }
+
+        .bg-option.type-1 {
+            background-color: #FFF9F0;
+        }
+
+        .bg-option.type-2 {
+            background: linear-gradient(135deg, #FFEEDD, #FFF9F0);
+        }
+
+        .bg-option.type-3 {
+            background-color: #FFF9F0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%23FFB6C1" opacity="0.2"/></svg>');
+        }
+
+        .bg-option.type-4 {
+            background-color: #FFF9F0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="0.5" fill="%234ECDC4" opacity="0.1"/></svg>');
+        }
+
+        /* 主画布区域 - 占据主要空间 */
+        .canvas-container {
+            flex: 1;
+            background-color: rgba(10, 10, 26, 0.4);
+            border-radius: 18px;
+            border: 2px solid rgba(255, 182, 193, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .canvas-header {
+            padding: 18px 25px;
+            background: rgba(20, 20, 40, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .canvas-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            color: var(--planet-1);
+        }
+
+        .canvas-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .canvas-btn {
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #CCCCCC;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .canvas-btn:hover {
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--planet-1);
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .canvas-btn.primary {
+            background: rgba(78, 205, 196, 0.25);
+            color: var(--planet-1);
+            font-weight: bold;
+        }
+
+        .canvas-btn.primary:hover {
+            background: rgba(78, 205, 196, 0.35);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.2);
+        }
+
+        .canvas-area {
+            flex: 1;
+            overflow: auto;
+            padding: var(--canvas-padding);
+            background-color: #FFF9F0;
+            background-image: 
+                linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+                linear-gradient(#eee .1em, transparent .1em);
+            background-size: 100% 1.2em;
+            position: relative;
+        }
+
+        #visionboardCanvas {
+            width: 1200px;
+            height: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: visible; /* 改为visible以确保所有元素都能被捕获 */
+        }
+
+        /* 愿景板上的元素样式 */
+        .board-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .wish-item-container {
+            position: absolute;
+            z-index: 1;
+            transition: all 0.2s ease;
+            cursor: move;
+        }
+
+        .wish-item-container.selected {
+            z-index: 10;
+            box-shadow: 0 0 0 3px var(--planet-1), 0 0 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .wish-item {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .wish-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .wish-image {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            background-color: #f5f5f5;
+        }
+
+        .wish-image.placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 2rem;
+        }
+
+        .wish-text {
+            padding: 15px;
+            height: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            text-align: center;
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            font-weight: 500;
+            line-height: 1.3;
+            overflow: hidden;
+        }
+
+        .wish-frame {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 8px solid;
+            border-image-slice: 8;
+            border-image-width: 8px;
+            border-image-repeat: stretch;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .wish-frame.type-1 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23FFB6C1" stroke-width="5" rx="10"/></svg>');
+        }
+
+        .wish-frame.type-2 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23DDA0DD" stroke-width="5" rx="10" stroke-dasharray="10,5"/></svg>');
+        }
+
+        .wish-frame.type-3 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%234ECDC4" stroke-width="5" rx="10"/><circle cx="10" cy="10" r="3" fill="%234ECDC4"/><circle cx="90" cy="10" r="3" fill="%234ECDC4"/><circle cx="10" cy="90" r="3" fill="%234ECDC4"/><circle cx="90" cy="90" r="3" fill="%234ECDC4"/></svg>');
+        }
+
+        .wish-frame.type-4 {
+            border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23FFD700" stroke-width="5" rx="10"/><path d="M10,10 L90,10 M90,10 L90,90 M90,90 L10,90 M10,90 L10,10" stroke="%23FFD700" stroke-width="2"/></svg>');
+        }
+
+        .wish-controls {
+            position: absolute;
+            top: -35px;
+            right: -10px;
+            display: none;
+            gap: 8px;
+            z-index: 11;
+        }
+
+        .wish-item-container.selected .wish-controls {
+            display: flex;
+        }
+
+        .wish-control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--planet-1);
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .wish-control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .wish-control-btn.delete {
+            background-color: #FF6B8B;
+        }
+
+        .wish-control-btn.resize {
+            background-color: #45B7D1;
+        }
+
+        .wish-control-btn.rotate {
+            background-color: #96CEB4;
+        }
+
+        .sticker-element {
+            position: absolute;
+            z-index: 5;
+            cursor: move;
+            user-select: none;
+            font-size: 50px;
+            transition: all 0.2s;
+        }
+
+        .sticker-element:hover {
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+        }
+
+        /* 底部控制区 */
+        .bottom-controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(20, 20, 40, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .hand-drawn-btn {
+            background-color: var(--accent-pink);
+            color: var(--text-brown);
+            border: 2px solid var(--text-brown);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            padding: 12px 24px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .hand-drawn-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+            background-color: #FFA7B3;
+        }
+
+        .hand-drawn-btn.primary {
+            background-color: var(--planet-1);
+            color: var(--night-blue);
+            border-color: var(--planet-1);
+            font-weight: bold;
+        }
+
+        .hand-drawn-btn.primary:hover {
+            background-color: #3DBBB2;
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .status-info {
+            color: #AAAAAA;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1400px) {
+            .editor-workspace {
+                height: calc(100vh - 220px);
+            }
+            
+            :root {
+                --sidebar-width: 300px;
+                --canvas-padding: 30px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .editor-workspace {
+                flex-direction: column;
+                height: auto;
+                min-height: 500px;
+            }
+            
+            .editor-sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .sidebar-panel {
+                flex: 1;
+                min-width: 280px;
+            }
+            
+            .canvas-container {
+                height: 600px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .guide-title {
+                font-size: 2.2rem;
+            }
+            
+            .guide-subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .guide-text {
+                font-size: 1rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .header-info {
+                align-items: flex-start;
+                margin-top: 10px;
+            }
+            
+            .canvas-area {
+                padding: 20px;
+            }
+            
+            #visionboardCanvas {
+                width: 100%;
+                height: 500px;
+            }
+            
+            .sidebar-panel {
+                min-width: 100%;
+            }
+            
+            .bottom-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 宇宙背景 -->
+    <div class="universe-bg" id="universeBg"></div>
+    
+    <!-- 主容器 -->
+    <div class="visionboard-container">
+        <!-- 头部 -->
+        <header class="visionboard-header">
+            <div class="logo">
+                <i class="fas fa-globe-americas logo-icon"></i>
+                <span>VisionFocus Hours</span>
+            </div>
+            <div class="header-info">
+                <div class="current-planet" id="planetDisplay">2026星球 · 愿景板制作</div>
+                <div class="progress-indicator">步骤 3/5 · 可视化愿景</div>
+            </div>
+        </header>
+
+        <!-- 引导区域 -->
+        <section class="guide-section">
+            <h1 class="guide-title">创作你的视觉愿景板</h1>
+            <h2 class="guide-subtitle">将文字愿望转化为视觉图像，让未来触手可及</h2>
+            <p class="guide-text">
+                为每个愿望碎片<span class="highlight">上传图片</span>，添加<span class="highlight">相框和装饰</span>，<br>
+                自由布局你的愿景板。这是你未来一年的<span class="highlight">视觉指引</span>。
+            </p>
+        </section>
+
+        <!-- 主编辑工作区 -->
+        <div class="editor-workspace">
+            <!-- 侧边工具栏 -->
+            <div class="editor-sidebar">
+                <!-- 工具面板 -->
+                <div class="sidebar-panel tools-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-tools"></i> 编辑工具
+                        </div>
+                    </div>
+                    <div class="toolbar-grid">
+                        <button class="tool-btn active" id="toolSelect" data-tool="select">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <span class="tool-label">选择</span>
+                        </button>
+                        <button class="tool-btn" id="toolMove" data-tool="move">
+                            <i class="fas fa-arrows-alt"></i>
+                            <span class="tool-label">移动</span>
+                        </button>
+                        <button class="tool-btn" id="toolSticker" data-tool="sticker">
+                            <i class="fas fa-star"></i>
+                            <span class="tool-label">贴纸</span>
+                        </button>
+                        <button class="tool-btn" id="toolFrame" data-tool="frame">
+                            <i class="fas fa-square"></i>
+                            <span class="tool-label">相框</span>
+                        </button>
+                        <button class="tool-btn" id="toolText" data-tool="text">
+                            <i class="fas fa-font"></i>
+                            <span class="tool-label">文字</span>
+                        </button>
+                        <button class="tool-btn" id="toolDelete" data-tool="delete">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="tool-label">删除</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 愿望列表面板 -->
+                <div class="sidebar-panel wishes-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-gem"></i> 愿望碎片
+                        </div>
+                        <span class="wish-count" id="wishCount">0/12</span>
+                    </div>
+                    <div class="wishes-list-container" id="wishesList">
+                        <!-- 愿望列表将通过JS动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 属性面板 -->
+                <div class="sidebar-panel properties-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-sliders-h"></i> 属性设置
+                        </div>
+                    </div>
+                    
+                    <!-- 图片上传属性 -->
+                    <div class="properties-content active" id="propertiesImage">
+                        <div class="property-group">
+                            <div class="property-title">
+                                <i class="fas fa-image"></i> 图片上传
+                            </div>
+                            <div style="text-align: center;">
+                                <button class="canvas-btn" id="uploadImageBtn" style="width: 100%; justify-content: center;">
+                                    <i class="fas fa-cloud-upload-alt"></i> 上传图片
+                                </button>
+                                <input type="file" id="imageUploadInput" accept="image/*" style="display: none;">
+                                <p style="color: #888; font-size: 0.85rem; margin-top: 10px;">支持 JPG, PNG, GIF (最大 2MB)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="property-group">
+                            <div class="property-title">
+                                <i class="fas fa-crop-alt"></i> 相框样式
+                            </div>
+                            <div class="property-grid">
+                                <div class="property-option frame-option type-1 active" data-frame="1"></div>
+                                <div class="property-option frame-option type-2" data-frame="2"></div>
+                                <div class="property-option frame-option type-3" data-frame="3"></div>
+                                <div class="property-option frame-option type-4" data-frame="4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 背景属性 -->
+                    <div class="properties-content" id="propertiesBackground">
+                        <div class="property-group">
+                            <div class="property-title">
+                                <i class="fas fa-layer-group"></i> 背景图案
+                            </div>
+                            <div class="property-grid">
+                                <div class="property-option bg-option type-1 active" data-bg="1"></div>
+                                <div class="property-option bg-option type-2" data-bg="2"></div>
+                                <div class="property-option bg-option type-3" data-bg="3"></div>
+                                <div class="property-option bg-option type-4" data-bg="4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 装饰元素面板 -->
+                <div class="sidebar-panel decorations-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-palette"></i> 装饰元素
+                        </div>
+                        <button class="canvas-btn" id="clearDecorationsBtn" style="padding: 5px 10px; font-size: 0.9rem;">
+                            <i class="fas fa-broom"></i> 清空
+                        </button>
+                    </div>
+                    <div class="decorations-grid" id="decorationsGrid">
+                        <!-- 装饰元素将通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主画布区域 -->
+            <div class="canvas-container">
+                <div class="canvas-header">
+                    <div class="canvas-title" id="canvasTitle">我的2026愿景板</div>
+                    <div class="canvas-actions">
+                        <button class="canvas-btn" id="zoomInBtn">
+                            <i class="fas fa-search-plus"></i> 放大
+                        </button>
+                        <button class="canvas-btn" id="zoomOutBtn">
+                            <i class="fas fa-search-minus"></i> 缩小
+                        </button>
+                        <button class="canvas-btn primary" id="saveImageBtn">
+                            <i class="fas fa-download"></i> 保存图片
+                        </button>
+                    </div>
+                </div>
+                <div class="canvas-area">
+                    <div id="visionboardCanvas">
+                        <!-- 背景 -->
+                        <div class="board-background" id="boardBackground"></div>
+                        
+                        <!-- 愿望碎片和装饰元素将通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部控制区 -->
+        <div class="bottom-controls">
+            <div class="control-group">
+                <button class="hand-drawn-btn" id="backBtn">
+                    <i class="fas fa-arrow-left"></i> 返回上一步
+                </button>
+                <button class="hand-drawn-btn" id="saveDraftBtn">
+                    <i class="fas fa-save"></i> 保存草稿
+                </button>
+                <button class="hand-drawn-btn" id="loadDraftBtn">
+                    <i class="fas fa-folder-open"></i> 加载草稿
+                </button>
+            </div>
+            
+            <div class="status-info">
+                <span id="selectionInfo">未选中任何元素</span>
+                <span id="canvasInfo">画布大小: 1200×800</span>
+            </div>
+            
+            <div class="control-group">
+                <button class="hand-drawn-btn primary" id="completeBtn">
+                    完成愿景板 <i class="fas fa-rocket"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LocalStorage管理
+        const STORAGE_PREFIX = 'vfh_';
+        
+        function getStorageData(key) {
+            try {
+                const data = localStorage.getItem(STORAGE_PREFIX + key);
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('Storage error:', e);
+                return null;
+            }
+        }
+        
+        function setStorageData(key, value) {
+            try {
+                localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+                return true;
+            } catch (e) {
+                console.error('Storage error:', e);
+                return false;
+            }
+        }
+        
+        function getPlanet(year) {
+            const planets = getStorageData('planets') || [];
+            return planets.find(p => p.year === parseInt(year));
+        }
+        
+        function updatePlanet(year, updates) {
+            const planets = getStorageData('planets') || [];
+            const index = planets.findIndex(p => p.year === parseInt(year));
+            
+            if (index !== -1) {
+                planets[index] = { ...planets[index], ...updates };
+                setStorageData('planets', planets);
+                return planets[index];
+            }
+            return null;
+        }
+        
+        // 愿景板数据
+        const visionBoard = {
+            currentYear: new Date().getFullYear(),
+            wishes: [],
+            selectedWishId: null,
+            selectedTool: 'select',
+            selectedFrameType: '1',
+            selectedBackgroundType: '1',
+            stickers: [],
+            canvasScale: 1,
+            canvasWidth: 1200,
+            canvasHeight: 800,
+            
+            // 装饰元素
+            decorations: [
+                { id: 1, icon: 'fas fa-star', content: '⭐' },
+                { id: 2, icon: 'fas fa-heart', content: '❤️' },
+                { id: 3, icon: 'fas fa-cloud', content: '☁️' },
+                { id: 4, icon: 'fas fa-sun', content: '☀️' },
+                { id: 5, icon: 'fas fa-moon', content: '🌙' },
+                { id: 6, icon: 'fas fa-bolt', content: '⚡' },
+                { id: 7, icon: 'fas fa-music', content: '🎵' },
+                { id: 8, icon: 'fas fa-book', content: '📚' },
+                { id: 9, icon: 'fas fa-plane', content: '✈️' },
+                { id: 10, icon: 'fas fa-tree', content: '🌳' },
+                { id: 11, icon: 'fas fa-coffee', content: '☕' },
+                { id: 12, icon: 'fas fa-graduation-cap', content: '🎓' }
+            ],
+            
+            // 背景选项
+            backgrounds: [
+                { id: 1, name: '纯色羊皮纸', type: '1' },
+                { id: 2, name: '渐变温暖', type: '2' },
+                { id: 3, name: '粉色圆点', type: '3' },
+                { id: 4, name: '蓝色圆点', type: '4' }
+            ]
+        };
+
+        // DOM元素
+        const universeBg = document.getElementById('universeBg');
+        const visionboardCanvas = document.getElementById('visionboardCanvas');
+        const boardBackground = document.getElementById('boardBackground');
+        const wishesList = document.getElementById('wishesList');
+        const wishCount = document.getElementById('wishCount');
+        const decorationsGrid = document.getElementById('decorationsGrid');
+        const imageUploadInput = document.getElementById('imageUploadInput');
+        const uploadImageBtn = document.getElementById('uploadImageBtn');
+        const propertiesImage = document.getElementById('propertiesImage');
+        const propertiesBackground = document.getElementById('propertiesBackground');
+        const selectionInfo = document.getElementById('selectionInfo');
+        const backBtn = document.getElementById('backBtn');
+        const completeBtn = document.getElementById('completeBtn');
+        
+        // 工具按钮
+        const toolButtons = {
+            select: document.getElementById('toolSelect'),
+            move: document.getElementById('toolMove'),
+            sticker: document.getElementById('toolSticker'),
+            frame: document.getElementById('toolFrame'),
+            text: document.getElementById('toolText'),
+            delete: document.getElementById('toolDelete')
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+            setupEventListeners();
+            createStarBackground();
+            loadWishesFromStorage();
+            createDecorationsGrid();
+            updateCanvasBackground();
+            updatePropertiesPanel();
+        });
+
+        function initApp() {
+            // 从URL获取年份参数
+            const urlParams = new URLSearchParams(window.location.search);
+            visionBoard.currentYear = parseInt(urlParams.get('year')) || new Date().getFullYear();
+            
+            // 更新页面显示
+            document.getElementById('planetDisplay').textContent = `${visionBoard.currentYear}星球 · 愿景板制作`;
+            document.getElementById('canvasTitle').textContent = `我的${visionBoard.currentYear}愿景板`;
+            
+            // 设置画布大小
+            visionboardCanvas.style.width = `${visionBoard.canvasWidth}px`;
+            visionboardCanvas.style.height = `${visionBoard.canvasHeight}px`;
+            
+            // 尝试从本地存储加载愿景板状态
+            loadVisionBoardState();
+        }
+
+        function createStarBackground() {
+            const starCount = 150;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机位置
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // 随机大小
+                const size = Math.random() * 3 + 1;
+                
+                // 随机闪烁延迟
+                const delay = Math.random() * 3;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.animationDelay = `${delay}s`;
+                
+                universeBg.appendChild(star);
+            }
+        }
+
+        function loadWishesFromStorage() {
+            try {
+                // 从LocalStorage加载对应年份的愿望数据
+                const key = `wishes_${visionBoard.currentYear}`;
+                const savedWishes = getStorageData(key);
+                
+                if (savedWishes && savedWishes.length > 0) {
+                    // 检查是否已有保存的愿景板状态（包含位置、图片等信息）
+                    const boardStateKey = `visionboard_${visionBoard.currentYear}`;
+                    const savedBoardState = getStorageData(boardStateKey);
+                    
+                    if (savedBoardState && savedBoardState.wishes && savedBoardState.wishes.length > 0) {
+                        // 使用已保存的愿景板状态（包含位置、图片等）
+                        visionBoard.wishes = savedBoardState.wishes;
+                        visionBoard.stickers = savedBoardState.stickers || [];
+                        visionBoard.selectedBackgroundType = savedBoardState.backgroundType || '1';
+                    } else {
+                        // 从愿望碎片创建愿景板项目
+                        visionBoard.wishes = savedWishes.map((wish, index) => ({
+                            ...wish,
+                            image: null,
+                            frameType: '1',
+                            position: {
+                                x: 50 + (index % 3) * 300,
+                                y: 50 + Math.floor(index / 3) * 250
+                            },
+                            size: {
+                                width: 250,
+                                height: 300
+                            },
+                            rotation: 0,
+                            zIndex: index + 1
+                        }));
+                    }
+                    
+                    // 更新愿望计数
+                    updateWishCount();
+                    
+                    // 渲染愿望列表
+                    renderWishesList();
+                    
+                    // 在画布上创建愿望项目
+                    createWishItemsOnCanvas();
+                    
+                    // 恢复贴纸
+                    if (visionBoard.stickers && visionBoard.stickers.length > 0) {
+                        visionBoard.stickers.forEach(stickerData => {
+                            const sticker = document.createElement('div');
+                            sticker.className = 'sticker-element';
+                            sticker.innerHTML = `<div style="text-align: center;">${stickerData.content}</div>`;
+                            
+                            sticker.style.left = `${stickerData.position.x}px`;
+                            sticker.style.top = `${stickerData.position.y}px`;
+                            sticker.style.width = `${stickerData.size.width}px`;
+                            sticker.style.height = `${stickerData.size.height}px`;
+                            sticker.style.fontSize = `${stickerData.size.height * 0.8}px`;
+                            
+                            visionboardCanvas.appendChild(sticker);
+                            setupStickerEvents(sticker, stickerData);
+                        });
+                    }
+                    
+                    // 更新背景
+                    updateCanvasBackground();
+                    
+                    // 默认选中第一个愿望
+                    if (visionBoard.wishes.length > 0) {
+                        selectWish(visionBoard.wishes[0].id);
+                    }
+                } else {
+                    // 如果没有保存的愿望，显示提示并跳转回愿望碎片页面
+                    showNotification('请先完成愿望碎片设定', 'info');
+                    setTimeout(() => {
+                        window.location.href = `dreamfragment.html?year=${visionBoard.currentYear}`;
+                    }, 2000);
+                }
+            } catch (e) {
+                console.error('加载愿望碎片失败:', e);
+                showNotification('加载愿望碎片失败，请重新开始', 'error');
+            }
+        }
+
+        function createSampleWishes() {
+            const sampleWishes = [
+                "健康有活力的身体",
+                "掌握一门新技能",
+                "完成一次深度旅行",
+                "改善财务状况",
+                "建立深度关系"
+            ];
+            
+            visionBoard.wishes = sampleWishes.map((text, index) => ({
+                id: index + 1,
+                text: text,
+                createdAt: new Date().toISOString(),
+                image: null,
+                frameType: '1',
+                position: {
+                    x: 50 + (index % 3) * 300,
+                    y: 50 + Math.floor(index / 3) * 250
+                },
+                size: {
+                    width: 250,
+                    height: 300
+                },
+                rotation: 0,
+                zIndex: index + 1
+            }));
+            
+            updateWishCount();
+            renderWishesList();
+            createWishItemsOnCanvas();
+            
+            if (visionBoard.wishes.length > 0) {
+                selectWish(visionBoard.wishes[0].id);
+            }
+        }
+
+        function renderWishesList() {
+            wishesList.innerHTML = '';
+            
+            visionBoard.wishes.forEach(wish => {
+                const listItem = document.createElement('div');
+                listItem.className = 'wish-list-item';
+                if (wish.id === visionBoard.selectedWishId) {
+                    listItem.classList.add('active');
+                }
+                listItem.dataset.wishId = wish.id;
+                
+                listItem.innerHTML = `
+                    <div class="wish-number">${wish.id}</div>
+                    <div class="wish-text">${wish.text || '未命名愿望'}</div>
+                    <div class="wish-status ${wish.image ? 'has-image' : ''}" data-wish-id="${wish.id}" title="${wish.image ? '已上传图片' : '点击上传图片'}">
+                        <i class="fas ${wish.image ? 'fa-check' : 'fa-image'}"></i>
+                    </div>
+                `;
+                
+                listItem.addEventListener('click', function(e) {
+                    if (!e.target.closest('.wish-status')) {
+                        selectWish(wish.id);
+                    }
+                });
+                
+                const statusBtn = listItem.querySelector('.wish-status');
+                statusBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectWish(wish.id);
+                    imageUploadInput.click();
+                });
+                
+                wishesList.appendChild(listItem);
+            });
+        }
+
+        function createWishItemsOnCanvas() {
+            visionBoard.wishes.forEach(wish => {
+                createWishItemElement(wish);
+            });
+        }
+
+        function createWishItemElement(wish) {
+            // 检查是否已存在
+            const existingItem = document.querySelector(`.wish-item-container[data-wish-id="${wish.id}"]`);
+            if (existingItem) {
+                existingItem.remove();
+            }
+            
+            // 创建容器
+            const container = document.createElement('div');
+            container.className = 'wish-item-container';
+            container.dataset.wishId = wish.id;
+            container.style.left = `${wish.position.x}px`;
+            container.style.top = `${wish.position.y}px`;
+            container.style.width = `${wish.size.width}px`;
+            container.style.height = `${wish.size.height}px`;
+            container.style.transform = `rotate(${wish.rotation}deg)`;
+            container.style.zIndex = wish.zIndex;
+            
+            // 创建愿望项目
+            const wishItem = document.createElement('div');
+            wishItem.className = 'wish-item';
+            
+            // 图片区域
+            const imageDiv = document.createElement('div');
+            imageDiv.className = 'wish-image';
+            
+            if (wish.image) {
+                imageDiv.style.backgroundImage = `url(${wish.image})`;
+                imageDiv.style.backgroundSize = 'cover';
+                imageDiv.style.backgroundPosition = 'center';
+            } else {
+                imageDiv.classList.add('placeholder');
+                imageDiv.innerHTML = `<i class="fas fa-image"></i>`;
+            }
+            
+            // 文字区域
+            const textDiv = document.createElement('div');
+            textDiv.className = 'wish-text';
+            textDiv.textContent = wish.text || '愿望碎片';
+            
+            // 相框
+            const frameDiv = document.createElement('div');
+            frameDiv.className = `wish-frame type-${wish.frameType || '1'}`;
+            
+            // 控制按钮
+            const controlsDiv = document.createElement('div');
+            controlsDiv.className = 'wish-controls';
+            controlsDiv.innerHTML = `
+                <div class="wish-control-btn delete" title="删除">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <div class="wish-control-btn resize" title="调整大小">
+                    <i class="fas fa-expand-alt"></i>
+                </div>
+                <div class="wish-control-btn rotate" title="旋转">
+                    <i class="fas fa-redo-alt"></i>
+                </div>
+            `;
+            
+            // 组装
+            wishItem.appendChild(imageDiv);
+            wishItem.appendChild(textDiv);
+            container.appendChild(wishItem);
+            container.appendChild(frameDiv);
+            container.appendChild(controlsDiv);
+            
+            // 添加到画布
+            visionboardCanvas.appendChild(container);
+            
+            // 添加事件监听器
+            setupWishItemEvents(container, wish);
+            
+            return container;
+        }
+
+        function setupWishItemEvents(container, wish) {
+            // 选中愿望
+            container.addEventListener('click', function(e) {
+                if (!e.target.closest('.wish-control-btn')) {
+                    selectWish(wish.id);
+                }
+            });
+            
+            // 删除按钮
+            const deleteBtn = container.querySelector('.wish-control-btn.delete');
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (confirm('确定要从愿景板中移除这个愿望吗？')) {
+                    removeWishFromBoard(wish.id);
+                }
+            });
+            
+            // 调整大小按钮
+            const resizeBtn = container.querySelector('.wish-control-btn.resize');
+            resizeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // 随机调整大小
+                const newWidth = Math.max(180, Math.min(400, wish.size.width + (Math.random() > 0.5 ? 30 : -30)));
+                const newHeight = Math.max(240, Math.min(500, wish.size.height + (Math.random() > 0.5 ? 40 : -40)));
+                
+                updateWishSize(wish.id, newWidth, newHeight);
+            });
+            
+            // 旋转按钮
+            const rotateBtn = container.querySelector('.wish-control-btn.rotate');
+            rotateBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const newRotation = (wish.rotation + 15) % 360;
+                updateWishRotation(wish.id, newRotation);
+            });
+            
+            // 拖拽移动
+            let isDragging = false;
+            let dragStartX, dragStartY, itemStartX, itemStartY;
+            
+            container.addEventListener('mousedown', function(e) {
+                if (e.target.closest('.wish-control-btn')) {
+                    return;
+                }
+                
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                itemStartX = parseInt(container.style.left);
+                itemStartY = parseInt(container.style.top);
+                
+                // 选中这个愿望
+                selectWish(wish.id);
+                
+                // 提高层级
+                visionBoard.wishes.forEach(w => {
+                    if (w.id === wish.id) {
+                        w.zIndex = 1000;
+                    } else if (w.zIndex > 900) {
+                        w.zIndex -= 1;
+                    }
+                });
+                container.style.zIndex = 1000;
+                
+                document.addEventListener('mousemove', handleDrag);
+                document.addEventListener('mouseup', stopDrag);
+            });
+            
+            function handleDrag(e) {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const newX = Math.max(0, Math.min(visionBoard.canvasWidth - parseInt(container.style.width), itemStartX + deltaX));
+                const newY = Math.max(0, Math.min(visionBoard.canvasHeight - parseInt(container.style.height), itemStartY + deltaY));
+                
+                container.style.left = `${newX}px`;
+                container.style.top = `${newY}px`;
+            }
+            
+            function stopDrag() {
+                isDragging = false;
+                document.removeEventListener('mousemove', handleDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                
+                // 更新愿望位置
+                const newX = parseInt(container.style.left);
+                const newY = parseInt(container.style.top);
+                updateWishPosition(wish.id, newX, newY);
+            }
+        }
+
+        function createDecorationsGrid() {
+            decorationsGrid.innerHTML = '';
+            
+            visionBoard.decorations.forEach(decoration => {
+                const decorationItem = document.createElement('div');
+                decorationItem.className = 'decoration-item';
+                decorationItem.dataset.decorationId = decoration.id;
+                decorationItem.title = '点击添加到愿景板';
+                decorationItem.innerHTML = `<i class="${decoration.icon}"></i>`;
+                
+                decorationItem.addEventListener('click', function() {
+                    addStickerToCanvas(decoration);
+                });
+                
+                decorationsGrid.appendChild(decorationItem);
+            });
+        }
+
+        function addStickerToCanvas(decoration) {
+            // 创建贴纸元素
+            const sticker = document.createElement('div');
+            sticker.className = 'sticker-element';
+            sticker.innerHTML = `<div style="text-align: center;">${decoration.content}</div>`;
+            
+            // 随机位置和大小
+            const x = Math.random() * (visionBoard.canvasWidth - 80);
+            const y = Math.random() * (visionBoard.canvasHeight - 80);
+            const size = 60 + Math.random() * 40;
+            
+            sticker.style.left = `${x}px`;
+            sticker.style.top = `${y}px`;
+            sticker.style.width = `${size}px`;
+            sticker.style.height = `${size}px`;
+            sticker.style.fontSize = `${size * 0.8}px`;
+            
+            // 添加到画布
+            visionboardCanvas.appendChild(sticker);
+            
+            // 添加到数据
+            const stickerData = {
+                id: Date.now(),
+                type: 'sticker',
+                content: decoration.content,
+                position: { x, y },
+                size: { width: size, height: size }
+            };
+            
+            visionBoard.stickers.push(stickerData);
+            
+            // 设置贴纸事件
+            setupStickerEvents(sticker, stickerData);
+            
+            showNotification(`已添加 ${decoration.content} 贴纸`, 'success');
+        }
+
+        function setupStickerEvents(sticker, stickerData) {
+            // 拖拽移动
+            let isDragging = false;
+            let dragStartX, dragStartY, stickerStartX, stickerStartY;
+            
+            sticker.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                stickerStartX = parseInt(sticker.style.left);
+                stickerStartY = parseInt(sticker.style.top);
+                
+                document.addEventListener('mousemove', handleStickerDrag);
+                document.addEventListener('mouseup', stopStickerDrag);
+            });
+            
+            function handleStickerDrag(e) {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const newX = Math.max(0, Math.min(visionBoard.canvasWidth - parseInt(sticker.style.width), stickerStartX + deltaX));
+                const newY = Math.max(0, Math.min(visionBoard.canvasHeight - parseInt(sticker.style.height), stickerStartY + deltaY));
+                
+                sticker.style.left = `${newX}px`;
+                sticker.style.top = `${newY}px`;
+            }
+            
+            function stopStickerDrag() {
+                isDragging = false;
+                document.removeEventListener('mousemove', handleStickerDrag);
+                document.removeEventListener('mouseup', stopStickerDrag);
+                
+                // 更新贴纸位置
+                const newX = parseInt(sticker.style.left);
+                const newY = parseInt(sticker.style.top);
+                
+                const stickerIndex = visionBoard.stickers.findIndex(s => s.id === stickerData.id);
+                if (stickerIndex !== -1) {
+                    visionBoard.stickers[stickerIndex].position = { x: newX, y: newY };
+                    saveVisionBoardState();
+                }
+            }
+            
+            // 双击删除
+            sticker.addEventListener('dblclick', function() {
+                if (confirm('确定要删除这个贴纸吗？')) {
+                    sticker.remove();
+                    
+                    // 从数据中移除
+                    const stickerIndex = visionBoard.stickers.findIndex(s => s.id === stickerData.id);
+                    if (stickerIndex !== -1) {
+                        visionBoard.stickers.splice(stickerIndex, 1);
+                        saveVisionBoardState();
+                    }
+                }
+            });
+        }
+
+        function selectWish(wishId) {
+            // 更新选中的愿望ID
+            visionBoard.selectedWishId = wishId;
+            
+            // 更新UI
+            document.querySelectorAll('.wish-item-container').forEach(container => {
+                container.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.wish-list-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 选中对应的愿望
+            const wishContainer = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+            const listItem = document.querySelector(`.wish-list-item[data-wish-id="${wishId}"]`);
+            
+            if (wishContainer) {
+                wishContainer.classList.add('selected');
+            }
+            
+            if (listItem) {
+                listItem.classList.add('active');
+            }
+            
+            // 更新属性面板
+            updatePropertiesPanel();
+            
+            // 更新选中信息
+            const wish = visionBoard.wishes.find(w => w.id === wishId);
+            if (wish) {
+                selectionInfo.textContent = `选中: "${wish.text}"`;
+            }
+        }
+
+        function updateWishCount() {
+            const count = visionBoard.wishes.length;
+            wishCount.textContent = `${count}/12`;
+            
+            // 更新下一步按钮状态
+            const hasWishes = visionBoard.wishes.length > 0;
+            completeBtn.disabled = !hasWishes;
+            
+            if (!hasWishes) {
+                completeBtn.style.opacity = '0.6';
+                completeBtn.style.cursor = 'not-allowed';
+            } else {
+                completeBtn.style.opacity = '1';
+                completeBtn.style.cursor = 'pointer';
+            }
+        }
+
+        function updateWishPosition(wishId, x, y) {
+            const wishIndex = visionBoard.wishes.findIndex(w => w.id === wishId);
+            if (wishIndex !== -1) {
+                visionBoard.wishes[wishIndex].position = { x, y };
+                saveVisionBoardState();
+            }
+        }
+
+        function updateWishSize(wishId, width, height) {
+            const wishIndex = visionBoard.wishes.findIndex(w => w.id === wishId);
+            if (wishIndex !== -1) {
+                visionBoard.wishes[wishIndex].size = { width, height };
+                
+                // 更新UI
+                const container = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+                if (container) {
+                    container.style.width = `${width}px`;
+                    container.style.height = `${height}px`;
+                }
+                
+                saveVisionBoardState();
+            }
+        }
+
+        function updateWishRotation(wishId, rotation) {
+            const wishIndex = visionBoard.wishes.findIndex(w => w.id === wishId);
+            if (wishIndex !== -1) {
+                visionBoard.wishes[wishIndex].rotation = rotation;
+                
+                // 更新UI
+                const container = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+                if (container) {
+                    container.style.transform = `rotate(${rotation}deg)`;
+                }
+                
+                saveVisionBoardState();
+            }
+        }
+
+        function updateWishImage(wishId, imageData) {
+            const wishIndex = visionBoard.wishes.findIndex(w => w.id === wishId);
+            if (wishIndex !== -1) {
+                visionBoard.wishes[wishIndex].image = imageData;
+                
+                // 更新UI
+                const container = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+                if (container) {
+                    const imageDiv = container.querySelector('.wish-image');
+                    if (imageDiv) {
+                        imageDiv.style.backgroundImage = `url(${imageData})`;
+                        imageDiv.style.backgroundSize = 'cover';
+                        imageDiv.style.backgroundPosition = 'center';
+                        imageDiv.classList.remove('placeholder');
+                    }
+                }
+                
+                // 更新列表中的状态图标
+                const listItem = document.querySelector(`.wish-list-item[data-wish-id="${wishId}"] .wish-status`);
+                if (listItem) {
+                    listItem.classList.add('has-image');
+                    listItem.innerHTML = '<i class="fas fa-check"></i>';
+                    listItem.title = '已上传图片';
+                }
+                
+                saveVisionBoardState();
+                showNotification('图片上传成功！', 'success');
+            }
+        }
+
+        function updateWishFrame(wishId, frameType) {
+            const wishIndex = visionBoard.wishes.findIndex(w => w.id === wishId);
+            if (wishIndex !== -1) {
+                visionBoard.wishes[wishIndex].frameType = frameType;
+                
+                // 更新UI
+                const container = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+                if (container) {
+                    const frameDiv = container.querySelector('.wish-frame');
+                    if (frameDiv) {
+                        frameDiv.className = `wish-frame type-${frameType}`;
+                    }
+                }
+                
+                saveVisionBoardState();
+            }
+        }
+
+        function removeWishFromBoard(wishId) {
+            // 从画布中移除
+            const container = document.querySelector(`.wish-item-container[data-wish-id="${wishId}"]`);
+            if (container) {
+                container.remove();
+            }
+            
+            // 从数据中移除
+            const wishIndex = visionBoard.wishes.findIndex(w => w.id === wishId);
+            if (wishIndex !== -1) {
+                visionBoard.wishes.splice(wishIndex, 1);
+                
+                // 更新列表
+                renderWishesList();
+                updateWishCount();
+                
+                // 如果删除的是选中的愿望，选中另一个
+                if (visionBoard.selectedWishId === wishId) {
+                    if (visionBoard.wishes.length > 0) {
+                        selectWish(visionBoard.wishes[0].id);
+                    } else {
+                        visionBoard.selectedWishId = null;
+                        selectionInfo.textContent = '未选中任何元素';
+                        updatePropertiesPanel();
+                    }
+                }
+                
+                saveVisionBoardState();
+                showNotification('愿望已从愿景板中移除', 'info');
+            }
+        }
+
+        function updateCanvasBackground() {
+            const bgType = visionBoard.selectedBackgroundType;
+            
+            switch(bgType) {
+                case '1':
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+                    boardBackground.style.backgroundImage = 'none';
+                    break;
+                case '2':
+                    boardBackground.style.background = 'linear-gradient(135deg, #FFEEDD, #FFF9F0)';
+                    break;
+                case '3':
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+                    boardBackground.style.backgroundImage = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%23FFB6C1" opacity="0.2"/></svg>\')';
+                    break;
+                case '4':
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+                    boardBackground.style.backgroundImage = 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="0.5" fill="%234ECDC4" opacity="0.1"/></svg>\')';
+                    break;
+                default:
+                    boardBackground.style.backgroundColor = '#FFF9F0';
+            }
+        }
+
+        function updatePropertiesPanel() {
+            // 根据当前选择显示不同的属性面板
+            if (visionBoard.selectedWishId) {
+                propertiesImage.classList.add('active');
+                propertiesBackground.classList.remove('active');
+                
+                // 更新选中的相框
+                const wish = visionBoard.wishes.find(w => w.id === visionBoard.selectedWishId);
+                if (wish) {
+                    document.querySelectorAll('.frame-option').forEach(option => {
+                        option.classList.remove('active');
+                    });
+                    
+                    const selectedFrame = document.querySelector(`.frame-option[data-frame="${wish.frameType || '1'}"]`);
+                    if (selectedFrame) {
+                        selectedFrame.classList.add('active');
+                    }
+                }
+            } else {
+                propertiesImage.classList.remove('active');
+                propertiesBackground.classList.add('active');
+                
+                // 更新选中的背景
+                document.querySelectorAll('.bg-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                
+                const selectedBg = document.querySelector(`.bg-option[data-bg="${visionBoard.selectedBackgroundType}"]`);
+                if (selectedBg) {
+                    selectedBg.classList.add('active');
+                }
+            }
+        }
+
+        function saveVisionBoardState() {
+            try {
+                const boardState = {
+                    wishes: visionBoard.wishes,
+                    stickers: visionBoard.stickers,
+                    backgroundType: visionBoard.selectedBackgroundType,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                // 使用年份相关的key保存
+                const boardStateKey = `visionboard_${visionBoard.currentYear}`;
+                setStorageData(boardStateKey, boardState);
+                return true;
+            } catch (e) {
+                console.error('保存愿景板状态失败:', e);
+                return false;
+            }
+        }
+
+        function loadVisionBoardState() {
+            try {
+                // 使用年份相关的key加载
+                const boardStateKey = `visionboard_${visionBoard.currentYear}`;
+                const savedState = getStorageData(boardStateKey);
+                
+                if (savedState) {
+                    visionBoard.wishes = savedState.wishes || [];
+                    visionBoard.stickers = savedState.stickers || [];
+                    visionBoard.selectedBackgroundType = savedState.backgroundType || '1';
+                    
+                    // 更新UI
+                    renderWishesList();
+                    updateWishCount();
+                    updateCanvasBackground();
+                    
+                    // 重新创建画布上的元素
+                    document.querySelectorAll('.wish-item-container, .sticker-element').forEach(el => el.remove());
+                    createWishItemsOnCanvas();
+                    
+                    // 创建贴纸
+                    if (savedState.stickers && savedState.stickers.length > 0) {
+                        savedState.stickers.forEach(stickerData => {
+                            const sticker = document.createElement('div');
+                            sticker.className = 'sticker-element';
+                            sticker.innerHTML = `<div style="text-align: center;">${stickerData.content}</div>`;
+                            
+                            sticker.style.left = `${stickerData.position.x}px`;
+                            sticker.style.top = `${stickerData.position.y}px`;
+                            sticker.style.width = `${stickerData.size.width}px`;
+                            sticker.style.height = `${stickerData.size.height}px`;
+                            sticker.style.fontSize = `${stickerData.size.height * 0.8}px`;
+                            
+                            visionboardCanvas.appendChild(sticker);
+                            setupStickerEvents(sticker, stickerData);
+                        });
+                    }
+                    
+                    updatePropertiesPanel();
+                    showNotification('已加载保存的愿景板', 'success');
+                }
+            } catch (e) {
+                console.error('加载愿景板状态失败:', e);
+            }
+        }
+
+        function setupEventListeners() {
+            // 工具按钮点击事件
+            Object.entries(toolButtons).forEach(([tool, button]) => {
+                button.addEventListener('click', function() {
+                    // 更新工具按钮状态
+                    Object.values(toolButtons).forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 更新当前工具
+                    visionBoard.selectedTool = tool;
+                    
+                    // 根据工具更新属性面板
+                    updatePropertiesPanel();
+                    
+                    // 显示工具提示
+                    const toolNames = {
+                        select: '选择',
+                        move: '移动',
+                        sticker: '贴纸',
+                        frame: '相框',
+                        text: '文字',
+                        delete: '删除'
+                    };
+                    
+                    showNotification(`已切换到${toolNames[tool]}工具`, 'info');
+                });
+            });
+            
+            // 图片上传
+            uploadImageBtn.addEventListener('click', function() {
+                if (visionBoard.selectedWishId) {
+                    imageUploadInput.click();
+                } else {
+                    showNotification('请先选择一个愿望', 'info');
+                }
+            });
+            
+            imageUploadInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    
+                    // 检查文件大小
+                    if (file.size > 2 * 1024 * 1024) {
+                        showNotification('图片大小不能超过2MB', 'error');
+                        return;
+                    }
+                    
+                    // 检查文件类型
+                    if (!file.type.match('image.*')) {
+                        showNotification('请选择图片文件', 'error');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        if (visionBoard.selectedWishId) {
+                            updateWishImage(visionBoard.selectedWishId, event.target.result);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    // 重置文件输入
+                    imageUploadInput.value = '';
+                }
+            });
+            
+            // 相框选择
+            document.querySelectorAll('.frame-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const frameType = this.dataset.frame;
+                    
+                    // 更新UI
+                    document.querySelectorAll('.frame-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 更新选中的愿望的相框
+                    if (visionBoard.selectedWishId) {
+                        updateWishFrame(visionBoard.selectedWishId, frameType);
+                    }
+                });
+            });
+            
+            // 背景选择
+            document.querySelectorAll('.bg-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const bgType = this.dataset.bg;
+                    
+                    // 更新UI
+                    document.querySelectorAll('.bg-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 更新背景
+                    visionBoard.selectedBackgroundType = bgType;
+                    updateCanvasBackground();
+                    saveVisionBoardState();
+                });
+            });
+            
+            // 清空装饰按钮
+            document.getElementById('clearDecorationsBtn').addEventListener('click', function() {
+                if (visionBoard.stickers.length > 0) {
+                    if (confirm(`确定要清空所有装饰元素吗？共${visionBoard.stickers.length}个`)) {
+                        // 移除所有贴纸
+                        document.querySelectorAll('.sticker-element').forEach(el => el.remove());
+                        
+                        // 清空数据
+                        visionBoard.stickers = [];
+                        saveVisionBoardState();
+                        
+                        showNotification('已清空所有装饰元素', 'info');
+                    }
+                } else {
+                    showNotification('当前没有装饰元素', 'info');
+                }
+            });
+            
+            // 缩放按钮
+            document.getElementById('zoomInBtn').addEventListener('click', function() {
+                if (visionBoard.canvasScale < 2) {
+                    visionBoard.canvasScale += 0.1;
+                    visionboardCanvas.style.transform = `scale(${visionBoard.canvasScale})`;
+                    visionboardCanvas.style.transformOrigin = 'center';
+                }
+            });
+            
+            document.getElementById('zoomOutBtn').addEventListener('click', function() {
+                if (visionBoard.canvasScale > 0.5) {
+                    visionBoard.canvasScale -= 0.1;
+                    visionboardCanvas.style.transform = `scale(${visionBoard.canvasScale})`;
+                    visionboardCanvas.style.transformOrigin = 'center';
+                }
+            });
+            
+            // 保存图片按钮
+            document.getElementById('saveImageBtn').addEventListener('click', function() {
+                saveVisionBoardAsImage();
+            });
+            
+            // 返回按钮
+            backBtn.addEventListener('click', function() {
+                if (confirm('返回上一步会保存当前愿景板，确定要返回吗？')) {
+                    saveVisionBoardState();
+                    showNotification('愿景板已保存，返回上一步...', 'info');
+                    setTimeout(() => {
+                        window.location.href = `dreamfragment.html?year=${visionBoard.currentYear}`;
+                    }, 1000);
+                }
+            });
+            
+            // 保存草稿按钮
+            document.getElementById('saveDraftBtn').addEventListener('click', function() {
+                if (saveVisionBoardState()) {
+                    showNotification('愿景板草稿已保存', 'success');
+                } else {
+                    showNotification('保存失败，请重试', 'error');
+                }
+            });
+            
+            // 加载草稿按钮
+            document.getElementById('loadDraftBtn').addEventListener('click', function() {
+                if (confirm('加载草稿会替换当前内容，确定要加载吗？')) {
+                    // 重新加载愿望数据
+                    loadWishesFromStorage();
+                    // 加载保存的愿景板状态
+                    loadVisionBoardState();
+                }
+            });
+            
+            // 完成按钮
+            completeBtn.addEventListener('click', function() {
+                // 检查是否有愿望
+                if (visionBoard.wishes.length === 0) {
+                    showNotification('请先添加至少一个愿望到愿景板', 'error');
+                    return;
+                }
+                
+                // 保存愿景板
+                saveVisionBoardState();
+                
+                // 更新星球状态
+                updatePlanet(visionBoard.currentYear, {
+                    visionBoardCompleted: true,
+                    visionBoardCompletedAt: new Date().toISOString(),
+                    visionBoard: {
+                        wishes: visionBoard.wishes,
+                        stickers: visionBoard.stickers,
+                        backgroundType: visionBoard.selectedBackgroundType
+                    }
+                });
+                
+                // 显示加载状态
+                completeBtn.disabled = true;
+                completeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+                
+                // 处理过程
+                setTimeout(() => {
+                    showNotification('🎉 愿景板制作完成！即将进入专注时光记录...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = `hoursputin.html?year=${visionBoard.currentYear}`;
+                    }, 1500);
+                }, 1500);
+            });
+            
+            // 键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + S 保存
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    if (saveVisionBoardState()) {
+                        showNotification('愿景板已保存', 'success');
+                    }
+                }
+                
+                // Delete 键删除选中项
+                if (e.key === 'Delete' && visionBoard.selectedWishId) {
+                    removeWishFromBoard(visionBoard.selectedWishId);
+                }
+                
+                // 方向键移动选中项
+                if (visionBoard.selectedWishId) {
+                    const selectedContainer = document.querySelector(`.wish-item-container[data-wish-id="${visionBoard.selectedWishId}"]`);
+                    if (selectedContainer) {
+                        const step = 10;
+                        let deltaX = 0, deltaY = 0;
+                        
+                        switch(e.key) {
+                            case 'ArrowLeft':
+                                deltaX = -step;
+                                break;
+                            case 'ArrowRight':
+                                deltaX = step;
+                                break;
+                            case 'ArrowUp':
+                                deltaY = -step;
+                                break;
+                            case 'ArrowDown':
+                                deltaY = step;
+                                break;
+                        }
+                        
+                        if (deltaX !== 0 || deltaY !== 0) {
+                            e.preventDefault();
+                            
+                            const currentX = parseInt(selectedContainer.style.left);
+                            const currentY = parseInt(selectedContainer.style.top);
+                            const width = parseInt(selectedContainer.style.width);
+                            const height = parseInt(selectedContainer.style.height);
+                            
+                            const newX = Math.max(0, Math.min(visionBoard.canvasWidth - width, currentX + deltaX));
+                            const newY = Math.max(0, Math.min(visionBoard.canvasHeight - height, currentY + deltaY));
+                            
+                            selectedContainer.style.left = `${newX}px`;
+                            selectedContainer.style.top = `${newY}px`;
+                            
+                            updateWishPosition(visionBoard.selectedWishId, newX, newY);
+                        }
+                    }
+                }
+            });
+        }
+
+        function saveVisionBoardAsImage() {
+            showNotification('正在生成高清图片...', 'info');
+            
+            // 检查html2canvas是否已加载
+            if (typeof html2canvas === 'undefined') {
+                showNotification('图片生成库未加载，请刷新页面重试', 'error');
+                return;
+            }
+            
+            // 获取愿景板画布元素
+            const canvasElement = document.getElementById('visionboardCanvas');
+            if (!canvasElement) {
+                showNotification('未找到愿景板画布', 'error');
+                return;
+            }
+            
+            // 临时隐藏控制按钮和选中状态，确保图片干净
+            const allControls = document.querySelectorAll('.wish-controls');
+            const selectedItems = document.querySelectorAll('.wish-item-container.selected');
+            const originalDisplay = [];
+            const originalSelected = [];
+            
+            allControls.forEach((control, index) => {
+                originalDisplay[index] = control.style.display;
+                control.style.display = 'none';
+            });
+            
+            selectedItems.forEach((item, index) => {
+                originalSelected[index] = item.classList.contains('selected');
+                item.classList.remove('selected');
+            });
+            
+            // 等待所有图片加载完成
+            const images = canvasElement.querySelectorAll('img, [style*="background-image"]');
+            let loadedCount = 0;
+            const totalImages = images.length;
+            
+            function checkAllImagesLoaded() {
+                loadedCount++;
+                if (loadedCount >= totalImages) {
+                    generateImage();
+                }
+            }
+            
+            if (totalImages === 0) {
+                // 没有图片，直接生成
+                generateImage();
+            } else {
+                // 等待所有图片加载
+                images.forEach(img => {
+                    if (img.tagName === 'IMG') {
+                        if (img.complete) {
+                            checkAllImagesLoaded();
+                        } else {
+                            img.onload = checkAllImagesLoaded;
+                            img.onerror = checkAllImagesLoaded; // 即使加载失败也继续
+                        }
+                    } else {
+                        // 对于背景图片，尝试预加载
+                        const bgImage = window.getComputedStyle(img).backgroundImage;
+                        if (bgImage && bgImage !== 'none') {
+                            const urlMatch = bgImage.match(/url\(['"]?(.+?)['"]?\)/);
+                            if (urlMatch) {
+                                const imgUrl = urlMatch[1];
+                                const testImg = new Image();
+                                testImg.onload = checkAllImagesLoaded;
+                                testImg.onerror = checkAllImagesLoaded;
+                                testImg.src = imgUrl;
+                            } else {
+                                checkAllImagesLoaded();
+                            }
+                        } else {
+                            checkAllImagesLoaded();
+                        }
+                    }
+                });
+            }
+            
+            function generateImage() {
+                // 使用html2canvas捕获画布
+                html2canvas(canvasElement, {
+                    backgroundColor: '#FFF9F0', // 使用背景色
+                    scale: 2, // 提高分辨率（2倍）
+                    useCORS: true, // 允许跨域图片
+                    allowTaint: true, // 允许跨域图片（即使CORS失败）
+                    logging: false, // 关闭控制台日志
+                    width: canvasElement.offsetWidth,
+                    height: canvasElement.offsetHeight,
+                    windowWidth: canvasElement.scrollWidth,
+                    windowHeight: canvasElement.scrollHeight,
+                    onclone: function(clonedDoc) {
+                        // 确保克隆的文档中所有元素都正确显示
+                        const clonedCanvas = clonedDoc.getElementById('visionboardCanvas');
+                        if (clonedCanvas) {
+                            // 确保背景可见且正确显示
+                            const bg = clonedCanvas.querySelector('.board-background');
+                            if (bg) {
+                                bg.style.display = 'block';
+                                bg.style.visibility = 'visible';
+                                bg.style.opacity = '1';
+                                bg.style.zIndex = '0';
+                            }
+                            
+                            // 确保所有愿望项目可见
+                            const wishItems = clonedCanvas.querySelectorAll('.wish-item-container');
+                            wishItems.forEach(item => {
+                                item.style.display = 'block';
+                                item.style.visibility = 'visible';
+                                item.style.opacity = '1';
+                                
+                                // 确保图片正确显示
+                                const wishImage = item.querySelector('.wish-image');
+                                if (wishImage) {
+                                    const bgImage = wishImage.style.backgroundImage;
+                                    if (bgImage && bgImage !== 'none') {
+                                        wishImage.style.backgroundImage = bgImage;
+                                        wishImage.style.backgroundSize = 'cover';
+                                        wishImage.style.backgroundPosition = 'center';
+                                    }
+                                }
+                                
+                                // 确保相框显示
+                                const frame = item.querySelector('.wish-frame');
+                                if (frame) {
+                                    frame.style.display = 'block';
+                                    frame.style.visibility = 'visible';
+                                }
+                                
+                                // 隐藏控制按钮
+                                const controls = item.querySelector('.wish-controls');
+                                if (controls) {
+                                    controls.style.display = 'none';
+                                }
+                            });
+                            
+                            // 确保所有贴纸可见
+                            const stickers = clonedCanvas.querySelectorAll('.sticker-element');
+                            stickers.forEach(sticker => {
+                                sticker.style.display = 'block';
+                                sticker.style.visibility = 'visible';
+                                sticker.style.opacity = '1';
+                            });
+                            
+                            // 确保文字可见
+                            const wishTexts = clonedCanvas.querySelectorAll('.wish-text');
+                            wishTexts.forEach(text => {
+                                text.style.color = '#5D4037'; // 确保文字颜色正确
+                                text.style.visibility = 'visible';
+                            });
+                        }
+                    }
+                }).then(function(canvas) {
+                    // 恢复控制按钮和选中状态
+                    allControls.forEach((control, index) => {
+                        control.style.display = originalDisplay[index];
+                    });
+                    
+                    selectedItems.forEach((item, index) => {
+                        if (originalSelected[index]) {
+                            item.classList.add('selected');
+                        }
+                    });
+                    
+                    // 将canvas转换为图片
+                    canvas.toBlob(function(blob) {
+                        if (!blob) {
+                            showNotification('图片生成失败，请重试', 'error');
+                            return;
+                        }
+                        
+                        // 创建下载链接
+                        const url = URL.createObjectURL(blob);
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = url;
+                        downloadLink.download = `我的${visionBoard.currentYear}愿景板.png`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                        
+                        // 释放URL对象
+                        setTimeout(() => {
+                            URL.revokeObjectURL(url);
+                        }, 100);
+                        
+                        showNotification('🎉 高清图片已保存到本地', 'success');
+                    }, 'image/png', 1.0); // 最高质量PNG
+                    
+                }).catch(function(error) {
+                    // 恢复控制按钮和选中状态
+                    allControls.forEach((control, index) => {
+                        control.style.display = originalDisplay[index];
+                    });
+                    
+                    selectedItems.forEach((item, index) => {
+                        if (originalSelected[index]) {
+                            item.classList.add('selected');
+                        }
+                    });
+                    
+                    console.error('生成图片失败:', error);
+                    showNotification('图片生成失败: ' + (error.message || '未知错误'), 'error');
+                });
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 25px;
+                right: 25px;
+                background-color: ${type === 'error' ? 'rgba(255, 107, 139, 0.95)' : type === 'success' ? 'rgba(78, 205, 196, 0.95)' : 'rgba(20, 20, 40, 0.95)'};
+                padding: 15px 20px;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+                z-index: 10000;
+                border-left: 5px solid ${type === 'error' ? '#FF6B8B' : type === 'success' ? '#4ECDC4' : '#FFD700'};
+                animation: slideIn 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+                max-width: 350px;
+                font-family: 'Ma Shan Zheng', cursive;
+                border: 1px solid ${type === 'error' ? 'rgba(255, 107, 139, 0.3)' : type === 'success' ? 'rgba(78, 205, 196, 0.3)' : 'rgba(255, 215, 0, 0.3)'};
+                backdrop-filter: blur(10px);
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}" 
+                       style="font-size: 1.4rem; color: ${type === 'error' ? '#FF6B8B' : type === 'success' ? '#4ECDC4' : '#FFD700'};"></i>
+                    <div style="color: white; font-size: 1.05rem; line-height: 1.4;">${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后移除通知
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+            
+            // 添加CSS动画
+            if (!document.getElementById('notification-animations')) {
+                const style = document.createElement('style');
+                style.id = 'notification-animations';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes fadeOut {
+                        from { opacity: 1; }
+                        to { opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    </script>
+</body>
+</html>

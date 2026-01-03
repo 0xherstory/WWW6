@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionFocus Hours · 星球冥想引导</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-light: #FFF9F0;
+            --primary-warm: #FFEEDD;
+            --accent-pink: #FFB6C1;
+            --accent-gold: #FFD700;
+            --accent-purple: #DDA0DD;
+            --text-brown: #8B4513;
+            --text-dark: #5D4037;
+            --shadow-soft: rgba(255, 182, 193, 0.2);
+            --border-radius: 20px;
+            --transition-slow: 0.8s ease;
+            --transition-normal: 0.4s ease;
+            --noise-color: #FF6347;
+            --focus-color: #6A5ACD;
+            --star-color: #FFD93D;
+            --night-blue: #0A0A1A;
+            --planet-1: #4ECDC4;
+            --earth-blue: #1E88E5;
+            --earth-green: #4CAF50;
+            --earth-brown: #8D6E63;
+            --meditation-blue: #0F2B46;
+            --meditation-green: #2D5A4B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            background-color: var(--night-blue);
+            color: #F0F0F0;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        /* 冥想氛围背景 */
+        .meditation-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 2s ease;
+        }
+
+        .layer-universe {
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(106, 90, 205, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 107, 139, 0.1) 0%, transparent 40%);
+        }
+
+        .layer-forest {
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(45, 90, 75, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(31, 78, 47, 0.15) 0%, transparent 50%);
+            opacity: 0;
+        }
+
+        .layer-sunlight {
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            opacity: 0;
+        }
+
+        .layer-stars {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="0.5" fill="white" opacity="0.3"/></svg>');
+            background-size: 200px 200px;
+            opacity: 0.2;
+        }
+
+        /* 主容器 */
+        .planet-creation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        /* 宇宙聚焦动画容器 */
+        .universe-focus-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        /* 初始宇宙视图 */
+        .initial-universe {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .universe-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 4rem;
+            color: var(--star-color);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 
+                0 0 10px rgba(255, 217, 0, 0.5),
+                0 0 20px rgba(255, 217, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .universe-instruction {
+            font-size: 1.5rem;
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            color: #E0E0E0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .highlight {
+            color: var(--star-color);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 217, 0, 0.5);
+        }
+
+        /* 星球容器 */
+        .planet-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px 0;
+            transition: all 3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .new-planet {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--planet-1), #2A8C82);
+            border: 3px solid var(--planet-1);
+            box-shadow: 
+                inset 0 0 30px rgba(255, 255, 255, 0.1),
+                0 0 60px rgba(78, 205, 196, 0.5);
+            position: relative;
+            overflow: hidden;
+            animation: planet-glow 4s infinite alternate;
+        }
+
+        @keyframes planet-glow {
+            0% { box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.1), 0 0 60px rgba(78, 205, 196, 0.5); }
+            100% { box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(78, 205, 196, 0.8); }
+        }
+
+        .planet-surface {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 2%, transparent 4%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.1) 1%, transparent 3%),
+                radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.05) 3%, transparent 5%);
+        }
+
+        .planet-name {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            z-index: 3;
+        }
+
+        /* 冥想空间 */
+        .meditation-space {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            padding: 20px;
+        }
+
+        .meditation-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .meditation-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 3.5rem;
+            color: var(--planet-1);
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 
+                0 0 10px rgba(78, 205, 196, 0.5),
+                0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .meditation-subtitle {
+            font-size: 1.5rem;
+            color: #CCCCCC;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        /* 冥想引导区域 */
+        .meditation-guide-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(15, 25, 35, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .guide-section {
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 1s ease;
+        }
+
+        .guide-section.active {
+            display: flex;
+        }
+
+        .guide-section-title {
+            font-size: 2rem;
+            color: var(--planet-1);
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        .guide-text-container {
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+
+        .guide-text {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            color: #F0F0F0;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .guide-line {
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        .guide-line.pause-line {
+            margin-bottom: 40px;
+        }
+
+        .guide-line.highlight {
+            color: var(--planet-1);
+            font-weight: 400;
+        }
+
+        .pause-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 0 10px;
+            vertical-align: middle;
+        }
+
+        .pause-indicator::after {
+            content: "⏸";
+            color: var(--planet-1);
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 进度指示 */
+        .guide-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .section-indicator::after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .section-indicator:last-child::after {
+            display: none;
+        }
+
+        .section-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 2;
+            transition: all 0.5s;
+        }
+
+        .section-dot.active {
+            background-color: var(--planet-1);
+            border-color: var(--planet-1);
+            color: white;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
+        .section-dot.completed {
+            background-color: rgba(78, 205, 196, 0.3);
+            border-color: var(--planet-1);
+            color: var(--planet-1);
+        }
+
+        .section-label {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #CCCCCC;
+            text-align: center;
+        }
+
+        /* 控制面板 */
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background-color: rgba(15, 25, 35, 0.8);
+            border: 2px solid var(--planet-1);
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 180px;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(78, 205, 196, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .control-btn.active {
+            background-color: rgba(78, 205, 196, 0.3);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-btn:disabled:hover {
+            background-color: rgba(15, 25, 35, 0.8);
+        }
+
+        .btn-icon {
+            font-size: 1.3rem;
+        }
+
+        /* 音频控制 */
+        .audio-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 30;
+        }
+
+        .audio-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(15, 25, 35, 0.9);
+            border: 2px solid var(--planet-1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--planet-1);
+            font-size: 1.5rem;
+        }
+
+        .audio-btn:hover {
+            background-color: rgba(78, 205, 196, 0.2);
+            transform: scale(1.1);
+        }
+
+        .audio-btn.active {
+            background-color: rgba(78, 205, 196, 0.3);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
+        /* 呼吸动画 */
+        .breathing-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 2px solid rgba(78, 205, 196, 0.2);
+            animation: breathe 8s infinite ease-in-out;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes breathe {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1); 
+                border-color: rgba(78, 205, 196, 0.2);
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.3); 
+                border-color: rgba(78, 205, 196, 0.5);
+            }
+        }
+
+        /* 完成部分 */
+        .completion-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+            animation: fadeIn 1s ease;
+            position: relative;
+            z-index: 20;
+        }
+
+        .completion-title {
+            font-size: 2.5rem;
+            color: var(--planet-1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .completion-text {
+            font-size: 1.3rem;
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #CCCCCC;
+        }
+        
+        .completion-section .control-btn {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .universe-title {
+                font-size: 2.8rem;
+            }
+            
+            .meditation-title {
+                font-size: 2.5rem;
+            }
+            
+            .guide-text {
+                font-size: 1.3rem;
+            }
+            
+            .planet-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .control-btn {
+                min-width: 160px;
+                padding: 10px 20px;
+            }
+            
+            .meditation-guide-container {
+                padding: 30px 20px;
+            }
+            
+            .guide-section-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .universe-title {
+                font-size: 2.2rem;
+            }
+            
+            .universe-instruction {
+                font-size: 1.2rem;
+                padding: 0 20px;
+            }
+            
+            .meditation-title {
+                font-size: 2rem;
+            }
+            
+            .planet-container {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .control-panel {
+                gap: 10px;
+            }
+            
+            .control-btn {
+                min-width: 140px;
+                font-size: 1rem;
+            }
+            
+            .guide-text {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 冥想氛围背景 -->
+    <div class="meditation-bg">
+        <div class="bg-layer layer-universe"></div>
+        <div class="bg-layer layer-forest"></div>
+        <div class="bg-layer layer-sunlight"></div>
+        <div class="bg-layer layer-stars"></div>
+    </div>
+    
+    <!-- 星球创建容器 -->
+    <div class="planet-creation-container">
+        <!-- 宇宙聚焦动画容器 -->
+        <div class="universe-focus-container" id="universeFocusContainer">
+            <div class="initial-universe">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <h1 class="universe-title" id="planetTitle">2026星球 · 冥想引导</h1>
+                    <p class="universe-instruction">
+                        每颗星球代表你<span class="highlight">一年的专注与成长</span>。<br>
+                        在开始记录专注时光前,请跟随专业冥想引导,<br>
+                        为你的<span class="highlight" id="planetYear">2026</span>星球设定清晰的愿景与方向。
+                    </p>
+                    
+                    <div class="planet-container">
+                        <div class="new-planet" id="newPlanet">
+                            <div class="planet-surface"></div>
+                            <div class="planet-name" id="planetNameDisplay">2026</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button class="control-btn" id="startCreationBtn" style="background-color: var(--planet-1); color: var(--night-blue); font-weight: bold; padding: 15px 40px; font-size: 1.4rem;">
+                            <i class="fas fa-seedling btn-icon"></i> 开始冥想引导
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 冥想空间 -->
+        <div class="meditation-space" id="meditationSpace">
+            <div class="breathing-circle" id="breathingCircle"></div>
+            
+            <div class="meditation-content">
+                <h1 class="meditation-title" id="meditationTitle">2026星球 · 冥想引导</h1>
+                <div class="meditation-subtitle">专业冥想引导 · 温暖女声 · 自然氛围</div>
+                
+                <div class="meditation-guide-container">
+                    <!-- 冥想准备与开场 -->
+                    <div class="guide-section active" id="section1">
+                        <h2 class="guide-section-title">冥想准备与开场</h2>
+                        <div class="guide-text-container" id="section1Text">
+                            <!-- 内容将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 呼吸锚定与身体放松 -->
+                    <div class="guide-section" id="section2">
+                        <h2 class="guide-section-title">呼吸锚定与身体放松</h2>
+                        <div class="guide-text-container" id="section2Text">
+                            <!-- 内容将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 自然意象与内心平静 -->
+                    <div class="guide-section" id="section3">
+                        <h2 class="guide-section-title">自然意象与内心平静</h2>
+                        <div class="guide-text-container" id="section3Text">
+                            <!-- 内容将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 愿景设想的心理准备 -->
+                    <div class="guide-section" id="section4">
+                        <h2 class="guide-section-title">愿景设想的心理准备</h2>
+                        <div class="guide-text-container" id="section4Text">
+                            <!-- 内容将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 结束与回归 -->
+                    <div class="guide-section" id="section5">
+                        <h2 class="guide-section-title">结束与回归</h2>
+                        <div class="guide-text-container" id="section5Text">
+                            <!-- 内容将通过JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guide-progress">
+                    <div class="section-indicator">
+                        <div class="section-dot active">1</div>
+                        <div class="section-label">准备</div>
+                    </div>
+                    <div class="section-indicator">
+                        <div class="section-dot">2</div>
+                        <div class="section-label">呼吸</div>
+                    </div>
+                    <div class="section-indicator">
+                        <div class="section-dot">3</div>
+                        <div class="section-label">意象</div>
+                    </div>
+                    <div class="section-indicator">
+                        <div class="section-dot">4</div>
+                        <div class="section-label">愿景</div>
+                    </div>
+                    <div class="section-indicator">
+                        <div class="section-dot">5</div>
+                        <div class="section-label">回归</div>
+                    </div>
+                </div>
+                
+                <div class="control-panel">
+                    <button class="control-btn" id="autoPlayBtn">
+                        <i class="fas fa-robot btn-icon"></i> 自动引导
+                    </button>
+                    <button class="control-btn" id="manualPlayBtn">
+                        <i class="fas fa-hand-point-up btn-icon"></i> 手动引导
+                    </button>
+                    <button class="control-btn" id="prevSectionBtn" disabled>
+                        <i class="fas fa-backward btn-icon"></i> 上一阶段
+                    </button>
+                    <button class="control-btn" id="nextSectionBtn">
+                        <i class="fas fa-forward btn-icon"></i> 下一阶段
+                    </button>
+                </div>
+                
+                <div class="completion-section" id="completionSection">
+                    <h2 class="completion-title">冥想引导完成</h2>
+                    <p class="completion-text">
+                        你已经为你的<span style="color: var(--planet-1); font-weight: bold;" id="completionYear">2026</span>星球完成了专业冥想引导。<br>
+                        现在,带着这份清晰与平静,进入星球内部空间,<br>
+                        开始记录你的专注时光,绘制你的年度愿景。
+                    </p>
+                    <button class="control-btn" id="enterPlanetBtn" style="background-color: var(--planet-1); color: var(--night-blue); font-weight: bold; padding: 15px 40px; font-size: 1.4rem;">
+                        <i class="fas fa-door-open btn-icon"></i> 进入2026星球
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 音频控制 -->
+    <div class="audio-controls">
+        <button class="audio-btn active" id="musicToggleBtn">
+            <i class="fas fa-music"></i>
+        </button>
+        <button class="audio-btn active" id="voiceToggleBtn">
+            <i class="fas fa-microphone"></i>
+        </button>
+    </div>
+    
+    <!-- 音频元素 -->
+    <audio id="backgroundMusic" loop>
+        <source src="../assets/audio/background/meditation.mp3" type="audio/mpeg">
+        <!-- 备用CDN音乐 -->
+        <source src="https://assets.mixkit.co/music/preview/mixkit-deep-ambient-space-1255.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- 引导语音 -->
+    <audio id="voiceSection1" src="../assets/audio/voice/section1.mp3"></audio>
+    <audio id="voiceSection2" src="../assets/audio/voice/section2.mp3"></audio>
+    <audio id="voiceSection3" src="../assets/audio/voice/section3.mp3"></audio>
+    <audio id="voiceSection4" src="../assets/audio/voice/section4.mp3"></audio>
+    <audio id="voiceSection5" src="../assets/audio/voice/section5.mp3"></audio>
+
+    <script>
+        // 简易LocalStorage管理
+        const STORAGE_PREFIX = 'vfh_';
+        
+        function getStorageData(key) {
+            try {
+                const data = localStorage.getItem(STORAGE_PREFIX + key);
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('Storage error:', e);
+                return null;
+            }
+        }
+        
+        function setStorageData(key, value) {
+            try {
+                localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+                return true;
+            } catch (e) {
+                console.error('Storage error:', e);
+                return false;
+            }
+        }
+        
+        function getPlanet(year) {
+            const planets = getStorageData('planets') || [];
+            return planets.find(p => p.year === year);
+        }
+        
+        function savePlanet(planet) {
+            const planets = getStorageData('planets') || [];
+            const index = planets.findIndex(p => p.year === planet.year);
+            if (index >= 0) {
+                planets[index] = planet;
+            } else {
+                planets.push(planet);
+            }
+            return setStorageData('planets', planets);
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: rgba(15, 25, 35, 0.95);
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                border-left: 5px solid var(--planet-1);
+                animation: slideIn 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+                max-width: 300px;
+                font-family: 'Ma Shan Zheng', cursive;
+                border: 1px solid rgba(78, 205, 196, 0.3);
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-info-circle" style="color: var(--planet-1);"></i>
+                    <div style="color: white;">${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+            
+            if (!document.getElementById('notification-animations')) {
+                const style = document.createElement('style');
+                style.id = 'notification-animations';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes fadeOut {
+                        from { opacity: 1; }
+                        to { opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // 冥想引导内容
+        const meditationGuide = {
+            sections: [
+                {
+                    id: 1,
+                    title: "冥想准备与开场",
+                    bgLayer: "layer-universe",
+                    lines: [
+                        { text: "请找到一个舒适的姿势坐下。", pause: 4000 },
+                        { text: "可以是盘坐,或坐在椅子上。", pause: 2000 },
+                        { text: "确保脊柱自然挺直,", pause: 2000 },
+                        { text: "双肩下沉,", pause: 2000 },
+                        { text: "双手轻放于膝盖或大腿上。", pause: 6000, isPause: true },
+                        { text: "轻轻闭上眼睛,", pause: 3000 },
+                        { text: "让身体的重量,", pause: 2000 },
+                        { text: "完全由地面支撑。", pause: 5000, isPause: true },
+                        { text: "现在,", pause: 2000 },
+                        { text: "将注意力转向呼吸。", pause: 2000 },
+                        { text: "无需刻意调整,", pause: 2000 },
+                        { text: "只需观察气息的自然流动。", pause: 4000, isPause: true },
+                        { text: "吸气时,", pause: 2000 },
+                        { text: "感受空气通过鼻腔的清凉感。", pause: 3000, isPause: true },
+                        { text: "呼气时,", pause: 2000 },
+                        { text: "体会气息离开身体的温热感。", pause: 5000, isPause: true },
+                        { text: "允许自己在这一刻,", pause: 2000 },
+                        { text: "放下所有杂念,", pause: 2000 },
+                        { text: "如同将沉重的行李,", pause: 2000 },
+                        { text: "暂时搁置在一旁。", pause: 6000, isPause: true },
+                        { text: "这里没有评判,", pause: 2000 },
+                        { text: "没有匆忙,", pause: 2000 },
+                        { text: "只有你,", pause: 2000 },
+                        { text: "与自己的相处。", pause: 8000, isPause: true, isHighlight: true }
+                    ],
+                    estimatedDuration: 90000
+                },
+                {
+                    id: 2,
+                    title: "呼吸锚定与身体放松",
+                    bgLayer: "layer-forest",
+                    lines: [
+                        { text: "接下来,", pause: 2000 },
+                        { text: "我们将通过呼吸,", pause: 2000 },
+                        { text: "让身心逐渐平静。", pause: 4000, isPause: true },
+                        { text: "吸气时,", pause: 2000 },
+                        { text: "想象将清新的能量吸入体内,", pause: 2000 },
+                        { text: "滋养每一个细胞。", pause: 4000, isPause: true },
+                        { text: "呼气时,", pause: 2000 },
+                        { text: "将压力与杂念,", pause: 2000 },
+                        { text: "缓缓排出,", pause: 2000 },
+                        { text: "如同海浪带走沙粒。", pause: 6000, isPause: true },
+                        { text: "现在,", pause: 2000 },
+                        { text: "将意识从头顶开始,", pause: 2000 },
+                        { text: "向下扫描。", pause: 4000, isPause: true },
+                        { text: "放松头皮……", pause: 5000, isPause: true },
+                        { text: "舒展眉心……", pause: 5000, isPause: true },
+                        { text: "释放脸颊的紧绷感……", pause: 6000, isPause: true },
+                        { text: "让肩膀自然下垂,", pause: 3000 },
+                        { text: "手臂逐渐柔软,", pause: 3000 },
+                        { text: "手指,", pause: 2000 },
+                        { text: "微微发暖。", pause: 7000, isPause: true },
+                        { text: "感受胸腔的开阔,", pause: 3000 },
+                        { text: "腹部的起伏。", pause: 6000, isPause: true },
+                        { text: "双腿,", pause: 2000 },
+                        { text: "双脚,", pause: 2000 },
+                        { text: "完全沉向地面。", pause: 8000, isPause: true },
+                        { text: "如果思绪飘走,", pause: 2000 },
+                        { text: "只需温柔地,", pause: 2000 },
+                        { text: "将注意力带回呼吸。", pause: 4000, isPause: true },
+                        { text: "如同一片云,", pause: 2000 },
+                        { text: "轻轻飘过。", pause: 2000 },
+                        { text: "不抗拒,", pause: 2000 },
+                        { text: "也不追逐。", pause: 8000, isPause: true, isHighlight: true }
+                    ],
+                    estimatedDuration: 100000
+                },
+                {
+                    id: 3,
+                    title: "自然意象与内心平静",
+                    bgLayer: "layer-sunlight",
+                    lines: [
+                        { text: "想象自己,", pause: 2000 },
+                        { text: "漫步在一片宁静的森林中。", pause: 5000, isPause: true },
+                        { text: "阳光,", pause: 2000 },
+                        { text: "透过树叶,", pause: 2000 },
+                        { text: "洒下斑驳的光点。", pause: 6000, isPause: true },
+                        { text: "微风,", pause: 2000 },
+                        { text: "轻拂脸颊,", pause: 2000 },
+                        { text: "带来青草与泥土的芬芳。", pause: 7000, isPause: true },
+                        { text: "远处,", pause: 2000 },
+                        { text: "溪流潺潺,", pause: 2000 },
+                        { text: "鸟鸣清脆。", pause: 6000, isPause: true },
+                        { text: "自然的声音,", pause: 2000 },
+                        { text: "将你包裹在", pause: 2000 },
+                        { text: "安全而放松的氛围中。", pause: 8000, isPause: true },
+                        { text: "感受双脚,", pause: 2000 },
+                        { text: "与大地紧密连接。", pause: 5000, isPause: true },
+                        { text: "如同一棵大树,", pause: 2000 },
+                        { text: "根系深入土壤,", pause: 2000 },
+                        { text: "稳固,", pause: 2000 },
+                        { text: "而安宁。", pause: 8000, isPause: true, isHighlight: true },
+                        { text: "每一次吸气,", pause: 2000 },
+                        { text: "吸收森林的生机。", pause: 4000, isPause: true },
+                        { text: "每一次呼气,", pause: 2000 },
+                        { text: "释放内心的纷扰。", pause: 6000, isPause: true },
+                        { text: "在这里,", pause: 2000 },
+                        { text: "你无需努力。", pause: 2000 },
+                        { text: "只需存在,", pause: 2000 },
+                        { text: "与感知。", pause: 10000, isPause: true, isHighlight: true }
+                    ],
+                    estimatedDuration: 90000
+                },
+                {
+                    id: 4,
+                    title: "愿景设想的心理准备",
+                    bgLayer: "layer-stars",
+                    lines: [
+                        { text: "在这份平静与专注中,", pause: 3000 },
+                        { text: "请将注意力,", pause: 2000 },
+                        { text: "轻轻转向内心。", pause: 5000, isPause: true },
+                        { text: "问问自己:", pause: 2000 },
+                        { text: "如果没有限制,", pause: 2000 },
+                        { text: "我最想创造的未来,", pause: 2000 },
+                        { text: "是什么?", pause: 8000, isPause: true, isHighlight: true },
+                        { text: "哪些画面,", pause: 2000 },
+                        { text: "让我感到喜悦?", pause: 3000 },
+                        { text: "哪些念头,", pause: 2000 },
+                        { text: "带来动力?", pause: 8000, isPause: true, isHighlight: true },
+                        { text: "无需寻找答案。", pause: 2000 },
+                        { text: "无需用力思考。", pause: 5000, isPause: true },
+                        { text: "只是允许这些愿景,", pause: 2000 },
+                        { text: "如种子一般,", pause: 2000 },
+                        { text: "在心底,", pause: 2000 },
+                        { text: "慢慢萌芽。", pause: 8000, isPause: true, isHighlight: true },
+                        { text: "想象它们,", pause: 2000 },
+                        { text: "如同星光,", pause: 2000 },
+                        { text: "在内在的夜空中,", pause: 2000 },
+                        { text: "逐渐明亮。", pause: 10000, isPause: true, isHighlight: true },
+                        { text: "在心中轻轻告诉自己:", pause: 3000 },
+                        { text: "我允许这些可能性存在。", pause: 4000 },
+                        { text: "我愿意,", pause: 2000 },
+                        { text: "以开放的心,", pause: 2000 },
+                        { text: "迎接它们。", pause: 10000, isPause: true, isHighlight: true }
+                    ],
+                    estimatedDuration: 80000
+                },
+                {
+                    id: 5,
+                    title: "结束与回归",
+                    bgLayer: "layer-universe",
+                    lines: [
+                        { text: "现在,", pause: 2000 },
+                        { text: "慢慢将注意力,", pause: 2000 },
+                        { text: "带回呼吸。", pause: 4000, isPause: true },
+                        { text: "感受身体,", pause: 2000 },
+                        { text: "与座位的接触。", pause: 4000, isPause: true },
+                        { text: "轻轻活动手指,", pause: 2000 },
+                        { text: "活动脚趾。", pause: 4000, isPause: true },
+                        { text: "搓热掌心,", pause: 2000 },
+                        { text: "将温暖,", pause: 2000 },
+                        { text: "敷在双眼上。", pause: 5000, isPause: true },
+                        { text: "当你准备好时,", pause: 2000 },
+                        { text: "缓缓睁开眼睛。", pause: 4000, isPause: true },
+                        { text: "适应周围的光线。", pause: 4000, isPause: true },
+                        { text: "带着这份宁静与清晰,", pause: 3000 },
+                        { text: "进入接下来的愿景板创作。", pause: 6000, isPause: true },
+                        { text: "请记住:", pause: 2000 },
+                        { text: "这份平静的力量,", pause: 2000 },
+                        { text: "始终在你之内,", pause: 2000 },
+                        { text: "随时,", pause: 2000 },
+                        { text: "可以被你调用。", pause: 10000, isPause: true, isHighlight: true }
+                    ],
+                    estimatedDuration: 60000
+                }
+            ],
+            currentSection: 0,
+            currentLine: 0,
+            isAutoPlay: true,
+            isMusicPlaying: true,
+            isVoicePlaying: true,
+            lineTimeout: null,
+            sectionTimeout: null,
+            isMeditationActive: false
+        };
+
+        // 当前星球信息
+        let currentPlanet = null;
+
+        // DOM元素
+        const universeBg = document.querySelector('.meditation-bg');
+        const universeFocusContainer = document.getElementById('universeFocusContainer');
+        const newPlanet = document.getElementById('newPlanet');
+        const startCreationBtn = document.getElementById('startCreationBtn');
+        const meditationSpace = document.getElementById('meditationSpace');
+        const breathingCircle = document.getElementById('breathingCircle');
+        const autoPlayBtn = document.getElementById('autoPlayBtn');
+        const manualPlayBtn = document.getElementById('manualPlayBtn');
+        const prevSectionBtn = document.getElementById('prevSectionBtn');
+        const nextSectionBtn = document.getElementById('nextSectionBtn');
+        const musicToggleBtn = document.getElementById('musicToggleBtn');
+        const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+        const completionSection = document.getElementById('completionSection');
+        const enterPlanetBtn = document.getElementById('enterPlanetBtn');
+        const sectionDots = document.querySelectorAll('.section-dot');
+        const sectionIndicators = document.querySelectorAll('.section-indicator');
+        
+        // 音频元素
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const voiceAudios = {
+            1: document.getElementById('voiceSection1'),
+            2: document.getElementById('voiceSection2'),
+            3: document.getElementById('voiceSection3'),
+            4: document.getElementById('voiceSection4'),
+            5: document.getElementById('voiceSection5')
+        };
+        
+        // 设置语音音量
+        Object.values(voiceAudios).forEach(audio => {
+            if (audio) audio.volume = 0.7;
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+            setupEventListeners();
+            populateGuideSections();
+        });
+
+        function initApp() {
+            // 从URL获取年份参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const year = urlParams.get('year') || new Date().getFullYear();
+            
+            // 获取或创建星球
+            currentPlanet = getPlanet(year);
+            
+            // 更新页面显示
+            updatePlanetDisplay(year);
+            
+            // 设置背景音乐音量
+            backgroundMusic.volume = 0.3;
+            
+            // 默认自动播放模式
+            setAutoPlayMode(true);
+        }
+
+        function updatePlanetDisplay(year) {
+            const elements = [
+                document.getElementById('planetTitle'),
+                document.getElementById('planetYear'),
+                document.getElementById('planetNameDisplay'),
+                document.getElementById('meditationTitle'),
+                document.getElementById('completionYear')
+            ];
+            
+            elements.forEach(el => {
+                if (el) {
+                    if (el.id === 'planetTitle' || el.id === 'meditationTitle') {
+                        el.textContent = `${year}星球 · 冥想引导`;
+                    } else {
+                        el.textContent = year;
+                    }
+                }
+            });
+        }
+
+        function populateGuideSections() {
+            meditationGuide.sections.forEach(section => {
+                const container = document.getElementById(`section${section.id}Text`);
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                section.lines.forEach((line, index) => {
+                    const lineElement = document.createElement('div');
+                    lineElement.className = 'guide-line';
+                    
+                    if (line.isPause) {
+                        lineElement.classList.add('pause-line');
+                    }
+                    
+                    if (line.isHighlight) {
+                        lineElement.classList.add('highlight');
+                    }
+                    
+                    lineElement.textContent = line.text;
+                    lineElement.style.animationDelay = `${index * 0.1}s`;
+                    
+                    if (line.isPause && line.pause >= 5000) {
+                        const pauseIndicator = document.createElement('span');
+                        pauseIndicator.className = 'pause-indicator';
+                        lineElement.appendChild(pauseIndicator);
+                    }
+                    
+                    container.appendChild(lineElement);
+                });
+            });
+        }
+
+        function showCompletionSection() {
+            console.log('显示完成界面');
+            
+            // 隐藏所有引导阶段
+            document.querySelectorAll('.guide-section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+            
+            // 停止所有音频
+            Object.values(voiceAudios).forEach(audio => {
+                if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            });
+            
+            // 停止所有定时器
+            clearTimeout(meditationGuide.lineTimeout);
+            clearTimeout(meditationGuide.sectionTimeout);
+            
+            // 显示完成界面
+            completionSection.style.display = 'flex';
+            completionSection.style.opacity = '0';
+            completionSection.style.pointerEvents = 'auto';
+            
+            setTimeout(() => {
+                completionSection.style.transition = 'opacity 1s ease';
+                completionSection.style.opacity = '1';
+            }, 100);
+            
+            // 更新按钮文本
+            const urlParams = new URLSearchParams(window.location.search);
+            const year = urlParams.get('year') || new Date().getFullYear();
+            
+            const enterBtn = document.getElementById('enterPlanetBtn');
+            if (enterBtn) {
+                enterBtn.innerHTML = `<i class="fas fa-door-open btn-icon"></i> 进入${year}星球`;
+                enterBtn.disabled = false;
+                enterBtn.style.pointerEvents = 'auto';
+                enterBtn.style.cursor = 'pointer';
+            }
+            
+            showNotification('✨ 冥想引导完成! 现在可以进入星球开始你的愿景之旅。');
+        }
+
+        function enterPlanet() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const year = urlParams.get('year') || new Date().getFullYear();
+            
+            // 保存冥想完成状态
+            const planets = getStorageData('planets') || [];
+            const planetIndex = planets.findIndex(p => p.year === parseInt(year));
+            
+            if (planetIndex !== -1) {
+                planets[planetIndex].meditationCompleted = true;
+                planets[planetIndex].meditationCompletedAt = new Date().toISOString();
+                setStorageData('planets', planets);
+            }
+            
+            showNotification('🌱 正在进入愿望碎片页面...');
+            
+            setTimeout(() => {
+                window.location.href = `dreamfragment.html?year=${year}`;
+            }, 1000);
+        }
+
+        function setupEventListeners() {
+            startCreationBtn.addEventListener('click', startPlanetCreation);
+            autoPlayBtn.addEventListener('click', () => setAutoPlayMode(true));
+            manualPlayBtn.addEventListener('click', () => setAutoPlayMode(false));
+            prevSectionBtn.addEventListener('click', prevSection);
+            nextSectionBtn.addEventListener('click', nextSection);
+            musicToggleBtn.addEventListener('click', toggleMusic);
+            voiceToggleBtn.addEventListener('click', toggleVoice);
+            enterPlanetBtn.addEventListener('click', enterPlanet);
+            
+            sectionIndicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    if (index <= meditationGuide.currentSection) {
+                        goToSection(index);
+                    }
+                });
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (!meditationGuide.isMeditationActive) return;
+                
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    setAutoPlayMode(!meditationGuide.isAutoPlay);
+                }
+                
+                if (e.key === 'ArrowRight') {
+                    nextSection();
+                }
+                
+                if (e.key === 'ArrowLeft') {
+                    prevSection();
+                }
+                
+                if (e.key === 'm' || e.key === 'M') {
+                    toggleMusic();
+                }
+                
+                if (e.key === 'v' || e.key === 'V') {
+                    toggleVoice();
+                }
+            });
+        }
+
+        function startPlanetCreation() {
+            startCreationBtn.disabled = true;
+            startCreationBtn.innerHTML = '<i class="fas fa-spinner fa-spin btn-icon"></i> 准备中...';
+            
+            // 播放背景音乐
+            backgroundMusic.play().catch(e => {
+                console.log('音乐自动播放被阻止:', e);
+            });
+            
+            universeFocusContainer.style.transform = 'scale(20)';
+            universeFocusContainer.style.opacity = '0.8';
+            
+            newPlanet.style.transform = 'scale(1.5)';
+            newPlanet.style.boxShadow = 'inset 0 0 50px rgba(255, 255, 255, 0.3), 0 0 120px rgba(78, 205, 196, 0.9)';
+            
+            setTimeout(() => {
+                meditationSpace.style.display = 'flex';
+                universeFocusContainer.style.display = 'none';
+                meditationGuide.isMeditationActive = true;
+                
+                breathingCircle.style.opacity = '0.5';
+                
+                startMeditationSection(0);
+                
+                showNotification('🧘 开始冥想引导 · 请跟随引导放松身心...');
+            }, 3000);
+        }
+
+        function startMeditationSection(sectionIndex) {
+            clearTimeout(meditationGuide.lineTimeout);
+            clearTimeout(meditationGuide.sectionTimeout);
+            
+            meditationGuide.currentSection = sectionIndex;
+            meditationGuide.currentLine = 0;
+            
+            updateSectionDisplay();
+            updateProgressIndicators();
+            updateControlButtons();
+            updateBackgroundLayer();
+            
+            // 播放该阶段的语音
+            playSectionVoice(sectionIndex + 1);
+            
+            if (meditationGuide.isAutoPlay) {
+                startAutoPlayLines();
+            } else {
+                showAllLines();
+            }
+        }
+        
+        // 播放阶段语音
+        function playSectionVoice(sectionId) {
+            // 停止所有语音
+            Object.values(voiceAudios).forEach(audio => {
+                if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            });
+            
+            // 播放当前阶段的语音
+            const voiceAudio = voiceAudios[sectionId];
+            if (voiceAudio && meditationGuide.isVoicePlaying) {
+                voiceAudio.play().catch(e => {
+                    console.log('语音播放失败或文件不存在:', e);
+                });
+                
+                // 监听语音播放结束事件
+                voiceAudio.onended = function() {
+                    console.log(`Section ${sectionId} voice ended`);
+                    // 语音播放完毕,如果是自动模式且还有下一阶段,则自动切换
+                    if (meditationGuide.isAutoPlay) {
+                        if (meditationGuide.currentSection < meditationGuide.sections.length - 1) {
+                            // 等待3秒后自动进入下一阶段
+                            meditationGuide.sectionTimeout = setTimeout(() => {
+                                nextSection();
+                            }, 3000);
+                        } else {
+                            // 最后一个阶段,显示完成界面
+                            meditationGuide.sectionTimeout = setTimeout(() => {
+                                showCompletionSection();
+                            }, 3000);
+                        }
+                    }
+                };
+            }
+        }
+
+        function startAutoPlayLines() {
+            const section = meditationGuide.sections[meditationGuide.currentSection];
+            const voiceAudio = voiceAudios[section.id];
+            
+            // 如果有语音音频且正在播放,则跳过文字逐行显示,直接显示全部
+            if (voiceAudio && meditationGuide.isVoicePlaying && !voiceAudio.paused) {
+                showAllLines();
+                // 语音会自动处理阶段切换 (在playSectionVoice的onended中)
+                return;
+            }
+            
+            // 没有语音或语音未播放,使用文字逐行显示
+            showLine(meditationGuide.currentLine);
+            
+            const line = section.lines[meditationGuide.currentLine];
+            meditationGuide.lineTimeout = setTimeout(() => {
+                meditationGuide.currentLine++;
+                
+                if (meditationGuide.currentLine < section.lines.length) {
+                    startAutoPlayLines();
+                } else {
+                    // 当前阶段的文字播放完毕
+                    if (meditationGuide.isAutoPlay && meditationGuide.currentSection < meditationGuide.sections.length - 1) {
+                        meditationGuide.sectionTimeout = setTimeout(() => {
+                            nextSection();
+                        }, 3000);
+                    } else if (meditationGuide.currentSection === meditationGuide.sections.length - 1) {
+                        meditationGuide.sectionTimeout = setTimeout(() => {
+                            showCompletionSection();
+                        }, 3000);
+                    }
+                }
+            }, line.pause || 2000);
+        }
+
+        function showLine(lineIndex) {
+            const section = meditationGuide.sections[meditationGuide.currentSection];
+            const container = document.getElementById(`section${section.id}Text`);
+            
+            if (!container || lineIndex >= section.lines.length) return;
+            
+            const lines = container.querySelectorAll('.guide-line');
+            lines.forEach(line => {
+                line.style.opacity = '0.3';
+            });
+            
+            for (let i = 0; i <= lineIndex; i++) {
+                if (lines[i]) {
+                    lines[i].style.opacity = '1';
+                    lines[i].style.transform = 'translateY(0)';
+                }
+            }
+            
+            if (lines[lineIndex]) {
+                lines[lineIndex].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        }
+
+        function showAllLines() {
+            const section = meditationGuide.sections[meditationGuide.currentSection];
+            const container = document.getElementById(`section${section.id}Text`);
+            if (!container) return;
+            
+            const lines = container.querySelectorAll('.guide-line');
+            lines.forEach(line => {
+                line.style.opacity = '1';
+                line.style.transform = 'translateY(0)';
+            });
+        }
+
+        function updateSectionDisplay() {
+            document.querySelectorAll('.guide-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const currentSection = meditationGuide.sections[meditationGuide.currentSection];
+            const sectionElement = document.getElementById(`section${currentSection.id}`);
+            if (sectionElement) {
+                sectionElement.classList.add('active');
+                
+                const textContainer = sectionElement.querySelector('.guide-text-container');
+                if (textContainer) {
+                    textContainer.scrollTop = 0;
+                }
+            }
+        }
+
+        function updateProgressIndicators() {
+            sectionDots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                
+                if (index === meditationGuide.currentSection) {
+                    dot.classList.add('active');
+                } else if (index < meditationGuide.currentSection) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
+        function updateControlButtons() {
+            prevSectionBtn.disabled = meditationGuide.currentSection === 0;
+            
+            const isLastSection = meditationGuide.currentSection === meditationGuide.sections.length - 1;
+            
+            if (isLastSection) {
+                // 在最后一个阶段,将"下一阶段"按钮改为"完成冥想"
+                nextSectionBtn.disabled = false;
+                nextSectionBtn.innerHTML = '<i class="fas fa-check-circle btn-icon"></i> 完成冥想';
+                nextSectionBtn.style.backgroundColor = 'var(--planet-1)';
+                nextSectionBtn.style.color = 'var(--night-blue)';
+                nextSectionBtn.style.fontWeight = 'bold';
+                
+                // 点击后显示完成界面
+                nextSectionBtn.onclick = function() {
+                    showCompletionSection();
+                };
+            } else {
+                nextSectionBtn.disabled = false;
+                nextSectionBtn.innerHTML = '<i class="fas fa-forward btn-icon"></i> 下一阶段';
+                nextSectionBtn.style.backgroundColor = '';
+                nextSectionBtn.style.color = '';
+                nextSectionBtn.style.fontWeight = '';
+                nextSectionBtn.onclick = null;
+            }
+        }
+
+        function updateBackgroundLayer() {
+            const section = meditationGuide.sections[meditationGuide.currentSection];
+            
+            document.querySelectorAll('.bg-layer').forEach(layer => {
+                layer.style.opacity = '0';
+            });
+            
+            const targetLayer = document.querySelector(`.${section.bgLayer}`);
+            if (targetLayer) {
+                targetLayer.style.opacity = '1';
+            }
+            
+            if (section.id === 2 || section.id === 3) {
+                breathingCircle.style.opacity = '0.7';
+            } else {
+                breathingCircle.style.opacity = '0.3';
+            }
+        }
+
+        function setAutoPlayMode(isAuto) {
+            meditationGuide.isAutoPlay = isAuto;
+            
+            if (isAuto) {
+                autoPlayBtn.classList.add('active');
+                manualPlayBtn.classList.remove('active');
+                
+                clearTimeout(meditationGuide.lineTimeout);
+                clearTimeout(meditationGuide.sectionTimeout);
+                
+                startAutoPlayLines();
+                
+                showNotification('📻 已切换为自动引导模式');
+            } else {
+                autoPlayBtn.classList.remove('active');
+                manualPlayBtn.classList.add('active');
+                
+                clearTimeout(meditationGuide.lineTimeout);
+                clearTimeout(meditationGuide.sectionTimeout);
+                
+                showAllLines();
+                
+                showNotification('👆 已切换为手动引导模式');
+            }
+        }
+
+        function nextSection() {
+            if (meditationGuide.currentSection < meditationGuide.sections.length - 1) {
+                startMeditationSection(meditationGuide.currentSection + 1);
+            }
+        }
+
+        function prevSection() {
+            if (meditationGuide.currentSection > 0) {
+                startMeditationSection(meditationGuide.currentSection - 1);
+            }
+        }
+
+        function goToSection(sectionIndex) {
+            if (sectionIndex >= 0 && sectionIndex < meditationGuide.sections.length) {
+                startMeditationSection(sectionIndex);
+            }
+        }
+
+        function toggleMusic() {
+            if (meditationGuide.isMusicPlaying) {
+                backgroundMusic.pause();
+                musicToggleBtn.classList.remove('active');
+                musicToggleBtn.style.color = '#CCCCCC';
+                musicToggleBtn.style.borderColor = '#CCCCCC';
+                showNotification('🔇 背景音乐已关闭');
+            } else {
+                backgroundMusic.play().catch(e => {
+                    console.log('音乐播放失败:', e);
+                });
+                musicToggleBtn.classList.add('active');
+                musicToggleBtn.style.color = 'var(--planet-1)';
+                musicToggleBtn.style.borderColor = 'var(--planet-1)';
+                showNotification('🔊 背景音乐已开启');
+            }
+            meditationGuide.isMusicPlaying = !meditationGuide.isMusicPlaying;
+        }
+
+        function toggleVoice() {
+            if (meditationGuide.isVoicePlaying) {
+                // 停止所有语音
+                Object.values(voiceAudios).forEach(audio => {
+                    if (audio) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }
+                });
+                
+                voiceToggleBtn.classList.remove('active');
+                voiceToggleBtn.style.color = '#CCCCCC';
+                voiceToggleBtn.style.borderColor = '#CCCCCC';
+                showNotification('🔇 引导语音已关闭');
+                
+                meditationGuide.isVoicePlaying = false;
+                
+                // 如果在自动模式,切换为文字引导
+                if (meditationGuide.isAutoPlay) {
+                    clearTimeout(meditationGuide.lineTimeout);
+                    startAutoPlayLines();
+                }
+            } else {
+                voiceToggleBtn.classList.add('active');
+                voiceToggleBtn.style.color = 'var(--planet-1)';
+                voiceToggleBtn.style.borderColor = 'var(--planet-1)';
+                showNotification('🔊 引导语音已开启');
+                
+                meditationGuide.isVoicePlaying = true;
+                
+                // 播放当前阶段的语音
+                if (meditationGuide.isMeditationActive) {
+                    playSectionVoice(meditationGuide.currentSection + 1);
+                }
+            }
+        }
+
+        function showCompletionSection() {
+            completionSection.style.display = 'flex';
+            showNotification(`✨ 冥想引导完成！现在可以进入你的${currentPlanet ? currentPlanet.year : '2026'}星球了。`);
+        }
+
+        function enterPlanet() {
+            enterPlanetBtn.disabled = true;
+            enterPlanetBtn.innerHTML = '<i class="fas fa-spinner fa-spin btn-icon"></i> 进入中...';
+            
+            const year = currentPlanet ? currentPlanet.year : new Date().getFullYear();
+            showNotification(`🚀 正在进入${year}星球...`);
+            
+            // 更新星球状态
+            if (currentPlanet) {
+                currentPlanet.meditationCompleted = true;
+                currentPlanet.meditationCompletedAt = Date.now();
+                savePlanet(currentPlanet);
+            }
+            
+            setTimeout(() => {
+                window.location.href = `dreamfragment.html?year=${year}`;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

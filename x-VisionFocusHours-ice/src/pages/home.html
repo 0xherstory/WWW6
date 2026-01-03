@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionFocus Hours · 星球宇宙 | 每年一颗星球，构建你的未来宇宙</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- 引入全局样式 -->
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    
+    <style>
+        /* 首页完整样式 - 基于原型 1starthome.html */
+        :root {
+            --primary-light: #FFF9F0;
+            --primary-warm: #FFEEDD;
+            --accent-pink: #FFB6C1;
+            --accent-gold: #FFD700;
+            --accent-purple: #DDA0DD;
+            --text-brown: #8B4513;
+            --text-dark: #5D4037;
+            --star-color: #FFD93D;
+            --night-blue: #0A0A1A;
+            --planet-1: #FF6B8B;
+            --planet-2: #4ECDC4;
+            --planet-3: #45B7D1;
+            --planet-4: #96CEB4;
+            --planet-5: #FFEAA7;
+            --nebula-1: rgba(106, 90, 205, 0.3);
+            --nebula-2: rgba(255, 107, 139, 0.3);
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            background-color: var(--night-blue);
+            color: #F0F0F0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, var(--nebula-1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, var(--nebula-2) 0%, transparent 40%);
+        }
+
+        /* 宇宙背景 */
+        .universe-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 手绘风格 */
+        .hand-drawn-border {
+            border: 3px solid var(--accent-pink);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            position: relative;
+            background-color: rgba(10, 10, 26, 0.85);
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .hand-drawn-btn {
+            background-color: var(--accent-pink);
+            color: var(--text-brown);
+            border: 2px solid var(--text-brown);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            padding: 14px 28px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hand-drawn-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+            background-color: #FFA7B3;
+        }
+
+        /* 主容器 */
+        .universe-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 头部 */
+        .universe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-family: 'ZCOOL QingKe HuangYou', cursive;
+            font-size: 2.8rem;
+            color: var(--star-color);
+            text-shadow: 0 0 10px rgba(255, 217, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+        }
+
+        /* 钱包连接区域 */
+        .wallet-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .wallet-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            background: rgba(20, 20, 40, 0.7);
+            border: 2px solid;
+        }
+
+        .wallet-status.connected {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .wallet-status.disconnected {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+        }
+
+        .wallet-status.connecting {
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+
+        .wallet-address {
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .wallet-btn {
+            background-color: var(--planet-2);
+            color: var(--night-blue);
+            border: 2px solid var(--planet-2);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            padding: 12px 24px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .wallet-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
+            background-color: #3DBBB2;
+        }
+
+        .wallet-btn.disconnect {
+            background-color: #FF6B6B;
+            border-color: #FF6B6B;
+            color: white;
+        }
+
+        /* 英雄区域 */
+        .hero-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            margin-bottom: 60px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(255, 154, 61, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 70% 80%, rgba(199, 128, 250, 0.1) 0%, transparent 50%);
+            z-index: 0;
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .main-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 5rem;
+            color: var(--star-color);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 
+                0 0 10px rgba(255, 217, 0, 0.5),
+                0 0 20px rgba(255, 217, 0, 0.3),
+                3px 3px 0 rgba(0, 0, 0, 0.5);
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 2.2rem;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+            max-width: 900px;
+            line-height: 1.4;
+        }
+
+        .tagline {
+            font-size: 1.8rem;
+            color: #E0E0E0;
+            max-width: 800px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+        }
+
+        .highlight {
+            color: var(--star-color);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 217, 0, 0.5);
+            position: relative;
+        }
+
+        .highlight::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--star-color), transparent);
+        }
+
+        /* 星球宇宙展示 */
+        .universe-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 80px 0;
+            padding: 40px;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            color: var(--star-color);
+            margin-bottom: 20px;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        .universe-visual {
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        .planet-orbit {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            animation: orbit 60s linear infinite;
+            top: 50%;
+            left: 50%;
+            transform-origin: center center;
+        }
+
+        @keyframes orbit {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.6s;
+            box-shadow: 
+                inset 0 0 20px rgba(255, 255, 255, 0.1),
+                0 0 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .planet:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                inset 0 0 30px rgba(255, 255, 255, 0.2),
+                0 0 50px rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        .planet-text {
+            position: absolute;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+        }
+
+        .planet-new {
+            background: radial-gradient(circle at 30% 30%, #4ECDC4, #2A8C82);
+            border: 3px solid #4ECDC4;
+        }
+
+        .planet-2024 {
+            background: radial-gradient(circle at 30% 30%, var(--planet-1), #D64569);
+            border: 3px solid var(--planet-1);
+        }
+
+        .planet-2025 {
+            background: radial-gradient(circle at 30% 30%, var(--planet-2), #2A8C82);
+            border: 3px solid var(--planet-2);
+        }
+
+        .planet-2026 {
+            background: radial-gradient(circle at 30% 30%, var(--planet-3), #2C77A3);
+            border: 3px solid var(--planet-3);
+        }
+
+        .planet-2027 {
+            background: radial-gradient(circle at 30% 30%, var(--planet-4), #6AA68A);
+            border: 3px solid var(--planet-4);
+        }
+
+        .planet-surface {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 2%, transparent 4%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.1) 1%, transparent 3%);
+        }
+
+        .planet-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .central-sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, var(--star-color), #FF8C00);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 60px var(--star-color),
+                0 0 120px rgba(255, 217, 0, 0.5);
+            animation: sun-pulse 3s infinite alternate;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        @keyframes sun-pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* 星球信息 */
+        .planet-info-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .planet-info-card {
+            width: 300px;
+            padding: 30px;
+            background-color: rgba(20, 20, 40, 0.8);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s;
+        }
+
+        .planet-info-card:hover {
+            border-color: var(--star-color);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255, 217, 0, 0.2);
+        }
+
+        .planet-info-icon {
+            font-size: 2.5rem;
+            color: var(--star-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .planet-info-title {
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        .planet-info-desc {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #CCCCCC;
+            text-align: center;
+        }
+
+        /* 时间线展示 */
+        .timeline-section {
+            margin: 80px 0;
+            padding: 60px 40px;
+            background: rgba(20, 20, 40, 0.7);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .timeline-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 60px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--planet-1), var(--planet-2), var(--planet-3), var(--planet-4), var(--planet-5));
+            z-index: 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+            position: relative;
+        }
+
+        .timeline-year {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+
+        .timeline-year:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .timeline-label {
+            font-size: 1.2rem;
+            color: #CCCCCC;
+            text-align: center;
+        }
+
+        /* CTA区域 */
+        .cta-section {
+            text-align: center;
+            padding: 80px 20px;
+            margin: 60px 0;
+            background: radial-gradient(circle at center, rgba(106, 90, 205, 0.2), transparent 70%);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 3rem;
+            color: var(--star-color);
+            margin-bottom: 20px;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        .cta-text {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+            color: #E0E0E0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .primary-cta {
+            background-color: var(--star-color);
+            color: var(--night-blue);
+            border-color: var(--star-color);
+            font-size: 1.4rem;
+            padding: 16px 32px;
+        }
+
+        .primary-cta:hover {
+            background-color: #FFC107;
+            box-shadow: 0 0 20px rgba(255, 217, 0, 0.7);
+        }
+
+        .secondary-cta {
+            background-color: transparent;
+            color: var(--star-color);
+            border-color: var(--star-color);
+        }
+
+        /* 页脚 */
+        .universe-footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 2px dashed rgba(255, 182, 193, 0.3);
+            color: #CCCCCC;
+            font-size: 1.1rem;
+        }
+
+        .footer-logo {
+            font-family: 'ZCOOL QingKe HuangYou', cursive;
+            font-size: 2.5rem;
+            color: var(--star-color);
+            margin-bottom: 20px;
+        }
+
+        .footer-tagline {
+            font-size: 1.3rem;
+            color: var(--accent-pink);
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        /* 钱包模态框 */
+        .wallet-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .wallet-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .wallet-content {
+            background: var(--night-blue);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 3px solid var(--planet-2);
+            text-align: center;
+            box-shadow: 0 0 50px rgba(78, 205, 196, 0.3);
+        }
+
+        .wallet-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            color: var(--planet-2);
+            margin-bottom: 20px;
+        }
+
+        .wallet-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .wallet-option:hover {
+            background: rgba(78, 205, 196, 0.1);
+            border-color: rgba(78, 205, 196, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .wallet-option-icon {
+            font-size: 2.5rem;
+            color: var(--planet-2);
+        }
+
+        .wallet-option-text {
+            text-align: left;
+            flex: 1;
+        }
+
+        .wallet-option-name {
+            font-size: 1.3rem;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .wallet-option-desc {
+            font-size: 0.9rem;
+            color: #CCCCCC;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .universe-visual {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-title {
+                font-size: 4rem;
+            }
+            
+            .universe-visual {
+                height: 400px;
+            }
+            
+            .timeline {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 40px;
+            }
+            
+            .timeline::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.6rem;
+            }
+            
+            .tagline {
+                font-size: 1.3rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .cta-title {
+                font-size: 2.2rem;
+            }
+            
+            .logo {
+                font-size: 2.2rem;
+            }
+            
+            .universe-visual {
+                height: 300px;
+            }
+
+            .wallet-section {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .wallet-status, .wallet-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Ko-fi 赞赏按钮样式 - 确保显示在左下角 */
+        #kofi-widget-overlay,
+        .kofi-widget-overlay {
+            z-index: 9999 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 宇宙背景 -->
+    <div class="universe-bg" id="universeBg"></div>
+    
+    <!-- 钱包连接模态框 -->
+    <div class="wallet-modal" id="walletModal">
+        <div class="wallet-content">
+            <h2 class="wallet-title">连接钱包</h2>
+            <p style="color: #CCCCCC; margin-bottom: 20px;">选择一个钱包连接到VisionFocus Hours</p>
+            
+            <div class="wallet-options">
+                <div class="wallet-option" id="metamaskOption">
+                    <div class="wallet-option-icon">
+                        <i class="fab fa-ethereum"></i>
+                    </div>
+                    <div class="wallet-option-text">
+                        <div class="wallet-option-name">MetaMask</div>
+                        <div class="wallet-option-desc">连接你的MetaMask钱包</div>
+                    </div>
+                </div>
+                
+                <div class="wallet-option" id="walletConnectOption">
+                    <div class="wallet-option-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="wallet-option-text">
+                        <div class="wallet-option-name">WalletConnect</div>
+                        <div class="wallet-option-desc">使用WalletConnect连接 (即将支持)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="hand-drawn-btn" id="closeWalletModalBtn" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3);">
+                取消
+            </button>
+        </div>
+    </div>
+
+    <div class="universe-container">
+        <!-- 头部导航 -->
+        <header class="universe-header">
+            <div class="logo">
+                <i class="fas fa-globe-americas logo-icon"></i>
+                <span>VisionFocus Hours</span>
+            </div>
+            <div class="wallet-section">
+                <div class="wallet-status disconnected" id="walletStatus">
+                    <i class="fas fa-wallet"></i>
+                    <span>未连接钱包</span>
+                </div>
+                
+                <button class="wallet-btn" id="connectWalletBtn">
+                    <i class="fas fa-plug"></i> 连接钱包
+                </button>
+                
+                <button class="wallet-btn disconnect" id="disconnectWalletBtn" style="display: none;">
+                    <i class="fas fa-unplug"></i> 断开连接
+                </button>
+            </div>
+        </header>
+
+        <!-- 英雄区域 -->
+        <section class="hero-section">
+            <div class="hero-bg"></div>
+            <h1 class="main-title">构建你的未来宇宙</h1>
+            <h2 class="subtitle">每年一颗星球，记录你的成长轨迹</h2>
+            <p class="tagline">
+                在时间的长河中，每一年都是一颗独特的星球。<br>
+                用<span class="highlight">专注时光</span>雕琢你的星球，<br>
+                用<span class="highlight">年度愿景</span>点亮你的宇宙。
+            </p>
+            <div class="cta-buttons">
+                <button class="hand-drawn-btn primary-cta" id="createFirstPlanetBtn">
+                    <i class="fas fa-plus-circle"></i> 创建我的第一颗星球
+                </button>
+                <button class="hand-drawn-btn secondary-cta" id="exploreUniverseBtn">
+                    <i class="fas fa-binoculars"></i> 探索星球宇宙
+                </button>
+            </div>
+        </section>
+
+        <!-- 星球宇宙展示 -->
+        <section class="universe-section">
+            <h2 class="section-title">你的个人宇宙</h2>
+            <p style="font-size: 1.3rem; text-align: center; max-width: 800px; margin-bottom: 40px; line-height: 1.7;">
+                每颗星球代表你<span class="highlight">一年的专注与成长</span>。<br>
+                点击星球进入你的年度空间，或创建新的星球开始新的一年。
+            </p>
+            
+            <div class="universe-visual" id="universeVisual">
+                <!-- 中央太阳 -->
+                <div class="central-sun" id="centralSun">
+                    <i class="fas fa-sun"></i>
+                </div>
+                
+                <!-- 星球将通过JS动态生成 -->
+            </div>
+            
+            <div class="planet-info-section">
+                <div class="planet-info-card hand-drawn-border">
+                    <div class="planet-info-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h3 class="planet-info-title">星球探索</h3>
+                    <p class="planet-info-desc">
+                        每颗星球是你的年度个人空间。包含当年的愿景板、专注记录、成就回顾。点击任意星球进入对应年份。
+                    </p>
+                </div>
+                
+                <div class="planet-info-card hand-drawn-border">
+                    <div class="planet-info-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <h3 class="planet-info-title">专注时光</h3>
+                    <p class="planet-info-desc">
+                        用专注时光雕琢你的星球。每投入1小时专注，星球就会变得更加璀璨。100小时让星球完全显化。
+                    </p>
+                </div>
+                
+                <div class="planet-info-card hand-drawn-border">
+                    <div class="planet-info-icon">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <h3 class="planet-info-title">宇宙扩张</h3>
+                    <p class="planet-info-desc">
+                        每年自动生成一颗新星球。随着时间推移，你的宇宙会不断扩大，形成独特的个人成长星系。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 时间线展示 -->
+        <section class="timeline-section hand-drawn-border">
+            <div class="timeline-bg"></div>
+            <div class="timeline-content">
+                <h2 class="section-title">时间线：从过去到未来</h2>
+                <p style="font-size: 1.3rem; text-align: center; max-width: 800px; margin: 0 auto 40px; line-height: 1.7;">
+                    你的成长轨迹在时间线上展开。<br>
+                    每一年都是一段独特的旅程，每颗星球都记录着<span class="highlight">专注的时光</span>与<span class="highlight">实现的愿景</span>。
+                </p>
+                
+                <div class="timeline" id="timelineContainer">
+                    <!-- 时间线项目将通过JS动态生成 -->
+                </div>
+                
+                <p style="font-size: 1.3rem; text-align: center; max-width: 800px; margin: 40px auto 0; line-height: 1.7; color: #CCCCCC;">
+                    点击年份查看该年度的星球详情，或点击<span class="highlight">"当前年度"</span>进入你当前的年度空间。
+                </p>
+            </div>
+        </section>
+
+        <!-- CTA区域 -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2 class="cta-title">开始雕琢你的第一颗星球</h2>
+                <p class="cta-text">
+                    每颗星球的<span class="highlight">大气层</span>是你的愿景，<br>
+                    每颗星球的<span class="highlight">地表</span>是你的专注记录，<br>
+                    每颗星球的<span class="highlight">轨道</span>是你的成长轨迹。<br>
+                    从今天开始，用专注时光<span class="highlight">构建你的未来宇宙</span>。
+                </p>
+                <div class="cta-buttons">
+                    <button class="hand-drawn-btn primary-cta" id="startNowBtn">
+                        <i class="fas fa-rocket"></i> 开始星球创建
+                    </button>
+                    <button class="hand-drawn-btn secondary-cta" id="watchDemoBtn">
+                        <i class="fas fa-video"></i> 观看宇宙之旅
+                    </button>
+                </div>
+                <p style="margin-top: 30px; font-size: 1.1rem; color: #CCCCCC;">
+                    无需信用卡 · 支持主流钱包 · 你的宇宙数据由你掌控
+                </p>
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="universe-footer">
+            <div class="footer-logo">VisionFocus Hours</div>
+            <div class="footer-tagline">构建你的未来宇宙 · 每年一颗星球，记录专注时光</div>
+            <p>© 2026 VisionFocus Hours. 一个将年度成长可视化为星球宇宙的专注工具。</p>
+            <p style="margin-top: 20px; font-size: 1rem;">
+                <i class="fas fa-globe-americas" style="color: var(--planet-3);"></i> 
+                星球宇宙 · 
+                <i class="fas fa-hourglass-half" style="color: var(--star-color);"></i> 
+                专注时光 · 
+                <i class="fas fa-user-astronaut" style="color: var(--accent-pink);"></i> 
+                个人成长空间
+            </p>
+        </footer>
+    </div>
+
+    <script type="module">
+        // 导入工具类
+        import walletManager from '../js/utils/wallet.js';
+        import storageManager from '../js/utils/storage.js';
+        import { showCustomNotification } from '../js/utils/helpers.js';
+
+        // DOM元素
+        const universeBg = document.getElementById('universeBg');
+        const walletModal = document.getElementById('walletModal');
+        const walletStatus = document.getElementById('walletStatus');
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const disconnectWalletBtn = document.getElementById('disconnectWalletBtn');
+        const closeWalletModalBtn = document.getElementById('closeWalletModalBtn');
+        const metamaskOption = document.getElementById('metamaskOption');
+        const walletConnectOption = document.getElementById('walletConnectOption');
+        const createFirstPlanetBtn = document.getElementById('createFirstPlanetBtn');
+        const exploreUniverseBtn = document.getElementById('exploreUniverseBtn');
+        const startNowBtn = document.getElementById('startNowBtn');
+        const watchDemoBtn = document.getElementById('watchDemoBtn');
+        const centralSun = document.getElementById('centralSun');
+        const universeVisual = document.getElementById('universeVisual');
+        const timelineContainer = document.getElementById('timelineContainer');
+
+        // 创建星空背景
+        function createStarBackground() {
+            const starCount = 300;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star star-twinkle';
+                
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3 + 1;
+                const delay = Math.random() * 3;
+                
+                star.style.cssText = `
+                    position: absolute;
+                    left: ${x}%;
+                    top: ${y}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: white;
+                    border-radius: 50%;
+                    animation-delay: ${delay}s;
+                `;
+                
+                universeBg.appendChild(star);
+            }
+        }
+
+        // 渲染星球
+        function renderPlanets() {
+            const planets = storageManager.getPlanets();
+            const currentYear = new Date().getFullYear();
+            
+            // 如果没有星球,显示示例星球
+            const displayPlanets = planets.length > 0 ? planets : [
+                { year: currentYear - 2, totalHours: 120 },
+                { year: currentYear - 1, totalHours: 89 },
+                { year: currentYear, totalHours: 45 }
+            ];
+            
+            // 添加新星球选项
+            if (walletManager.isWalletConnected()) {
+                displayPlanets.push({ year: 'new', totalHours: 0 });
+            }
+            
+            // 清除现有星球(保留太阳)
+            const existingPlanets = universeVisual.querySelectorAll('.planet-orbit');
+            existingPlanets.forEach(p => p.remove());
+            
+            // 创建星球
+            displayPlanets.forEach((planet, index) => {
+                const orbitRadius = 150 + index * 100;
+                const planetSize = planet.year === 'new' ? 140 : (100 + Math.min(planet.totalHours || 0, 100) * 0.3);
+                const angle = (360 / displayPlanets.length) * index;
+                
+                // 创建轨道
+                const orbit = document.createElement('div');
+                orbit.className = 'planet-orbit';
+                orbit.style.cssText = `
+                    width: ${orbitRadius * 2}px;
+                    height: ${orbitRadius * 2}px;
+                    margin-left: -${orbitRadius}px;
+                    margin-top: -${orbitRadius}px;
+                    animation-duration: ${30 + index * 10}s;
+                `;
+                
+                // 创建星球
+                const planetEl = document.createElement('div');
+                const colorClass = planet.year === 'new' ? 'planet-new' : `planet-${planet.year}`;
+                planetEl.className = `planet ${colorClass}`;
+                planetEl.style.cssText = `
+                    width: ${planetSize}px;
+                    height: ${planetSize}px;
+                    top: 0;
+                    left: 50%;
+                    margin-left: -${planetSize / 2}px;
+                    margin-top: -${planetSize / 2}px;
+                `;
+                
+                // 添加表面纹理
+                const surface = document.createElement('div');
+                surface.className = 'planet-surface';
+                planetEl.appendChild(surface);
+                
+                // 添加文字
+                const text = document.createElement('div');
+                text.className = 'planet-text';
+                text.textContent = planet.year === 'new' ? '新星球' : planet.year;
+                planetEl.appendChild(text);
+                
+                // 新星球添加加号
+                if (planet.year === 'new') {
+                    const plus = document.createElement('div');
+                    plus.style.cssText = 'position: absolute; font-size: 3rem; color: white; opacity: 0.8;';
+                    plus.textContent = '+';
+                    planetEl.appendChild(plus);
+                } else {
+                    // 已存在的星球,显示进度状态
+                    const planetData = storageManager.getPlanet(planet.year);
+                    if (planetData) {
+                        // 创建状态徽章
+                        const statusBadge = document.createElement('div');
+                        statusBadge.style.cssText = `
+                            position: absolute;
+                            bottom: -25px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background: rgba(0, 0, 0, 0.7);
+                            color: white;
+                            padding: 4px 10px;
+                            border-radius: 12px;
+                            font-size: 0.75rem;
+                            white-space: nowrap;
+                            z-index: 10;
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            pointer-events: none;
+                        `;
+                        
+                        // 根据完成状态设置不同的徽章
+                        if (!planetData.meditationCompleted) {
+                            statusBadge.textContent = '🧘 待冥想';
+                            statusBadge.style.borderColor = '#FFD700';
+                            statusBadge.style.background = 'rgba(255, 215, 0, 0.2)';
+                        } else if (!planetData.dreamFragmentsCompleted) {
+                            statusBadge.textContent = '💭 设定愿景';
+                            statusBadge.style.borderColor = '#4ECDC4';
+                            statusBadge.style.background = 'rgba(78, 205, 196, 0.2)';
+                        } else if (!planetData.visionBoardCompleted) {
+                            statusBadge.textContent = '🎨 创建愿景板';
+                            statusBadge.style.borderColor = '#FF6B8B';
+                            statusBadge.style.background = 'rgba(255, 107, 139, 0.2)';
+                        } else if (!planetData.focusHoursCompleted) {
+                            statusBadge.textContent = `⏰ 投入时光`;
+                            statusBadge.style.borderColor = '#9370DB';
+                            statusBadge.style.background = 'rgba(147, 112, 219, 0.2)';
+                        } else if (planetData.nftMinted || (planetData.nft && planetData.nft.generated)) {
+                            statusBadge.textContent = '🎉 NFT已生成';
+                            statusBadge.style.borderColor = '#FFD700';
+                            statusBadge.style.background = 'rgba(255, 215, 0, 0.3)';
+                            statusBadge.style.boxShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        } else {
+                            statusBadge.textContent = `✨ ${planetData.totalHours || 0}小时`;
+                            statusBadge.style.borderColor = '#52C41A';
+                            statusBadge.style.background = 'rgba(82, 196, 26, 0.2)';
+                        }
+                        
+                        planetEl.appendChild(statusBadge);
+                    }
+                }
+                
+                // 部分星球添加光环
+                if (index % 2 === 0 && planet.year !== 'new') {
+                    const ring = document.createElement('div');
+                    ring.className = 'planet-ring';
+                    ring.style.cssText = `
+                        width: ${planetSize * 1.8}px;
+                        height: ${planetSize * 0.3}px;
+                        top: ${planetSize * 0.35}px;
+                        left: -${planetSize * 0.4}px;
+                        transform: rotate(20deg);
+                    `;
+                    planetEl.appendChild(ring);
+                }
+                
+                // 点击事件
+                planetEl.addEventListener('click', () => {
+                    if (planet.year === 'new') {
+                        createNewPlanet();
+                    } else {
+                        selectPlanet(planet.year);
+                    }
+                });
+                
+                orbit.appendChild(planetEl);
+                universeVisual.appendChild(orbit);
+            });
+        }
+
+        // 渲染时间线
+        function renderTimeline() {
+            const planets = storageManager.getPlanets();
+            const currentYear = new Date().getFullYear();
+            
+            // 如果没有星球,显示示例
+            const years = planets.length > 0 ? 
+                planets.map(p => p.year) : 
+                [currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+            
+            timelineContainer.innerHTML = '';
+            
+            years.forEach((year, index) => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                
+                const colors = ['var(--planet-1)', 'var(--planet-2)', 'var(--planet-3)', 'var(--planet-4)', 'var(--planet-5)'];
+                const labels = ['成长回顾', '技能提升', '当前年度', '未来规划', '远期愿景'];
+                
+                const isCurrent = year === currentYear;
+                
+                item.innerHTML = `
+                    <div class="timeline-year" style="background-color: ${colors[index % colors.length]}; ${isCurrent ? 'box-shadow: 0 0 20px ' + colors[index % colors.length] : ''}" data-year="${year}">
+                        ${year}
+                    </div>
+                    <div class="timeline-label">${isCurrent ? '当前年度' : labels[index % labels.length]}</div>
+                `;
+                
+                // 点击事件
+                item.querySelector('.timeline-year').addEventListener('click', () => {
+                    selectPlanet(year);
+                });
+                
+                timelineContainer.appendChild(item);
+            });
+        }
+
+        // 选择星球
+        function selectPlanet(year) {
+            const planet = storageManager.getPlanet(year);
+            
+            if (!planet) {
+                showCustomNotification('星球不存在', '请先创建星球');
+                return;
+            }
+            
+            // 调试：输出星球状态
+            console.log(`[selectPlanet] 年份: ${year}, 星球数据:`, {
+                meditationCompleted: planet.meditationCompleted,
+                dreamFragmentsCompleted: planet.dreamFragmentsCompleted,
+                visionBoardCompleted: planet.visionBoardCompleted,
+                focusHoursCompleted: planet.focusHoursCompleted,
+                nftMinted: planet.nftMinted,
+                nft: planet.nft
+            });
+            
+            // 检查是否完成冥想
+            if (!planet.meditationCompleted) {
+                showCustomNotification('需要完成冥想引导', '正在进入冥想流程...');
+                setTimeout(() => {
+                    window.location.href = `meditation.html?year=${year}`;
+                }, 1000);
+                return;
+            }
+            
+            // 检查是否完成愿景碎片
+            if (!planet.dreamFragmentsCompleted) {
+                showCustomNotification(`进入${year}星球`, '继续设定愿景碎片...');
+                setTimeout(() => {
+                    window.location.href = `dreamfragment.html?year=${year}`;
+                }, 1000);
+                return;
+            }
+            
+            // 检查是否完成愿景板
+            if (!planet.visionBoardCompleted) {
+                showCustomNotification(`进入${year}星球`, '继续创建愿景板...');
+                setTimeout(() => {
+                    window.location.href = `visionboard.html?year=${year}`;
+                }, 1000);
+                return;
+            }
+            
+            // 检查是否完成专注时光投资
+            if (!planet.focusHoursCompleted) {
+                showCustomNotification(`进入${year}星球`, '继续投入专注时光...');
+                setTimeout(() => {
+                    window.location.href = `hoursputin.html?year=${year}`;
+                }, 1000);
+                return;
+            }
+            
+            // 检查NFT是否已生成（兼容两种格式：nftMinted 或 nft.generated）
+            const hasNFT = planet.nftMinted || (planet.nft && planet.nft.generated);
+            console.log(`[selectPlanet] NFT检查: nftMinted=${planet.nftMinted}, nft.generated=${planet.nft?.generated}, hasNFT=${hasNFT}`);
+            
+            if (hasNFT) {
+                console.log(`[selectPlanet] NFT已生成，跳转到NFT页面: NFT.html?year=${year}`);
+                showCustomNotification(`进入${year}星球`, '查看年度NFT纪念');
+                setTimeout(() => {
+                    window.location.href = `NFT.html?year=${year}`;
+                }, 1000);
+                return;
+            }
+            
+            // 所有初始化步骤完成但NFT未生成,进入专注时光投资页面
+            showCustomNotification(`进入${year}星球`, `查看${year}年的专注时光记录`);
+            setTimeout(() => {
+                window.location.href = `hoursputin.html?year=${year}`;
+            }, 1000);
+        }
+
+        // 创建新星球
+        function createNewPlanet() {
+            if (!walletManager.isWalletConnected()) {
+                showCustomNotification('请先连接钱包', '连接后即可创建星球');
+                walletModal.classList.add('active');
+                return;
+            }
+            
+            const currentYear = new Date().getFullYear();
+            const existingPlanet = storageManager.getPlanet(currentYear);
+            
+            if (existingPlanet) {
+                showCustomNotification('星球已存在', `${currentYear}年的星球已经创建`);
+                // 直接进入该星球
+                selectPlanet(currentYear);
+                return;
+            }
+            
+            // 创建新星球
+            const newPlanet = storageManager.createPlanet(currentYear);
+            
+            if (newPlanet) {
+                showCustomNotification('星球创建成功!', `欢迎来到${currentYear}年的星球`);
+                
+                // 1秒后跳转到冥想引导页面
+                setTimeout(() => {
+                    showCustomNotification('即将开始冥想引导', '为你的星球设定愿景...');
+                    setTimeout(() => {
+                        window.location.href = `meditation.html?year=${currentYear}`;
+                    }, 1000);
+                }, 1000);
+            }
+        }
+
+        // 更新钱包UI
+        function updateWalletUI() {
+            const isConnected = walletManager.isWalletConnected();
+            const address = walletManager.getAddress();
+            
+            if (isConnected && address) {
+                walletStatus.className = 'wallet-status connected';
+                walletStatus.innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    <span>已连接</span>
+                    <span class="wallet-address">${walletManager.getShortAddress()}</span>
+                `;
+                
+                connectWalletBtn.style.display = 'none';
+                disconnectWalletBtn.style.display = 'flex';
+                
+                showCustomNotification('钱包连接成功', '欢迎来到VisionFocus Hours!');
+                
+                // 重新渲染星球(显示新星球选项)
+                renderPlanets();
+            } else {
+                walletStatus.className = 'wallet-status disconnected';
+                walletStatus.innerHTML = `
+                    <i class="fas fa-wallet"></i>
+                    <span>未连接钱包</span>
+                `;
+                
+                connectWalletBtn.style.display = 'flex';
+                disconnectWalletBtn.style.display = 'none';
+                
+                // 重新渲染星球(隐藏新星球选项)
+                renderPlanets();
+            }
+        }
+
+        // 连接钱包
+        async function connectWallet() {
+            try {
+                walletStatus.className = 'wallet-status connecting';
+                walletStatus.innerHTML = `
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>连接中...</span>
+                `;
+                
+                await walletManager.connect();
+                updateWalletUI();
+                walletModal.classList.remove('active');
+                
+            } catch (error) {
+                console.error('连接失败:', error);
+                updateWalletUI();
+                
+                if (error.message.includes('MetaMask')) {
+                    showCustomNotification('请安装MetaMask', '点击前往官网下载');
+                    setTimeout(() => {
+                        window.open('https://metamask.io/download/', '_blank');
+                    }, 2000);
+                } else if (error.code === 4001) {
+                    showCustomNotification('已取消连接', '用户拒绝了连接请求');
+                } else {
+                    showCustomNotification('连接失败', error.message || '请重试');
+                }
+            }
+        }
+
+        // 断开连接
+        function disconnectWallet() {
+            walletManager.disconnect();
+            updateWalletUI();
+            showCustomNotification('已断开连接', '下次见!');
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 VisionFocus Hours 初始化中...');
+            
+            createStarBackground();
+            await walletManager.init();
+            updateWalletUI();
+            renderPlanets();
+            renderTimeline();
+            
+            console.log('✅ 初始化完成');
+            
+            setTimeout(() => {
+                showCustomNotification('欢迎来到VisionFocus Hours', '用专注时光,点亮愿望星空 ✨');
+            }, 500);
+        });
+
+        // 事件监听
+        connectWalletBtn.addEventListener('click', () => {
+            walletModal.classList.add('active');
+        });
+
+        disconnectWalletBtn.addEventListener('click', disconnectWallet);
+        metamaskOption.addEventListener('click', connectWallet);
+        
+        walletConnectOption.addEventListener('click', () => {
+            showCustomNotification('即将支持', 'WalletConnect功能开发中');
+        });
+
+        closeWalletModalBtn.addEventListener('click', () => {
+            walletModal.classList.remove('active');
+        });
+
+        walletModal.addEventListener('click', (e) => {
+            if (e.target === walletModal) {
+                walletModal.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                walletModal.classList.remove('active');
+            }
+        });
+
+        createFirstPlanetBtn.addEventListener('click', createNewPlanet);
+        startNowBtn.addEventListener('click', createNewPlanet);
+        
+        exploreUniverseBtn.addEventListener('click', () => {
+            const planets = storageManager.getPlanets();
+            if (planets.length === 0) {
+                showCustomNotification('还没有星球', '快创建你的第一颗星球吧!');
+            } else {
+                showCustomNotification('星球数据', `你已经创建了${planets.length}颗星球`);
+                console.log('所有星球:', planets);
+            }
+            
+            // 滚动到宇宙展示区
+            document.querySelector('.universe-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        watchDemoBtn.addEventListener('click', () => {
+            // 跳转到星球轨迹页面
+            window.location.href = 'startresult.html';
+        });
+
+        centralSun.addEventListener('click', () => {
+            showCustomNotification('☀️ 宇宙中心', '这是你宇宙的中心!点击星球进入年度空间');
+        });
+
+        // 暴露到全局(方便调试)
+        window.walletManager = walletManager;
+        window.storageManager = storageManager;
+    </script>
+    
+    <!-- Ko-fi 赞赏入口 -->
+    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+    <script>
+        kofiWidgetOverlay.draw('iceflake0', {
+            'type': 'floating-chat',
+            'floating-chat.donateButton.text': '',
+            'floating-chat.donateButton.background-color': '#323842',
+            'floating-chat.donateButton.text-color': '#fff'
+        });
+    </script>
+</body>
+</html>
