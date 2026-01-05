@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星球轨迹 · VisionFocus Hours | 你的个人成长星系</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --night-blue: #0A0A1A;
+            --star-color: #FFD93D;
+            --planet-1: #FF6B8B;
+            --planet-2: #4ECDC4;
+            --planet-3: #45B7D1;
+            --planet-4: #96CEB4;
+            --planet-5: #FFEAA7;
+            --accent-pink: #FFB6C1;
+            --text-light: #F0F0F0;
+            --orbit-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--night-blue);
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 宇宙背景 */
+        .universe-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(106, 90, 205, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 107, 139, 0.1) 0%, transparent 20%);
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        /* 简约头部 */
+        .simple-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--star-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--star-color);
+            color: var(--star-color);
+        }
+
+        /* 主容器 */
+        .trajectory-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 标题区 */
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            color: var(--star-color);
+            margin-bottom: 15px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        /* 星盘主视图 */
+        .star-chart {
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        /* 轨道系统 */
+        .orbit-system {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px solid var(--orbit-color);
+            animation: orbit-rotate linear infinite;
+        }
+
+        .orbit-label {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        /* 星球 */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.5s;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .planet:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        .planet.active {
+            animation: planet-pulse 2s infinite;
+            box-shadow: 0 0 40px currentColor;
+        }
+
+        @keyframes planet-pulse {
+            0%, 100% { box-shadow: 0 0 20px currentColor; }
+            50% { box-shadow: 0 0 40px currentColor; }
+        }
+
+        /* 星球颜色 */
+        .planet-2024 { background: radial-gradient(circle at 30% 30%, var(--planet-1), #8A2D52); color: var(--planet-1); }
+        .planet-2025 { background: radial-gradient(circle at 30% 30%, var(--planet-2), #1A6E6A); color: var(--planet-2); }
+        .planet-2026 { background: radial-gradient(circle at 30% 30%, var(--planet-3), #1E5A7A); color: var(--planet-3); }
+        .planet-2027 { background: radial-gradient(circle at 30% 30%, var(--planet-4), #4A7D62); color: var(--planet-4); }
+        .planet-2028 { background: radial-gradient(circle at 30% 30%, var(--planet-5), #A38B3A); color: var(--planet-5); }
+        .planet-new { background: radial-gradient(circle at 30% 30%, #9D4EDD, #5A189A); color: #9D4EDD; }
+
+        /* 中央太阳 */
+        .central-sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--star-color), #FF8C00);
+            border-radius: 50%;
+            box-shadow: 0 0 50px var(--star-color);
+            animation: sun-pulse 4s infinite alternate;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        @keyframes sun-pulse {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 50px var(--star-color); }
+            100% { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 80px var(--star-color); }
+        }
+
+        @keyframes orbit-rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* 轨迹线 */
+        .trajectory-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            z-index: 1;
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            position: fixed;
+            right: -400px;
+            top: 100px;
+            width: 350px;
+            height: calc(100vh - 150px);
+            background: rgba(20, 20, 40, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px 0 0 20px;
+            padding: 30px;
+            border-left: 2px solid var(--star-color);
+            transition: right 0.5s ease;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .info-panel.open {
+            right: 0;
+        }
+
+        .close-panel {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .planet-detail {
+            margin-top: 20px;
+        }
+
+        .detail-title {
+            font-size: 2rem;
+            color: var(--star-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--star-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+
+        /* 时间轴 */
+        .timeline-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(20, 20, 40, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 50;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .timeline-year {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .timeline-year.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .timeline-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 控制面板 */
+        .control-panel {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            border-color: var(--star-color);
+            color: var(--star-color);
+            transform: scale(1.1);
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .star-chart {
+                height: 500px;
+            }
+            
+            .main-title {
+                font-size: 2.8rem;
+            }
+            
+            .info-panel {
+                width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .star-chart {
+                height: 400px;
+            }
+            
+            .main-title {
+                font-size: 2.2rem;
+            }
+            
+            .info-panel {
+                width: 100%;
+                height: 60vh;
+                bottom: 0;
+                top: auto;
+                right: 0;
+                border-radius: 20px 20px 0 0;
+                transform: translateY(100%);
+            }
+            
+            .info-panel.open {
+                transform: translateY(0);
+            }
+            
+            .control-panel {
+                left: 10px;
+                top: auto;
+                bottom: 100px;
+                transform: none;
+                flex-direction: row;
+            }
+            
+            .timeline {
+                gap: 15px;
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 宇宙背景 -->
+    <div class="universe-bg" id="universeBg"></div>
+    
+    <!-- 简约头部 -->
+    <header class="simple-header">
+        <div class="logo">
+            <i class="fas fa-satellite logo-icon"></i>
+            <span>星球轨迹</span>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="window.location.href='home.html'">
+                <i class="fas fa-home"></i> 返回首页
+            </button>
+            <button class="nav-btn" id="resetViewBtn">
+                <i class="fas fa-sync-alt"></i> 重置视图
+            </button>
+        </div>
+    </header>
+
+    <!-- 主容器 -->
+    <main class="trajectory-container">
+        <div class="title-section">
+            <h1 class="main-title">你的成长星系</h1>
+            <p class="subtitle">每颗星球代表一年的专注轨迹 · 每圈轨道象征一段成长周期</p>
+        </div>
+
+        <!-- 星盘主视图 -->
+        <div class="star-chart" id="starChart">
+            <div class="orbit-system" id="orbitSystem">
+                <!-- 轨道将通过JS生成 -->
+            </div>
+            
+            <!-- 轨迹线 -->
+            <div class="trajectory-line" id="trajectoryLine" style="width: 0;"></div>
+            
+            <!-- 中央太阳 -->
+            <div class="central-sun" id="centralSun">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+        </div>
+    </main>
+
+    <!-- 信息面板 -->
+    <div class="info-panel" id="infoPanel">
+        <button class="close-panel" id="closePanel">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="planet-detail" id="planetDetail">
+            <!-- 内容将通过JS动态生成 -->
+        </div>
+    </div>
+
+    <!-- 控制面板 -->
+    <div class="control-panel">
+        <button class="control-btn" id="toggleOrbitsBtn" title="显示/隐藏轨道">
+            <i class="fas fa-circle-notch"></i>
+        </button>
+        <button class="control-btn" id="zoomInBtn" title="放大">
+            <i class="fas fa-search-plus"></i>
+        </button>
+        <button class="control-btn" id="zoomOutBtn" title="缩小">
+            <i class="fas fa-search-minus"></i>
+        </button>
+        <button class="control-btn" id="toggleTrajectoryBtn" title="显示轨迹线">
+            <i class="fas fa-route"></i>
+        </button>
+        <button class="control-btn" id="autoRotateBtn" title="自动旋转">
+            <i class="fas fa-play"></i>
+        </button>
+    </div>
+
+    <!-- 时间轴 -->
+    <div class="timeline-bar">
+        <div class="timeline" id="timeline">
+            <!-- 时间轴项目将通过JS生成 -->
+        </div>
+    </div>
+
+    <script type="module">
+        // 引入工具类
+        import StorageManager from '../js/utils/storage.js';
+        
+        // 初始化存储管理器
+        const storageManager = new StorageManager();
+        
+        // 将storageManager暴露到全局
+        window.storageManager = storageManager;
+        
+        // 从LocalStorage加载真实数据
+        function loadPlanetData() {
+            const planets = storageManager.getPlanets();
+            const planetData = {};
+            
+            // 获取当前年份
+            const currentYear = new Date().getFullYear();
+            
+            // 转换数据格式
+            planets.forEach(planet => {
+                const year = planet.year.toString();
+                
+                // 计算里程碑数量
+                const milestones = [];
+                if (planet.meditationCompleted) milestones.push('完成冥想引导');
+                if (planet.dreamFragmentsCompleted) milestones.push('设定愿景碎片');
+                if (planet.visionBoardCompleted) milestones.push('创建愿景板');
+                if (planet.focusHoursCompleted) milestones.push('投入专注时光');
+                if (planet.nftMinted || (planet.nft && planet.nft.generated)) milestones.push('生成年度NFT');
+                
+                // 根据年份分配颜色
+                const yearColors = {
+                    '2024': 'var(--planet-1)',
+                    '2025': 'var(--planet-2)',
+                    '2026': 'var(--planet-3)',
+                    '2027': 'var(--planet-4)',
+                    '2028': 'var(--planet-5)'
+                };
+                
+                planetData[year] = {
+                    name: `${year}年度星球`,
+                    color: yearColors[year] || 'var(--planet-3)',
+                    focusHours: planet.totalHours || 0,
+                    totalHours: 1000, // 目标总小时数
+                    achievements: milestones.length,
+                    milestones: milestones.length > 0 ? milestones : ['等待开始'],
+                    description: (planet.nftMinted || (planet.nft && planet.nft.generated)) ? '年度NFT已生成' : 
+                                planet.focusHoursCompleted ? '专注时光投资中' :
+                                planet.visionBoardCompleted ? '愿景板已创建' :
+                                planet.dreamFragmentsCompleted ? '愿景碎片已设定' :
+                                planet.meditationCompleted ? '冥想引导已完成' : '等待开始',
+                    active: parseInt(year) === currentYear,
+                    // 保存原始数据用于路由
+                    _rawData: planet
+                };
+            });
+            
+            // 如果没有星球，添加一个"新星球"选项
+            if (planets.length === 0) {
+                planetData["new"] = {
+                    name: "新星球",
+                    color: "#9D4EDD",
+                    focusHours: 0,
+                    totalHours: 1000,
+                    achievements: 0,
+                    milestones: ["等待创建"],
+                    description: "点击创建新的年度星球",
+                    active: false
+                };
+            }
+            
+            return planetData;
+        }
+        
+        // 智能路由：根据星球完成状态跳转到对应页面
+        function navigateToPlanet(year) {
+            if (year === "new") {
+                // 创建新星球
+                window.location.href = 'home.html';
+                return;
+            }
+            
+            const planet = storageManager.getPlanet(parseInt(year));
+            
+            if (!planet) {
+                showNotification('星球不存在', '请先创建星球');
+                return;
+            }
+            
+            // 智能路由逻辑
+            if (planet.nftMinted || (planet.nft && planet.nft.generated)) {
+                // NFT已生成 -> 跳转到NFT页面
+                showNotification(`进入${year}星球`, '查看年度NFT纪念');
+                setTimeout(() => {
+                    window.location.href = `NFT.html?year=${year}`;
+                }, 500);
+            } else if (planet.focusHoursCompleted) {
+                // 已完成专注投入 -> 跳转到专注投入页面
+                showNotification(`进入${year}星球`, '查看专注时光记录');
+                setTimeout(() => {
+                    window.location.href = `hoursputin.html?year=${year}`;
+                }, 500);
+            } else if (planet.visionBoardCompleted) {
+                // 已完成愿景板 -> 跳转到专注投入页面
+                showNotification(`进入${year}星球`, '开始投入专注时光');
+                setTimeout(() => {
+                    window.location.href = `hoursputin.html?year=${year}`;
+                }, 500);
+            } else if (planet.dreamFragmentsCompleted) {
+                // 已完成愿景碎片 -> 跳转到愿景板页面
+                showNotification(`进入${year}星球`, '继续创建愿景板');
+                setTimeout(() => {
+                    window.location.href = `visionboard.html?year=${year}`;
+                }, 500);
+            } else if (planet.meditationCompleted) {
+                // 已完成冥想 -> 跳转到愿景碎片页面
+                showNotification(`进入${year}星球`, '继续设定愿景碎片');
+                setTimeout(() => {
+                    window.location.href = `dreamfragment.html?year=${year}`;
+                }, 500);
+            } else {
+                // 未完成冥想 -> 跳转到冥想引导页面
+                showNotification(`进入${year}星球`, '开始冥想引导');
+                setTimeout(() => {
+                    window.location.href = `meditation.html?year=${year}`;
+                }, 500);
+            }
+        }
+        
+        // 加载真实数据
+        const planetData = loadPlanetData();
+        
+        // 模拟数据 - 用户的星球轨迹（作为后备）
+        const fallbackPlanetData = {
+            "2024": {
+                name: "健康之旅",
+                color: "var(--planet-1)",
+                focusHours: 320,
+                totalHours: 1000,
+                achievements: 15,
+                milestones: ["完成马拉松训练", "建立每日冥想习惯", "阅读12本健康书籍"],
+                description: "专注于身心健康的基础年"
+            },
+            "2025": {
+                name: "技能成长",
+                color: "var(--planet-2)",
+                focusHours: 580,
+                totalHours: 1000,
+                achievements: 22,
+                milestones: ["掌握Web开发", "学习数据科学", "完成3个开源项目"],
+                description: "专业技能提升与知识扩展"
+            },
+            "2026": {
+                name: "当前年度",
+                color: "var(--planet-3)",
+                focusHours: 240,
+                totalHours: 1000,
+                achievements: 8,
+                milestones: ["启动VisionFocus项目", "建立每日专注习惯", "完成产品原型"],
+                description: "构建个人成长系统与宇宙可视化",
+                active: true
+            },
+            "2027": {
+                name: "未来规划",
+                color: "var(--planet-4)",
+                focusHours: 0,
+                totalHours: 1000,
+                achievements: 0,
+                milestones: ["待规划"],
+                description: "未来一年的成长空间"
+            },
+            "2028": {
+                name: "未来愿景",
+                color: "var(--planet-5)",
+                focusHours: 0,
+                totalHours: 1000,
+                achievements: 0,
+                milestones: ["待规划"],
+                description: "长期愿景与目标"
+            },
+            "new": {
+                name: "新星球",
+                color: "#9D4EDD",
+                focusHours: 0,
+                totalHours: 1000,
+                achievements: 0,
+                milestones: ["等待创建"],
+                description: "点击创建新的年度星球"
+            }
+        };
+        
+        // 如果没有真实数据，使用后备数据
+        const finalPlanetData = Object.keys(planetData).length > 0 ? planetData : fallbackPlanetData;
+        
+        // 将数据暴露到全局作用域
+        window.finalPlanetData = finalPlanetData;
+        window.navigateToPlanet = navigateToPlanet;
+
+        // 配置
+        const config = {
+            orbitCount: 5,
+            minOrbitRadius: 150,
+            orbitSpacing: 100,
+            planetSizes: [70, 65, 80, 65, 70, 75], // 对应每颗星球的大小
+            orbitSpeeds: [120, 100, 80, 100, 120], // 轨道旋转速度（秒）
+            showOrbits: true,
+            showTrajectory: false,
+            autoRotate: false,
+            zoomLevel: 1
+        };
+
+        // 状态
+        let state = {
+            selectedPlanet: "2026",
+            planets: [],
+            orbits: [],
+            rotationAngle: 0
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建宇宙背景
+            createUniverseBg();
+            
+            // 初始化轨道和星球
+            initOrbitSystem();
+            
+            // 初始化时间轴
+            initTimeline();
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 默认选择当前年份（如果有数据）
+            const data = window.finalPlanetData || finalPlanetData;
+            const currentYear = new Date().getFullYear().toString();
+            if (data[currentYear]) {
+                selectPlanet(currentYear);
+            } else if (Object.keys(data).length > 0) {
+                // 选择第一个可用的年份
+                const firstYear = Object.keys(data).find(y => y !== "new");
+                if (firstYear) {
+                    selectPlanet(firstYear);
+                }
+            }
+            
+            // 如果是自动旋转，开始动画
+            if (config.autoRotate) {
+                startAutoRotation();
+            }
+        });
+
+        // 创建宇宙背景
+        function createUniverseBg() {
+            const universeBg = document.getElementById('universeBg');
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机位置
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // 随机大小
+                const size = Math.random() * 2 + 0.5;
+                
+                // 随机闪烁延迟
+                const delay = Math.random() * 4;
+                const duration = 2 + Math.random() * 3;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.animationDelay = `${delay}s`;
+                star.style.animationDuration = `${duration}s`;
+                
+                universeBg.appendChild(star);
+            }
+        }
+
+        // 初始化轨道系统
+        function initOrbitSystem() {
+            const orbitSystem = document.getElementById('orbitSystem');
+            const years = Object.keys(window.finalPlanetData || finalPlanetData);
+            
+            // 创建轨道和星球
+            years.forEach((year, index) => {
+                // 轨道半径
+                const orbitRadius = config.minOrbitRadius + (index * config.orbitSpacing);
+                
+                // 创建轨道
+                const orbit = document.createElement('div');
+                orbit.className = 'orbit';
+                orbit.style.width = `${orbitRadius * 2}px`;
+                orbit.style.height = `${orbitRadius * 2}px`;
+                orbit.style.animationDuration = `${config.orbitSpeeds[index] || 100}s`;
+                
+                // 轨道标签
+                const orbitLabel = document.createElement('div');
+                orbitLabel.className = 'orbit-label';
+                orbitLabel.textContent = year === "new" ? "新轨道" : `${year}轨道`;
+                orbit.appendChild(orbitLabel);
+                
+                // 创建星球
+                const planet = document.createElement('div');
+                planet.className = `planet planet-${year}`;
+                planet.id = `planet-${year}`;
+                planet.dataset.year = year;
+                
+                // 星球大小
+                const planetSize = config.planetSizes[index] || 70;
+                planet.style.width = `${planetSize}px`;
+                planet.style.height = `${planetSize}px`;
+                
+                // 星球位置（在轨道上）
+                const angle = (index * 60) * (Math.PI / 180); // 每颗星球间隔60度
+                const planetX = orbitRadius * Math.cos(angle);
+                const planetY = orbitRadius * Math.sin(angle);
+                
+                planet.style.left = `calc(50% + ${planetX}px)`;
+                planet.style.top = `calc(50% + ${planetY}px)`;
+                planet.style.transform = `translate(-50%, -50%)`;
+                
+                // 星球标签
+                planet.textContent = year === "new" ? "NEW" : year;
+                
+                // 添加状态徽章（如果有NFT，显示特殊标记）
+                const planetInfo = (window.finalPlanetData || finalPlanetData)[year];
+                if (planetInfo && planetInfo._rawData && 
+                    (planetInfo._rawData.nftMinted || (planetInfo._rawData.nft && planetInfo._rawData.nft.generated))) {
+                    const nftBadge = document.createElement('div');
+                    nftBadge.style.cssText = `
+                        position: absolute;
+                        top: -10px;
+                        right: -10px;
+                        width: 20px;
+                        height: 20px;
+                        background: #FFD700;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 10px;
+                        box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+                        z-index: 10;
+                    `;
+                    nftBadge.innerHTML = '<i class="fas fa-gem" style="color: #000;"></i>';
+                    planet.appendChild(nftBadge);
+                }
+                
+                // 添加到轨道
+                orbit.appendChild(planet);
+                
+                // 保存引用
+                state.orbits.push(orbit);
+                state.planets.push({element: planet, year: year, angle: angle, radius: orbitRadius});
+                
+                // 添加到DOM
+                orbitSystem.appendChild(orbit);
+            });
+            
+            // 更新轨道显示
+            updateOrbitVisibility();
+        }
+
+        // 初始化时间轴
+        function initTimeline() {
+            const timeline = document.getElementById('timeline');
+            const years = Object.keys(window.finalPlanetData || finalPlanetData);
+            
+            years.forEach(year => {
+                if (year === "new") return; // 新星球不在时间轴显示
+                
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.dataset.year = year;
+                
+                const data = (window.finalPlanetData || finalPlanetData)[year];
+                const yearCircle = document.createElement('div');
+                yearCircle.className = 'timeline-year';
+                yearCircle.style.backgroundColor = data.color;
+                yearCircle.textContent = year;
+                
+                const yearLabel = document.createElement('div');
+                yearLabel.className = 'timeline-label';
+                yearLabel.textContent = data.name;
+                
+                timelineItem.appendChild(yearCircle);
+                timelineItem.appendChild(yearLabel);
+                timeline.appendChild(timelineItem);
+                
+                // 点击事件 - 使用智能路由
+                timelineItem.addEventListener('click', () => {
+                    navigateToPlanet(year);
+                });
+            });
+        }
+
+        // 选择星球
+        function selectPlanet(year) {
+            // 更新选中状态
+            state.selectedPlanet = year;
+            
+            // 更新星球激活状态
+            state.planets.forEach(planet => {
+                const isActive = planet.year === year;
+                planet.element.classList.toggle('active', isActive);
+            });
+            
+            // 更新时间轴
+            document.querySelectorAll('.timeline-year').forEach(el => {
+                const yearCircle = el;
+                const parent = yearCircle.parentElement;
+                const isActive = parent.dataset.year === year;
+                yearCircle.classList.toggle('active', isActive);
+            });
+            
+            // 更新信息面板
+            updateInfoPanel(year);
+            
+            // 显示信息面板
+            document.getElementById('infoPanel').classList.add('open');
+            
+            // 显示轨迹线
+            if (config.showTrajectory) {
+                drawTrajectoryToPlanet(year);
+            }
+        }
+
+        // 居中显示选中星球
+        function centerPlanet(year) {
+            const planet = state.planets.find(p => p.year === year);
+            if (!planet) return;
+            
+            // 计算使该星球位于视图中心的偏移
+            const starChart = document.getElementById('starChart');
+            const chartWidth = starChart.offsetWidth;
+            const chartHeight = starChart.offsetHeight;
+            
+            // 计算星球相对于轨道系统中心的位置
+            const planetX = planet.radius * Math.cos(planet.angle);
+            const planetY = planet.radius * Math.sin(planet.angle);
+            
+            // 计算需要移动轨道系统的距离，使星球居中
+            const offsetX = -planetX;
+            const offsetY = -planetY;
+            
+            // 应用变换
+            const orbitSystem = document.getElementById('orbitSystem');
+            orbitSystem.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+        }
+
+        // 更新信息面板
+        function updateInfoPanel(year) {
+            const data = (window.finalPlanetData || finalPlanetData)[year];
+            if (!data) return;
+            const panel = document.getElementById('planetDetail');
+            
+            // 计算进度百分比
+            const progressPercent = (data.focusHours / data.totalHours) * 100;
+            
+            // 生成HTML
+            panel.innerHTML = `
+                <h2 class="detail-title">
+                    <i class="fas fa-globe-americas"></i>
+                    ${year === "new" ? "新星球" : year + "星球"}
+                </h2>
+                <p class="detail-subtitle">${data.name} · ${data.description}</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercent}%; background: ${data.color};"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <span>${data.focusHours} / ${data.totalHours} 小时</span>
+                    <span>${progressPercent.toFixed(1)}% 完成</span>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${data.focusHours}</div>
+                        <div class="stat-label">专注小时</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.achievements}</div>
+                        <div class="stat-label">成就数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${year === "new" ? "?" : new Date().getFullYear() - parseInt(year)}</div>
+                        <div class="stat-label">距离现在</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.milestones.length}</div>
+                        <div class="stat-label">里程碑</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: var(--star-color);">
+                    <i class="fas fa-flag-checkered"></i> 主要里程碑
+                </h3>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    ${data.milestones.map(milestone => `
+                        <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <i class="fas fa-check-circle" style="color: ${data.color}; margin-right: 10px;"></i>
+                            ${milestone}
+                        </li>
+                    `).join('')}
+                </ul>
+                
+                ${year !== "new" ? `
+                    <button onclick="navigateToPlanet('${year}')" style="margin-top: 30px; width: 100%; padding: 15px; background: ${data.color}; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; transition: all 0.3s;">
+                        <i class="fas fa-rocket"></i> ${data._rawData && (data._rawData.nftMinted || (data._rawData.nft && data._rawData.nft.generated)) ? '查看年度NFT' : '进入年度空间'}
+                    </button>
+                ` : ''}
+                
+                ${year === "new" ? `
+                    <button onclick="window.location.href='home.html'" style="margin-top: 30px; width: 100%; padding: 15px; background: ${data.color}; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">
+                        <i class="fas fa-plus"></i> 创建新年度星球
+                    </button>
+                ` : ''}
+            `;
+        }
+
+        // 绘制轨迹线
+        function drawTrajectoryToPlanet(year) {
+            const trajectoryLine = document.getElementById('trajectoryLine');
+            const centralSun = document.getElementById('centralSun');
+            const planet = document.getElementById(`planet-${year}`);
+            
+            if (!planet) return;
+            
+            // 获取中央太阳和星球的位置
+            const sunRect = centralSun.getBoundingClientRect();
+            const planetRect = planet.getBoundingClientRect();
+            
+            // 计算相对位置
+            const sunX = sunRect.left + sunRect.width / 2;
+            const sunY = sunRect.top + sunRect.height / 2;
+            const planetX = planetRect.left + planetRect.width / 2;
+            const planetY = planetRect.top + planetRect.height / 2;
+            
+            // 计算距离和角度
+            const deltaX = planetX - sunX;
+            const deltaY = planetY - sunY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+            
+            // 设置轨迹线
+            trajectoryLine.style.width = `${distance}px`;
+            trajectoryLine.style.transform = `rotate(${angle}deg)`;
+            trajectoryLine.style.left = `${sunX}px`;
+            trajectoryLine.style.top = `${sunY}px`;
+            trajectoryLine.style.display = 'block';
+        }
+
+        // 更新轨道可见性
+        function updateOrbitVisibility() {
+            state.orbits.forEach(orbit => {
+                orbit.style.display = config.showOrbits ? 'block' : 'none';
+            });
+            
+            document.getElementById('toggleOrbitsBtn').innerHTML = 
+                config.showOrbits ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        }
+
+        // 更新轨迹线可见性
+        function updateTrajectoryVisibility() {
+            const trajectoryLine = document.getElementById('trajectoryLine');
+            trajectoryLine.style.display = config.showTrajectory ? 'block' : 'none';
+            
+            document.getElementById('toggleTrajectoryBtn').innerHTML = 
+                config.showTrajectory ? '<i class="fas fa-route"></i>' : '<i class="fas fa-route"></i>';
+            
+            // 如果开启轨迹线，绘制到当前选中星球
+            if (config.showTrajectory && state.selectedPlanet) {
+                drawTrajectoryToPlanet(state.selectedPlanet);
+            }
+        }
+
+        // 开始自动旋转
+        function startAutoRotation() {
+            if (state.rotationInterval) clearInterval(state.rotationInterval);
+            
+            state.rotationInterval = setInterval(() => {
+                state.rotationAngle += 0.5;
+                if (state.rotationAngle >= 360) state.rotationAngle = 0;
+                
+                // 应用旋转到所有轨道
+                state.orbits.forEach((orbit, index) => {
+                    const speedMultiplier = 1 + (index * 0.2);
+                    const rotation = (state.rotationAngle * speedMultiplier) % 360;
+                    orbit.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+                });
+            }, 50);
+            
+            document.getElementById('autoRotateBtn').innerHTML = '<i class="fas fa-pause"></i>';
+            config.autoRotate = true;
+        }
+
+        // 停止自动旋转
+        function stopAutoRotation() {
+            if (state.rotationInterval) {
+                clearInterval(state.rotationInterval);
+                state.rotationInterval = null;
+            }
+            
+            document.getElementById('autoRotateBtn').innerHTML = '<i class="fas fa-play"></i>';
+            config.autoRotate = false;
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 星球点击事件 - 使用智能路由
+            state.planets.forEach(planet => {
+                planet.element.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // 先显示选中状态
+                    selectPlanet(planet.year);
+                    // 然后智能路由
+                    navigateToPlanet(planet.year);
+                });
+            });
+            
+            // 中央太阳点击事件
+            document.getElementById('centralSun').addEventListener('click', () => {
+                // 重置视图到中心
+                const orbitSystem = document.getElementById('orbitSystem');
+                orbitSystem.style.transform = `translate(-50%, -50%)`;
+                
+                // 选择当前年份（如果有）
+                const data = window.finalPlanetData || finalPlanetData;
+                const currentYear = new Date().getFullYear().toString();
+                if (data[currentYear]) {
+                    selectPlanet(currentYear);
+                } else if (Object.keys(data).length > 0) {
+                    const firstYear = Object.keys(data).find(y => y !== "new");
+                    if (firstYear) selectPlanet(firstYear);
+                }
+                
+                // 显示通知
+                showNotification("☀️ 回到宇宙中心 · 你是所有星球的引力源");
+            });
+            
+            // 关闭信息面板
+            document.getElementById('closePanel').addEventListener('click', () => {
+                document.getElementById('infoPanel').classList.remove('open');
+            });
+            
+            // 控制按钮事件
+            document.getElementById('toggleOrbitsBtn').addEventListener('click', () => {
+                config.showOrbits = !config.showOrbits;
+                updateOrbitVisibility();
+            });
+            
+            document.getElementById('toggleTrajectoryBtn').addEventListener('click', () => {
+                config.showTrajectory = !config.showTrajectory;
+                updateTrajectoryVisibility();
+            });
+            
+            document.getElementById('autoRotateBtn').addEventListener('click', () => {
+                if (config.autoRotate) {
+                    stopAutoRotation();
+                } else {
+                    startAutoRotation();
+                }
+            });
+            
+            document.getElementById('zoomInBtn').addEventListener('click', () => {
+                config.zoomLevel = Math.min(config.zoomLevel + 0.1, 2);
+                updateZoom();
+            });
+            
+            document.getElementById('zoomOutBtn').addEventListener('click', () => {
+                config.zoomLevel = Math.max(config.zoomLevel - 0.1, 0.5);
+                updateZoom();
+            });
+            
+            document.getElementById('resetViewBtn').addEventListener('click', resetView);
+            
+            // 点击背景关闭信息面板
+            document.addEventListener('click', (e) => {
+                const infoPanel = document.getElementById('infoPanel');
+                if (!infoPanel.contains(e.target) && !e.target.closest('.planet')) {
+                    infoPanel.classList.remove('open');
+                }
+            });
+        }
+
+        // 更新缩放
+        function updateZoom() {
+            const orbitSystem = document.getElementById('orbitSystem');
+            orbitSystem.style.transform = `translate(-50%, -50%) scale(${config.zoomLevel})`;
+        }
+
+        // 重置视图
+        function resetView() {
+            // 重置缩放
+            config.zoomLevel = 1;
+            updateZoom();
+            
+            // 重置轨道位置
+            const orbitSystem = document.getElementById('orbitSystem');
+            orbitSystem.style.transform = `translate(-50%, -50%)`;
+            
+            // 停止自动旋转
+            stopAutoRotation();
+            
+            // 选择当前年份（如果有）
+            const data = window.finalPlanetData || finalPlanetData;
+            const currentYear = new Date().getFullYear().toString();
+            if (data[currentYear]) {
+                selectPlanet(currentYear);
+            } else if (Object.keys(data).length > 0) {
+                const firstYear = Object.keys(data).find(y => y !== "new");
+                if (firstYear) selectPlanet(firstYear);
+            }
+            
+            showNotification("🔄 视图已重置 · 回到初始状态");
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: rgba(20, 20, 40, 0.9);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                border-left: 4px solid var(--star-color);
+                z-index: 1000;
+                animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+                backdrop-filter: blur(10px);
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-info-circle" style="color: var(--star-color);"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 添加动画样式
+            if (!document.getElementById('notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideInRight {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes fadeOut {
+                        from { opacity: 1; }
+                        to { opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // 3秒后移除
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+        // navigateToPlanet已在模块顶部暴露到全局
+    </script>
+</body>
+</html>

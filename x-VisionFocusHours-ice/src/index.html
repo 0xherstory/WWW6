@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionFocus Hours · 专注时光愿景板</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="VisionFocus Hours - 用专注时光，点亮愿望星空。每年一颗星球，记录你的成长轨迹。">
+    <meta name="keywords" content="专注时光,愿景板,NFT,Web3,个人成长,目标管理">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(to bottom, #0a0e27, #1a1442, #2d1b5e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* 星空背景 */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .loading-container {
+            text-align: center;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: 56px;
+            font-family: 'Ma Shan Zheng', cursive;
+            background: linear-gradient(135deg, #FFD4B8, #FF9F7F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        .tagline {
+            font-size: 20px;
+            color: #FFD4B8;
+            margin-bottom: 10px;
+            animation: fadeIn 1.5s ease-in;
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            color: #CCCCCC;
+            margin-bottom: 40px;
+            animation: pulse 2s infinite;
+        }
+        
+        .progress-bar {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        .progress-fill {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #FF9F7F, #FFD4B8);
+            animation: loadProgress 1.5s ease-in-out forwards;
+        }
+        
+        .status-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #999;
+            min-height: 20px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
+        
+        /* 图标动画 */
+        .icon-wrapper {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 星空背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <div class="loading-container">
+        <div class="icon-wrapper">
+            🌍
+        </div>
+        <div class="logo">VisionFocus Hours</div>
+        <div class="tagline">用专注时光，点亮愿望星空</div>
+        <div class="loading-text">✨ 正在初始化宇宙...</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="status-text" id="statusText">检查环境...</div>
+    </div>
+    
+    <script type="module">
+        // 创建星空
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        createStars();
+        
+        const statusText = document.getElementById('statusText');
+        
+        // 模拟初始化步骤
+        const steps = [
+            { text: '检查浏览器环境...', delay: 300 },
+            { text: '加载应用配置...', delay: 500 },
+            { text: '准备数据存储...', delay: 400 },
+            { text: '初始化完成!', delay: 300 }
+        ];
+        
+        let currentStep = 0;
+        
+        function runNextStep() {
+            if (currentStep < steps.length) {
+                statusText.textContent = steps[currentStep].text;
+                currentStep++;
+                setTimeout(runNextStep, steps[currentStep - 1].delay);
+            } else {
+                // 所有步骤完成,跳转到首页
+                setTimeout(() => {
+                    window.location.href = 'pages/home.html';
+                }, 200);
+            }
+        }
+        
+        // 开始执行
+        setTimeout(runNextStep, 500);
+    </script>
+</body>
+</html>

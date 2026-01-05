@@ -1,0 +1,133 @@
+/**
+ * VisionFocus Hours - CSS变量定义
+ * 统一管理颜色、字体、间距等设计token
+ */
+
+:root {
+    /* ============ 颜色系统 ============ */
+    
+    /* 主色调 - 温暖橙色系 */
+    --color-primary: #FF9F7F;
+    --color-primary-light: #FFB89A;
+    --color-primary-dark: #FF8A5C;
+    
+    /* 辅助色 - 奶油橙 */
+    --color-secondary: #FFD4B8;
+    --color-secondary-light: #FFE4D0;
+    --color-secondary-dark: #FFC49F;
+    
+    /* 强调色 - 浅米色 */
+    --color-accent: #FFF4E6;
+    --color-accent-light: #FFFCF5;
+    --color-accent-dark: #FFE8CC;
+    
+    /* 背景色 - 宇宙深蓝 */
+    --color-bg-primary: #0a0e27;
+    --color-bg-secondary: #1a1442;
+    --color-bg-tertiary: #2d1b5e;
+    
+    /* 文字颜色 */
+    --color-text-primary: #333333;
+    --color-text-secondary: #666666;
+    --color-text-tertiary: #999999;
+    --color-text-light: #FFFFFF;
+    --color-text-muted: rgba(255, 255, 255, 0.6);
+    
+    /* 显化效果颜色 */
+    --color-manifestation-0: #8B9DC3;  /* 未显化 */
+    --color-manifestation-1: #FFE4B5;  /* 星光初现 */
+    --color-manifestation-2: #87CEEB;  /* 微光荧荧 */
+    --color-manifestation-3: #FFD700;  /* 金色流光 */
+    --color-manifestation-4: #FF1493;  /* 钻石七彩 */
+    
+    /* 状态颜色 */
+    --color-success: #52C41A;
+    --color-warning: #FAAD14;
+    --color-error: #F5222D;
+    --color-info: #1890FF;
+    
+    /* ============ 字体系统 ============ */
+    
+    --font-title: 'Ma Shan Zheng', cursive;
+    --font-display: 'ZCOOL QingKe HuangYou', cursive;
+    --font-body: 'Noto Serif SC', serif;
+    --font-mono: 'Courier New', monospace;
+    
+    /* 字体大小 */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 30px;
+    --font-size-4xl: 36px;
+    --font-size-5xl: 48px;
+    
+    /* 字重 */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    
+    /* 行高 */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.8;
+    
+    /* ============ 间距系统 ============ */
+    
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+    
+    /* ============ 圆角 ============ */
+    
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+    
+    /* ============ 阴影 ============ */
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+    --shadow-glow: 0 0 20px rgba(255, 159, 127, 0.5);
+    
+    /* ============ 过渡效果 ============ */
+    
+    --transition-fast: 150ms ease;
+    --transition-base: 300ms ease;
+    --transition-slow: 500ms ease;
+    
+    /* ============ Z-index层级 ============ */
+    
+    --z-index-dropdown: 1000;
+    --z-index-sticky: 1020;
+    --z-index-fixed: 1030;
+    --z-index-modal-backdrop: 1040;
+    --z-index-modal: 1050;
+    --z-index-popover: 1060;
+    --z-index-tooltip: 1070;
+    
+    /* ============ 布局 ============ */
+    
+    --container-max-width: 1200px;
+    --sidebar-width: 280px;
+    --header-height: 64px;
+    
+    /* ============ 动画时长 ============ */
+    
+    --duration-coin-drop: 1500ms;
+    --duration-page-transition: 500ms;
+    --duration-manifestation: 2000ms;
+}
+
