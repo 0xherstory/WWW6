@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External 3D Canvas</title>
+    <style>
+        body { margin: 0; background: #0a0a0a; color: white; font-family: monospace; overflow: hidden; }
+        .canvas-area { width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); }
+        .controls { position: fixed; bottom: 30px; display: flex; gap: 20px; z-index: 10; }
+        button { background: #8b5cf6; color: white; border: none; padding: 12px 24px; font-family: monospace; font-size: 16px; cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+        button:hover { background: #7c3aed; transform: translateY(-2px); }
+        button.secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; }
+        .cube { width: 200px; height: 200px; background: rgba(139, 92, 246, 0.2); border: 2px solid #8b5cf6; transform: rotateX(45deg) rotateY(45deg); animation: spin 10s infinite linear; box-shadow: 0 0 50px rgba(139, 92, 246, 0.4); }
+        @keyframes spin { 0% { transform: rotateX(45deg) rotateY(45deg); } 100% { transform: rotateX(45deg) rotateY(405deg); } }
+    </style>
+</head>
+<body>
+    <div class="canvas-area">
+        <div class="grid"></div>
+        <div class="cube" id="art-object"></div>
+        <h1 style="margin-top: 50px; text-transform: uppercase; letter-spacing: 2px;">3D Co-Creation Environment</h1>
+        <p style="opacity: 0.5;">Project ID: <span id="pid">Loading...</span></p>
+        
+        <div class="controls">
+            <button class="secondary" onclick="randomize()">Randomize Parameters</button>
+            <button onclick="finish()">Complete & Mint</button>
+        </div>
+    </div>
+
+    <script>
+        // Parse params
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById('pid').innerText = urlParams.get('projectID') || 'Unknown';
+
+        function randomize() {
+            const cube = document.getElementById('art-object');
+            const hue = Math.floor(Math.random() * 360);
+            cube.style.borderColor = `hsl(${hue}, 80%, 60%)`;
+            cube.style.background = `hsla(${hue}, 80%, 60%, 0.2)`;
+            cube.style.boxShadow = `0 0 50px hsla(${hue}, 80%, 60%, 0.4)`;
+        }
+
+        function finish() {
+            // Mock generating a screenshot (base64)
+            // In a real app, this would be canvas.toDataURL()
+            // We'll use a solid color generic placeholder for the mock response
+            const hue = Math.floor(Math.random() * 360);
+            const mockImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="; // 1x1 pixel
+
+            const message = {
+                type: 'COMPLETE',
+                image: mockImage, // In reality, this would be the actual screenshot
+                log: {
+                    actions: ['rotate', 'color_change', 'scale'],
+                    timestamp: Date.now(),
+                    creator: urlParams.get('userWallet')
+                }
+            };
+
+            // Post message to parent
+            if (window.opener) {
+                window.opener.postMessage(message, "*");
+                window.close();
+            } else {
+                window.parent.postMessage(message, "*");
+            }
+        }
+    </script>
+</body>
+</html>

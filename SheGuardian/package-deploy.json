@@ -1,0 +1,28 @@
+{
+  "name": "emergency-guardian-deploy",
+  "version": "1.0.0",
+  "description": "Emergency Guardian Production Deployment Server",
+  "main": "deploy-server.js",
+  "scripts": {
+    "start": "node deploy-server.js",
+    "deploy": "npm run build:frontend && npm start",
+    "build:frontend": "cd frontend && npm run build",
+    "health": "curl -f http://localhost:3000/health || exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "emergency-guardian",
+    "blockchain",
+    "web3",
+    "react",
+    "production"
+  ],
+  "author": "Emergency Guardian Team",
+  "license": "MIT"
+}

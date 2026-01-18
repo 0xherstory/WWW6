@@ -1,0 +1,1106 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
+    color: #333;
+    line-height: 1.6;
+    overflow: hidden;
+}
+
+/* 主界面 - 仿底特律变人流程图 */
+.flowchart-page {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
+}
+
+/* 顶部进度条 - 仿游戏风格 */
+.progress-bar {
+    position: relative;
+    height: 50px;
+    background: linear-gradient(90deg, #2c3e50, #34495e);
+    border-bottom: 3px solid #4A90E2;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4A90E2, #357ABD);
+    transition: width 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 故事标题 - 游戏风格 */
+.story-header {
+    position: absolute;
+    top: 80px;
+    left: 50px;
+    z-index: 10;
+    color: #2c3e50;
+}
+
+.story-title {
+    font-size: 42px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.story-subtitle {
+    font-size: 18px;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+/* 流程图容器 */
+.flowchart-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 120px);
+    overflow: auto;
+    padding: 20px;
+}
+
+/* 背景网格 - 更细致的网格 */
+.grid-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(52, 73, 94, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(52, 73, 94, 0.1) 1px, transparent 1px);
+    background-size: 25px 25px;
+    z-index: 1;
+}
+
+/* 连接线 - 游戏风格 */
+.connection-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.connection-lines line {
+    stroke: #4A90E2;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 2px rgba(74, 144, 226, 0.3));
+}
+
+.connection-lines circle {
+    fill: #4A90E2;
+    stroke: #357ABD;
+    stroke-width: 1;
+    filter: drop-shadow(0 0 3px rgba(74, 144, 226, 0.5));
+}
+
+/* 章节节点 - 仿游戏节点样式 */
+.story-node {
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.story-node:hover {
+    transform: scale(1.05);
+    z-index: 20;
+}
+
+.node-content {
+    background: linear-gradient(135deg, #4A90E2, #357ABD);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    width: 160px;
+    height: 70px;
+    text-align: left;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 2px solid #357ABD;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+/* 起始节点 */
+.start-node .node-content {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    border-color: #229954;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(39, 174, 96, 0.4);
+}
+
+/* 正史节点 */
+.canon-node .node-content {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-color: #c0392b;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(231, 76, 60, 0.4);
+}
+
+/* 续写节点 */
+.add-node .node-content {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    border-color: #8e44ad;
+    border-style: dashed;
+    border-width: 3px;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(155, 89, 182, 0.4);
+}
+
+.node-title {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.node-author {
+    font-size: 11px;
+    opacity: 0.9;
+    line-height: 1;
+    font-style: italic;
+}
+
+.canon-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* 续写节点特殊样式 */
+.add-node .add-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    animation: nestPulse 2s ease-in-out infinite;
+}
+
+@keyframes nestPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        filter: brightness(1);
+    }
+    50% { 
+        transform: scale(1.1); 
+        filter: brightness(1.2) hue-rotate(15deg);
+    }
+}
+
+.bird-animation {
+    position: absolute;
+    top: -25px;
+    right: -35px;
+    font-size: 16px;
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+.branch-animation {
+    position: absolute;
+    top: -15px;
+    left: -25px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.add-node:hover .bird-animation {
+    right: -10px;
+    opacity: 1;
+    animation: birdBuildingNest 1.2s ease-in-out;
+}
+
+.add-node:hover .branch-animation {
+    left: -5px;
+    opacity: 1;
+    animation: branchGrowForNest 0.8s ease-in-out;
+}
+
+@keyframes birdBuildingNest {
+    0% {
+        transform: translateX(-30px) translateY(-10px) rotate(-20deg);
+        opacity: 0;
+    }
+    25% {
+        transform: translateX(-15px) translateY(-5px) rotate(-10deg);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translateX(-5px) translateY(0) rotate(5deg);
+        opacity: 0.9;
+    }
+    75% {
+        transform: translateX(0) translateY(2px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes branchGrowForNest {
+    0% {
+        transform: scale(0.3) rotate(-45deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(0.8) rotate(-20deg);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+/* 底部控制栏 - 仿游戏界面 */
+.bottom-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(90deg, #2c3e50, #34495e);
+    border-top: 2px solid #4A90E2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn {
+    background: linear-gradient(135deg, #34495e, #2c3e50);
+    color: white;
+    border: 1px solid #4A90E2;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.control-btn:hover {
+    background: linear-gradient(135deg, #4A90E2, #357ABD);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(74, 144, 226, 0.4);
+}
+
+/* 弹窗样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #f5f5f0;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-header h3 {
+    color: #374151;
+    font-size: 1.5em;
+}
+
+.close {
+    color: #9ca3af;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #ef4444;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.chapter-content {
+    line-height: 1.8;
+    font-size: 1.1em;
+    color: #374151;
+    margin-bottom: 25px;
+}
+
+.chapter-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.like-btn {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+}
+
+.write-btn {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.leaf-icon {
+    font-size: 1.2em;
+}
+
+/* 续写界面样式 */
+.write-interface {
+    max-width: 100%;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+.form-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.6;
+    transition: border-color 0.3s ease;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+.tag-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-option {
+    background: #ecf0f1;
+    color: #7f8c8d;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.tag-option:hover {
+    background: #d5dbdb;
+    transform: translateY(-1px);
+}
+
+.tag-option.selected {
+    background: #4A90E2 !important;
+    color: white !important;
+}
+
+/* 小鸟搭窝动画区域 */
+.bird-nest-animation {
+    background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.flying-bird {
+    font-size: 24px;
+    display: inline-block;
+    margin-right: 10px;
+    animation: birdFly 2s ease-in-out infinite;
+}
+
+.branch-building {
+    font-size: 20px;
+    display: inline-block;
+    margin-left: 10px;
+    animation: branchGrow 1.5s ease-in-out infinite;
+}
+
+.nest-text {
+    color: #666;
+    font-style: italic;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+@keyframes birdFly {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-8px) rotate(-5deg);
+    }
+    50% {
+        transform: translateY(-12px) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-8px) rotate(5deg);
+    }
+}
+
+@keyframes branchGrow {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    border-top: 2px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    background: white;
+    border-radius: 0 0 15px 15px;
+}
+
+.modal-action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.write-continue {
+    background: #4A90E2;
+    color: white;
+}
+
+.modal-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .story-title {
+        font-size: 32px;
+    }
+    
+    .node-content {
+        width: 140px;
+        height: 60px;
+        padding: 8px 12px;
+    }
+    
+    .node-title {
+        font-size: 12px;
+    }
+    
+    .node-author {
+        font-size: 10px;
+    }
+    
+    .bottom-controls {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 10px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}
+/* Web3 和 NFT 信息样式 */
+.web3-info {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: 2px solid #3498db;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+}
+
+.nft-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.nft-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.nft-badge.canon {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.nft-badge.alt {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.nft-details {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nft-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2c3e50;
+    background: rgba(52, 152, 219, 0.1);
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.vote-count {
+    font-size: 12px;
+    color: #7f8c8d;
+    font-weight: 600;
+}
+
+.blockchain-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #bdc3c7;
+}
+
+.chain-badge {
+    font-size: 11px;
+    background: #34495e;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.royalty-info {
+    font-size: 11px;
+    color: #27ae60;
+    font-weight: 600;
+}
+
+/* 投票竞技场样式 */
+.voting-arena {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.voting-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.voting-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.voting-countdown {
+    font-size: 14px;
+    color: #f39c12;
+    font-weight: 600;
+}
+
+.candidate-list {
+    display: grid;
+    gap: 15px;
+}
+
+.candidate-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.candidate-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.candidate-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.candidate-title {
+    font-weight: 600;
+    color: #ecf0f1;
+}
+
+.candidate-votes {
+    background: #3498db;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.candidate-author {
+    font-size: 12px;
+    color: #bdc3c7;
+    margin-bottom: 8px;
+}
+
+.candidate-excerpt {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #ecf0f1;
+    margin-bottom: 10px;
+}
+
+.vote-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.vote-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.vote-btn:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: scale(1.05);
+}
+
+.read-full-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.read-full-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1f5f8b);
+}
+
+/* 作者声誉系统 */
+.author-reputation {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-left: 4px solid #3498db;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.reputation-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+}
+
+.reputation-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.reputation-number {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.reputation-label {
+    color: #7f8c8d;
+    font-size: 10px;
+}
+
+/* 分支历史追踪 */
+.branch-lineage {
+    background: rgba(52, 152, 219, 0.05);
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.lineage-path {
+    font-size: 11px;
+    color: #7f8c8d;
+    font-family: monospace;
+}
+
+.lineage-node {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0 2px;
+    font-size: 10px;
+}
+
+/* 收益分润显示 */
+.royalty-breakdown {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 12px;
+}
+
+.royalty-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 0;
+}
+
+.royalty-percentage {
+    font-weight: 700;
+}
+/* 作者档案样式 */
+.author-profile {
+    padding: 20px 0;
+}
+
+.author-bio {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.author-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.author-badge {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+/* 投票确认弹窗样式 */
+.vote-confirmation {
+    text-align: center;
+    padding: 20px;
+}
+
+.vote-info {
+    margin-bottom: 20px;
+}
+
+.vote-details {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.vote-details > div {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.vote-weight {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.gas-fee {
+    color: #e67e22;
+    font-weight: 600;
+}
+
+.vote-reward {
+    color: #3498db;
+    font-weight: 600;
+}
+
+.wallet-connect {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.wallet-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.wallet-icon {
+    font-size: 16px;
+}
+
+.wallet-address {
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.wallet-balance {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+/* 候选分支卡片增强 */
+.candidate-concept {
+    font-size: 11px;
+    color: #f39c12;
+    font-style: italic;
+    margin: 8px 0;
+    padding: 5px 8px;
+    background: rgba(243, 156, 18, 0.1);
+    border-radius: 6px;
+}
+
+.voting-stats {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.total-votes {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.voting-power {
+    font-size: 12px;
+    color: #f39c12;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .nft-info {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .nft-details {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .candidate-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .reputation-stats {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .wallet-status {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+    
+    .vote-details > div {
+        font-size: 12px;
+    }
+}
+
+/* 动画增强 */
+.candidate-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nft-badge {
+    animation: badgeGlow 2s ease-in-out infinite;
+}
+
+@keyframes badgeGlow {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(52, 152, 219, 0.6);
+    }
+}
+
+/* 加载状态 */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

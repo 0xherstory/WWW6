@@ -1,0 +1,40 @@
+{
+  "name": "story-universe-contracts",
+  "version": "1.0.0",
+  "description": "分叉叙事宇宙 - Web3智能合约系统",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run deploy.js --network localhost",
+    "deploy:sepolia": "hardhat run deploy.js --network sepolia",
+    "deploy:mumbai": "hardhat run deploy.js --network mumbai",
+    "deploy:polygon": "hardhat run deploy.js --network polygon",
+    "verify": "hardhat verify",
+    "node": "hardhat node",
+    "clean": "hardhat clean"
+  },
+  "keywords": [
+    "web3",
+    "nft",
+    "ethereum",
+    "solidity",
+    "smart-contracts",
+    "story",
+    "copyright"
+  ],
+  "author": "Story Universe Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "hardhat": "^2.19.0",
+    "hardhat-gas-reporter": "^1.0.9"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.0"
+  }
+}

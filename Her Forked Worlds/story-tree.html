@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>故事流程图 - 分叉叙事宇宙</title>
+    <link rel="stylesheet" href="story-tree.css">
+</head>
+<body>
+    <!-- 故事流程图页面 -->
+    <div class="flowchart-page">
+        <!-- 顶部导航栏 -->
+        <div class="top-navbar">
+            <button class="back-btn" onclick="window.location.href='./universe-hub/universe-hub.html'">
+                ← 返回主页
+            </button>
+            <div class="title-section">
+                <h1 class="story-title" id="storyTitle">加载中...</h1>
+                <!-- 作者信息区域 -->
+                <div class="story-author-info" id="storyAuthorInfo" style="display: none;">
+                    <div class="story-author-avatar" id="storyAuthorAvatar" onclick="showStoryAuthorCard()">作</div>
+                    <span class="story-author-name" id="storyAuthorName" onclick="showStoryAuthorCard()">作者名</span>
+                </div>
+            </div>
+            <div class="placeholder"></div>
+        </div>
+
+        <!-- 顶部统计信息栏 -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-icon">👥</span>
+                <span class="stat-label">参与者</span>
+                <span class="stat-value" id="participantsCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📖</span>
+                <span class="stat-label">章节数</span>
+                <span class="stat-value" id="chaptersCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">👁️</span>
+                <span class="stat-label">总阅读</span>
+                <span class="stat-value" id="totalViews">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">💰</span>
+                <span class="stat-label">总收益</span>
+                <span class="stat-value" id="totalRevenue">0 ETH</span>
+            </div>
+        </div>
+
+        <!-- 流程图容器 -->
+        <div class="flowchart-container">
+            <!-- 背景网格 -->
+            <div class="grid-background"></div>
+
+            <!-- 连接线 SVG -->
+            <svg class="connection-lines" id="connectionSvg" width="100%" height="100%">
+                <!-- 连接线将通过JavaScript动态生成 -->
+            </svg>
+
+            <!-- 节点容器 -->
+            <div id="nodesContainer">
+                <!-- 节点将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 底部控制栏 -->
+        <div class="bottom-controls">
+            <button class="control-btn" onclick="window.location.href='./universe-hub/universe-hub.html'">
+                🏠 返回主页
+            </button>
+            <button class="control-btn" onclick="window.location.href='./www6demo-4/following-page.html'">
+                ⭐ 我的关注
+            </button>
+            <button class="control-btn">📊 统计信息</button>
+            <button class="control-btn">💰 收益中心</button>
+            <button class="control-btn">⚙️ 设置</button>
+        </div>
+    </div>
+
+    <!-- 章节卡片弹窗 -->
+    <div class="modal" id="chapterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="chapterTitle">章节标题</h3>
+                <span class="close" onclick="closeChapterModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="chapter-info">
+                    <span class="chapter-author" id="chapterAuthor">作者</span>
+                    <span class="chapter-stats" id="chapterStats">👁️ 0 阅读 · 🍃 0 点赞</span>
+                </div>
+                <div class="chapter-preview" id="chapterPreview">
+                    章节简介...
+                </div>
+                <div class="chapter-actions">
+                    <button class="action-btn subscribe-btn" id="subscribeBtn" onclick="toggleSubscribe()">
+                        <span class="btn-icon">⭐</span>
+                        <span class="btn-text">订阅</span>
+                    </button>
+
+                    <button class="action-btn read-btn" onclick="showFullContent()">
+                        <span class="btn-icon">📖</span>
+                        <span class="btn-text">阅读</span>
+                    </button>
+
+                    <button class="action-btn like-btn" id="likeBtn" onclick="toggleLike()">
+                        <span class="btn-icon">🍃</span>
+                        <span class="btn-text like-count" id="likeCount">0</span>
+                    </button>
+
+                    <button class="action-btn write-btn" onclick="showWriteModal()">
+                        <span class="btn-icon">✍️</span>
+                        <span class="btn-text">续写</span>
+                    </button>
+
+                    <button class="action-btn next-btn" onclick="showNextChapters()">
+                        <span class="btn-text">下一章</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全文阅读弹窗 -->
+    <div class="modal" id="readModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="readTitle">章节标题</h3>
+                <span class="close" onclick="closeReadModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="full-content" id="fullContent">
+                    加载中...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 续写弹窗 -->
+    <div class="modal" id="writeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✍️ 续写新章节</h3>
+                <span class="close" onclick="closeWriteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="write-interface">
+                    <div class="form-group">
+                        <label>章节标题</label>
+                        <input type="text" id="writeTitle" class="form-input" placeholder="为你的章节起个标题">
+                    </div>
+
+                    <div class="form-group">
+                        <label>关键词标签（用逗号分隔）</label>
+                        <input type="text" id="writeTags" class="form-input" placeholder="例如：悬疑,转折,高潮">
+                    </div>
+
+                    <div class="form-group">
+                        <label>章节内容</label>
+                        <textarea id="writeContent" class="form-textarea" placeholder="在这里开始你的创作..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-action-btn" onclick="closeWriteModal()">取消</button>
+                <button class="modal-action-btn submit-btn" onclick="submitChapter()">🚀 提交章节</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 下一章列表弹窗 -->
+    <div class="modal" id="nextModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📚 下一章节列表</h3>
+                <span class="close" onclick="closeNextModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="sort-info">
+                    按点赞数量排序
+                </div>
+                <div class="next-chapters-list" id="nextChaptersList">
+                    <!-- 将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 作者卡片弹窗 -->
+    <div class="modal" id="authorModal">
+        <div class="modal-content author-card-modal">
+            <div class="modal-header">
+                <h3>作者信息</h3>
+                <span class="close" onclick="closeAuthorModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="author-card-content">
+                    <div class="author-card-avatar" id="authorCardAvatar">作</div>
+                    <h4 class="author-card-name" id="authorCardName">作者名</h4>
+                    <p class="author-card-bio" id="authorCardBio">这位作者很神秘，暂未留下任何简介。</p>
+                    <button class="action-btn follow-btn" id="followBtn" onclick="toggleFollow()">
+                        <span class="btn-icon">➕</span>
+                        <span class="btn-text">关注</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="story-tree.js"></script>
+</body>
+</html>

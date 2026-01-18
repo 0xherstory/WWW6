@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 - 小说创作网站</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 返回主页按钮 -->
+    <button class="back-to-home" onclick="window.location.href='../universe-hub/universe-hub.html'">
+        <span>←</span>
+        <span>返回主页</span>
+    </button>
+
+    <div class="container">
+        <!-- 固定顶部导航栏 -->
+        <div class="fixed-nav">
+            <button class="nav-btn active" id="creationsBtn">我创作的</button>
+            <button class="nav-btn" id="earningsBtn">我的收益</button>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 我创作的内容 -->
+            <div class="tab-content active" id="creationsContent">
+                <div class="story-list">
+                    <div class="story-item" data-story-id="3">
+                        <div class="story-cover story-cover-emoji">
+                            <span class="cover-emoji">🚀</span>
+                            <div class="cover-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        </div>
+                        <div class="story-info">
+                            <h3 class="story-title">星际殖民纪元</h3>
+                            <p class="story-desc">人类第一艘殖民飞船准备起航，开启星际探索之旅...</p>
+                            <div class="story-stats">
+                                <span class="stat">阅读量: 1.56万</span>
+                                <span class="stat">章节: 1</span>
+                                <span class="status">连载中</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-item" data-story-id="1">
+                        <div class="story-cover story-cover-emoji">
+                            <span class="cover-emoji">🌃</span>
+                            <div class="cover-gradient" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                        </div>
+                        <div class="story-info">
+                            <h3 class="story-title">赛博朋克 2177</h3>
+                            <p class="story-desc">2177年新东京，赛博侦探追踪记忆贩卖者的踪迹...</p>
+                            <div class="story-stats">
+                                <span class="stat">阅读量: 4.47万</span>
+                                <span class="stat">章节: 4</span>
+                                <span class="status">连载中</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-item" data-story-id="4">
+                        <div class="story-cover story-cover-emoji">
+                            <span class="cover-emoji">🌹</span>
+                            <div class="cover-gradient" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                        </div>
+                        <div class="story-info">
+                            <h3 class="story-title">午后玫瑰</h3>
+                            <p class="story-desc">一首诗歌引发的创作，关于生命、时间与存在...</p>
+                            <div class="story-stats">
+                                <span class="stat">阅读量: 5.74万</span>
+                                <span class="stat">章节: 8</span>
+                                <span class="status">连载中</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的收益内容 -->
+            <div class="tab-content" id="earningsContent">
+                <div class="earnings-grid">
+                    <div class="earnings-card">
+                        <div class="card-header">
+                            <h3>总收益</h3>
+                            <div class="coin-icon">💰</div>
+                        </div>
+                        <div class="earnings-amount">1,250</div>
+                        <div class="earnings-label">代币</div>
+                    </div>
+
+                    <div class="earnings-card">
+                        <div class="card-header">
+                            <h3>本月收益</h3>
+                            <div class="coin-icon">📈</div>
+                        </div>
+                        <div class="earnings-amount">320</div>
+                        <div class="earnings-label">代币</div>
+                    </div>
+
+                    <div class="earnings-card">
+                        <div class="card-header">
+                            <h3>昨日收益</h3>
+                            <div class="coin-icon">⭐</div>
+                        </div>
+                        <div class="earnings-amount">45</div>
+                        <div class="earnings-label">代币</div>
+                    </div>
+
+                    <div class="earnings-card">
+                        <div class="card-header">
+                            <h3>待提现</h3>
+                            <div class="coin-icon">💎</div>
+                        </div>
+                        <div class="earnings-amount">890</div>
+                        <div class="earnings-label">代币</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

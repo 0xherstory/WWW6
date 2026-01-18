@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说网站 - 登录</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <h1>📚 小说阅读</h1>
+                <p>连接钱包开始阅读之旅</p>
+            </div>
+            
+            <div class="wallet-options">
+                <button class="wallet-btn" id="metamask-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+                    <span>MetaMask</span>
+                </button>
+                
+                <button class="wallet-btn" id="walletconnect-btn">
+                    <div class="wallet-icon">🔗</div>
+                    <span>WalletConnect</span>
+                </button>
+                
+                <button class="wallet-btn" id="coinbase-btn">
+                    <div class="wallet-icon">🔵</div>
+                    <span>Coinbase Wallet</span>
+                </button>
+            </div>
+            
+            <div class="status" id="status"></div>
+            
+            <div class="footer">
+                <p>首次登录将自动创建账户</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 成功登录弹窗 -->
+    <div class="success-modal" id="success-modal">
+        <div class="success-modal-content">
+            <div class="success-icon">✅</div>
+            <div class="success-title">登录成功！</div>
+            <div class="success-message">钱包连接成功，欢迎来到小说网站</div>
+            <div class="wallet-address-display" id="modal-wallet-address"></div>
+            <div class="countdown" id="countdown">3秒后自动跳转...</div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

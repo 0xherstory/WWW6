@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe Hub - 宇宙故事树</title>
+    <link rel="stylesheet" href="universe-hub.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="top-navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="navbar-left">
+                    <!-- 可以放置 logo 或其他内容 -->
+                </div>
+                <div class="navbar-right">
+                    <button class="nav-btn" onclick="window.location.href='../www6demo-4/following-page.html'">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 2L10.09 6.26L15 7L11 10.74L12 16L8 13.27L4 16L5 10.74L1 7L5.91 6.26L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>关注</span>
+                    </button>
+                    <button class="nav-btn" onclick="goToProfile()">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M13 14V12.6667C13 11.9594 12.719 11.2811 12.219 10.781C11.7189 10.281 11.0406 10 10.3333 10H5.66667C4.95942 10 4.28115 10.281 3.78105 10.781C3.28095 11.2811 3 11.9594 3 12.6667V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="8" cy="5.33333" r="2.66667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>我的</span>
+                    </button>
+                    
+                    <!-- 玩法说明模块 -->
+                    <div class="help-tooltip" id="helpTooltip">
+                        <div class="help-trigger">
+                            <span class="help-icon">ⓘ</span>
+                            <span class="help-text">玩法说明</span>
+                        </div>
+                        <div class="help-card glass-card" id="helpCard">
+                            <div class="help-content">
+                                <div class="help-section">
+                                    <h4>什么是分叉宇宙</h4>
+                                    <p>每个故事在关键节点都可以分叉，创造出不同的世界线。你可以提出新的剧情走向，让故事朝着你想象的方向发展。</p>
+                                </div>
+                                <div class="help-section">
+                                    <h4>什么是 Canon</h4>
+                                    <p>Canon 是社区投票选出的"正典"故事线，代表了大多数参与者认可的剧情发展。每个宇宙都有自己独特的 Canon 路径。</p>
+                                </div>
+                                <div class="help-section">
+                                    <h4>我可以做什么</h4>
+                                    <p>阅读现有故事、提交分叉提案、参与投票决定 Canon 走向，或者创建属于你自己的全新故事宇宙。</p>
+                                </div>
+                            </div>
+                            <div class="help-footer">
+                                <a href="#" class="help-link" onclick="viewFullDocs()">查看完整玩法文档 →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- 顶部区域 -->
+    <header class="hero-section">
+
+        <div class="container">
+            <div class="hero-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="30" cy="30" r="28" stroke="url(#gradient1)" stroke-width="2" fill="none"/>
+                            <circle cx="30" cy="30" r="20" stroke="url(#gradient2)" stroke-width="1.5" fill="none"/>
+                            <circle cx="30" cy="30" r="12" stroke="url(#gradient3)" stroke-width="1" fill="none"/>
+                            <circle cx="30" cy="30" r="4" fill="url(#gradient4)"/>
+                            <defs>
+                                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#8B5CF6"/>
+                                    <stop offset="100%" style="stop-color:#EC4899"/>
+                                </linearGradient>
+                                <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#A855F7"/>
+                                    <stop offset="100%" style="stop-color:#F472B6"/>
+                                </linearGradient>
+                                <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#C084FC"/>
+                                    <stop offset="100%" style="stop-color:#F9A8D4"/>
+                                </linearGradient>
+                                <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#DDD6FE"/>
+                                    <stop offset="100%" style="stop-color:#FBCFE8"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h1 class="title">宇宙故事树</h1>
+                </div>
+                <p class="slogan">探索无限可能的故事宇宙，参与创造属于你的 Canon</p>
+                <p class="subtitle">在这里，每个选择都会分叉出新的世界线，每个故事都在等待你的参与</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- 创建新宇宙卡片 -->
+    <section class="create-section" id="createSection">
+        <div class="container">
+            <div class="create-card glass-card">
+                <div class="create-header">
+                    <h3>创建新的故事宇宙</h3>
+                    <p class="create-subtitle">设置世界观、参与条件、分叉权限与收益规则</p>
+                </div>
+                <div class="create-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">🔐</span>
+                        <span>进入条件（人数 / NFT / Token 权限）</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🌌</span>
+                        <span>宇宙元数据（标题、关键词、封面）</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📖</span>
+                        <span>创世章节设定</span>
+                    </div>
+                </div>
+                <button class="create-btn" onclick="createUniverse()">
+                    <span>Create Universe</span>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 故事宇宙卡片列表 -->
+    <main class="main-content">
+        <div class="container">
+            <section class="universe-grid">
+                <h2 class="section-title">探索故事宇宙</h2>
+                <div class="grid" id="universeGrid">
+                    <!-- 卡片将通过 JavaScript 动态生成 -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Create Universe 弹窗 -->
+    <div class="modal" id="createUniverseModal">
+        <div class="modal-content create-universe-modal">
+            <div class="modal-header">
+                <h2>🌌 创建新的故事宇宙</h2>
+                <button class="close-btn" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createUniverseForm">
+                    <!-- 宇宙基本信息 -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="icon">📖</span>
+                            基本信息
+                        </h3>
+                        <div class="form-group">
+                            <label>故事标题</label>
+                            <input type="text" id="universeTitle" class="form-input" placeholder="为你的宇宙起个名字" required>
+                        </div>
+                        <div class="form-group">
+                            <label>故事简介</label>
+                            <textarea id="universeDesc" class="form-textarea" placeholder="简要描述这个故事宇宙的世界观..." rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>标签分类</label>
+                            <div class="tag-selector">
+                                <button type="button" class="tag-btn" onclick="toggleTag(this, 'Sci-fi')">科幻</button>
+                                <button type="button" class="tag-btn" onclick="toggleTag(this, 'Fantasy')">奇幻</button>
+                                <button type="button" class="tag-btn" onclick="toggleTag(this, 'Romance')">浪漫</button>
+                                <button type="button" class="tag-btn" onclick="toggleTag(this, 'Mystery')">悬疑</button>
+                                <button type="button" class="tag-btn" onclick="toggleTag(this, 'Horror')">恐怖</button>
+                                <button type="button" class="tag-btn" onclick="toggleTag(this, 'Adventure')">冒险</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 世界观设定 -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="icon">🌌</span>
+                            世界观设定
+                        </h3>
+                        <div class="form-group">
+                            <label>创世章节</label>
+                            <textarea id="genesisChapter" class="form-textarea" placeholder="在这里开始你的第一章..." rows="6" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 参与条件 -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="icon">🔐</span>
+                            参与条件
+                        </h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="radio" name="accessType" value="public" checked> 公开（任何人可参与）
+                            </label>
+                            <label>
+                                <input type="radio" name="accessType" value="token"> 需持有 Token
+                            </label>
+                            <label>
+                                <input type="radio" name="accessType" value="nft"> 需持有 NFT
+                            </label>
+                        </div>
+                        <div class="form-group" id="tokenAmountGroup" style="display: none;">
+                            <label>所需 Token 数量</label>
+                            <input type="number" id="tokenAmount" class="form-input" placeholder="100" min="0">
+                        </div>
+                    </div>
+
+                    <!-- 分叉权限 -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="icon">🌿</span>
+                            分叉权限
+                        </h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="forkPermission" checked> 允许任何参与者创建分支
+                            </label>
+                            <label>
+                                <input type="checkbox" name="votingRequired"> 新分支需要投票确认
+                            </label>
+                            <label>
+                                <input type="checkbox" name="mintCost"> 创建分支需支付铸造费用
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>铸造费用（FORK Token）</label>
+                            <input type="number" id="mintCost" class="form-input" placeholder="50" min="0" value="50">
+                        </div>
+                    </div>
+
+                    <!-- 收益规则 -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="icon">💰</span>
+                            收益规则
+                        </h3>
+                        <div class="form-group">
+                            <label>创作者版税（%）</label>
+                            <input type="number" id="royalty" class="form-input" placeholder="5" min="0" max="20" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label>后代分支分润（%）</label>
+                            <input type="number" id="descendantShare" class="form-input" placeholder="2" min="0" max="10" value="2">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">取消</button>
+                <button type="submit" form="createUniverseForm" class="btn btn-primary">
+                    <span>🚀 创建宇宙</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="universe-hub.js"></script>
+</body>
+</html>

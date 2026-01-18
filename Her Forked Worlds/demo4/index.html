@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分叉叙事宇宙 - Web3创作平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 作者界面 -->
+    <div class="author-page" id="authorPage">
+        <div class="author-header">
+            <div class="author-avatar">👩‍🎨</div>
+            <div class="author-info">
+                <h1 class="author-name">海大人</h1>
+                <p class="author-bio">诗意创作者，专注于现代诗歌和哲学思辨。在Web3世界中探索文字的无限可能。</p>
+                <div class="author-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">作品</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2.5k</span>
+                        <span class="stat-label">关注者</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5.2</span>
+                        <span class="stat-label">ETH收益</span>
+                    </div>
+                </div>
+            </div>
+            <div class="author-actions">
+                <button class="follow-btn">关注</button>
+                <button class="tip-btn">打赏</button>
+            </div>
+        </div>
+
+        <div class="works-section">
+            <h2 class="section-title">创作作品</h2>
+            <div class="works-grid">
+                <div class="work-card" onclick="enterStoryCard()">
+                    <div class="work-cover">
+                        <div class="work-emoji">🌹</div>
+                        <div class="work-stats">
+                            <span class="views">👁️ 12.3k</span>
+                            <span class="likes">🍃 1.2k</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">午后玫瑰</h3>
+                        <p class="work-desc">一首关于时间、生命与意义的现代诗</p>
+                        <div class="work-tags">
+                            <span class="tag">诗歌</span>
+                            <span class="tag">哲思</span>
+                            <span class="tag">意象</span>
+                        </div>
+                        <div class="work-meta">
+                            <span class="chapters">5章节</span>
+                            <span class="branches">23分支</span>
+                            <span class="nft-price">0.5 ETH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <div class="work-cover">
+                        <div class="work-emoji">🌙</div>
+                        <div class="work-stats">
+                            <span class="views">👁️ 8.7k</span>
+                            <span class="likes">🍃 890</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">夜的独白</h3>
+                        <p class="work-desc">探索内心深处的孤独与思考</p>
+                        <div class="work-tags">
+                            <span class="tag">诗歌</span>
+                            <span class="tag">情感</span>
+                        </div>
+                        <div class="work-meta">
+                            <span class="chapters">3章节</span>
+                            <span class="branches">15分支</span>
+                            <span class="nft-price">0.3 ETH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <div class="work-cover">
+                        <div class="work-emoji">🦋</div>
+                        <div class="work-stats">
+                            <span class="views">👁️ 15.2k</span>
+                            <span class="likes">🍃 2.1k</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">蝴蝶效应</h3>
+                        <p class="work-desc">微小选择如何改变整个世界</p>
+                        <div class="work-tags">
+                            <span class="tag">科幻</span>
+                            <span class="tag">哲思</span>
+                        </div>
+                        <div class="work-meta">
+                            <span class="chapters">7章节</span>
+                            <span class="branches">42分支</span>
+                            <span class="nft-price">0.8 ETH</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 故事卡片界面 -->
+    <div class="story-card-page" id="storyCardPage" style="display: none;">
+        <div class="story-card-header">
+            <button class="back-btn" onclick="backToAuthor()">← 返回作者页</button>
+        </div>
+        
+        <div class="story-card-container">
+            <div class="story-card">
+                <div class="story-cover">
+                    <div class="story-emoji">🌹</div>
+                    <div class="story-glow"></div>
+                </div>
+                
+                <div class="story-details">
+                    <h1 class="story-title">午后玫瑰</h1>
+                    <div class="story-author">
+                        <span class="author-avatar-small">👩‍🎨</span>
+                        <span class="author-name-small">海大人</span>
+                    </div>
+                    
+                    <p class="story-description">
+                        一首关于时间、生命与意义的现代诗。在这个快速变化的世界里，
+                        玫瑰静静开放，乌鸦安然死去，而我们在寻找着属于自己的诗意...
+                    </p>
+                    
+                    <div class="story-tags">
+                        <span class="tag">诗歌</span>
+                        <span class="tag">哲思</span>
+                        <span class="tag">意象</span>
+                    </div>
+                    
+                    <div class="story-stats">
+                        <div class="stat">
+                            <span class="stat-icon">👁️</span>
+                            <span class="stat-text">12.3k 阅读</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">🌿</span>
+                            <span class="stat-text">23 分支</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">💎</span>
+                            <span class="stat-text">0.5 ETH</span>
+                        </div>
+                    </div>
+                    
+                    <div class="story-actions">
+                        <button class="action-btn subscribe-btn" onclick="toggleSubscribe(this)">
+                            <span class="btn-icon">⭐</span>
+                            <span class="btn-text">订阅</span>
+                        </button>
+                        
+                        <button class="action-btn read-btn" onclick="enterStoryTree()">
+                            <span class="btn-icon">📖</span>
+                            <span class="btn-text">阅读</span>
+                        </button>
+                        
+                        <button class="action-btn like-btn" onclick="toggleLike(this)">
+                            <span class="btn-icon">🍃</span>
+                            <span class="btn-text like-count">1.2k</span>
+                        </button>
+                        
+                        <button class="action-btn write-btn" onclick="showWriteInterface()">
+                            <span class="btn-icon">✍️</span>
+                            <span class="btn-text">续写</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主界面 - 仿底特律变人流程图 -->
+    <div class="flowchart-page" id="flowchartPage" style="display: none;">
+        <!-- 顶部进度条 -->
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 51%"></div>
+            <span class="progress-text">51% 完成</span>
+        </div>
+
+        <!-- 故事标题 -->
+        <div class="story-header">
+            <button class="back-btn" onclick="backToCard()" style="position: absolute; top: -10px; left: -20px;">← 返回故事卡片</button>
+            <h1 class="story-title">午后玫瑰</h1>
+            <div class="story-subtitle">这是场景流程图。</div>
+        </div>
+
+        <!-- 流程图容器 -->
+        <div class="flowchart-container">
+            <!-- 背景网格 -->
+            <div class="grid-background"></div>
+            
+            <!-- 连接线 SVG -->
+            <svg class="connection-lines" width="100%" height="100%">
+                <!-- 主干线 -->
+                <line x1="200" y1="250" x2="350" y2="250" stroke="#8b7355" stroke-width="3"/>
+                
+                <!-- 第一层分支 -->
+                <line x1="350" y1="250" x2="350" y2="180" stroke="#8b7355" stroke-width="2"/>
+                <line x1="350" y1="250" x2="350" y2="320" stroke="#8b7355" stroke-width="2"/>
+                <line x1="350" y1="180" x2="500" y2="180" stroke="#8b7355" stroke-width="2"/>
+                <line x1="350" y1="320" x2="500" y2="320" stroke="#8b7355" stroke-width="2"/>
+                
+                <!-- 第二层分支 -->
+                <line x1="500" y1="180" x2="500" y2="120" stroke="#8b7355" stroke-width="2"/>
+                <line x1="500" y1="180" x2="500" y2="240" stroke="#8b7355" stroke-width="2"/>
+                <line x1="500" y1="320" x2="500" y2="380" stroke="#8b7355" stroke-width="2"/>
+                <line x1="500" y1="120" x2="650" y2="120" stroke="#8b7355" stroke-width="2"/>
+                <line x1="500" y1="240" x2="650" y2="240" stroke="#8b7355" stroke-width="2"/>
+                <line x1="500" y1="380" x2="650" y2="380" stroke="#8b7355" stroke-width="2"/>
+                
+                <!-- 第三层分支 -->
+                <line x1="650" y1="240" x2="650" y2="180" stroke="#8b7355" stroke-width="2"/>
+                <line x1="650" y1="240" x2="650" y2="300" stroke="#8b7355" stroke-width="2"/>
+                <line x1="650" y1="180" x2="800" y2="180" stroke="#8b7355" stroke-width="2"/>
+                <line x1="650" y1="300" x2="800" y2="300" stroke="#8b7355" stroke-width="2"/>
+                
+                <!-- 连接点 -->
+                <circle cx="350" cy="250" r="5" fill="#8b7355"/>
+                <circle cx="350" cy="180" r="4" fill="#8b7355"/>
+                <circle cx="350" cy="320" r="4" fill="#8b7355"/>
+                <circle cx="500" cy="180" r="4" fill="#8b7355"/>
+                <circle cx="500" cy="240" r="4" fill="#8b7355"/>
+                <circle cx="500" cy="320" r="4" fill="#8b7355"/>
+                <circle cx="500" cy="120" r="4" fill="#8b7355"/>
+                <circle cx="500" cy="380" r="4" fill="#8b7355"/>
+                <circle cx="650" cy="240" r="4" fill="#8b7355"/>
+                <circle cx="650" cy="180" r="4" fill="#8b7355"/>
+                <circle cx="650" cy="300" r="4" fill="#8b7355"/>
+            </svg>
+
+            <!-- 起始节点 -->
+            <div class="story-node start-node" data-chapter="start" style="left: 120px; top: 220px;" onclick="openChapter('start')">
+                <div class="node-content">
+                    <div class="node-title">午后玫瑰</div>
+                    <div class="node-author">海大人</div>
+                    <div class="node-views">👁️ 12.3k</div>
+                </div>
+            </div>
+
+            <!-- 第一层分支 -->
+            <div class="story-node branch-node" data-chapter="branch1" style="left: 420px; top: 150px;" onclick="openChapter('branch1')">
+                <div class="node-content">
+                    <div class="node-title">黑色乌鸦</div>
+                    <div class="node-author">暗夜诗者</div>
+                    <div class="node-views">👁️ 8.5k</div>
+                </div>
+            </div>
+
+            <div class="story-node branch-node canon-node" data-chapter="branch2" style="left: 420px; top: 290px;" onclick="openChapter('branch2')">
+                <div class="node-content">
+                    <div class="node-title">世界向前</div>
+                    <div class="node-author">时光织者</div>
+                    <div class="canon-badge">正史</div>
+                    <div class="node-views">👁️ 15.2k</div>
+                </div>
+            </div>
+
+            <!-- 第二层分支 -->
+            <div class="story-node branch-node" data-chapter="branch3" style="left: 570px; top: 90px;" onclick="openChapter('branch3')">
+                <div class="node-content">
+                    <div class="node-title">时间停滞</div>
+                    <div class="node-author">时间诗人</div>
+                    <div class="node-views">👁️ 6.7k</div>
+                </div>
+            </div>
+
+            <div class="story-node branch-node" data-chapter="branch4" style="left: 600px; top: 175px;" onclick="openChapter('branch4')">
+                <div class="node-content">
+                    <div class="node-title">无声询问</div>
+                    <div class="node-author">静默观者</div>
+                    <div class="node-views">👁️ 5.2k</div>
+                </div>
+            </div>
+
+            <div class="story-node branch-node" data-chapter="branch5" style="left: 600px; top: 275px;" onclick="openChapter('branch5')">
+                <div class="node-content">
+                    <div class="node-title">玫瑰凋零</div>
+                    <div class="node-author">花语诗人</div>
+                    <div class="node-views">👁️ 7.8k</div>
+                </div>
+            </div>
+
+            <!-- 第三层分支 -->
+            <div class="story-node branch-node" data-chapter="branch6" style="left: 750px; top: 125px;" onclick="openChapter('branch6')">
+                <div class="node-content">
+                    <div class="node-title">新的开始</div>
+                    <div class="node-author">希望之光</div>
+                    <div class="node-views">👁️ 4.1k</div>
+                </div>
+            </div>
+
+            <div class="story-node branch-node" data-chapter="branch7" style="left: 750px; top: 225px;" onclick="openChapter('branch7')">
+                <div class="node-content">
+                    <div class="node-title">循环往复</div>
+                    <div class="node-author">轮回诗者</div>
+                    <div class="node-views">👁️ 3.9k</div>
+                </div>
+            </div>
+
+            <!-- 续写节点 -->
+            <div class="story-node add-node" style="left: 920px; top: 175px;" onclick="showWriteInterface()">
+                <div class="node-content">
+                    <div class="add-icon">✨</div>
+                    <div class="node-title">续写新分支</div>
+                    <div class="bird-animation">🐦</div>
+                    <div class="branch-animation">🌿</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部控制栏 -->
+        <div class="bottom-controls">
+            <button class="control-btn" onclick="showVotingArena()">🏟️ 投票竞技场</button>
+            <button class="control-btn" onclick="showAuthorProfile('海大人')">👥 作者档案</button>
+            <button class="control-btn">📊 统计信息</button>
+            <button class="control-btn">💰 收益中心</button>
+            <button class="control-btn">⚙️ 设置</button>
+            <button class="control-btn" onclick="backToCard()">❌ 退出</button>
+        </div>
+    </div>
+
+    <!-- 章节阅读弹窗 -->
+    <div class="modal" id="chapterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">章节标题</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="chapter-author-info">
+                    <span class="author-avatar-small">👩‍🎨</span>
+                    <span id="modalAuthor">作者名</span>
+                </div>
+                <div class="chapter-content" id="modalContent">
+                    章节内容加载中...
+                </div>
+                <div class="chapter-actions">
+                    <button class="action-btn like-btn" onclick="likeChapter()">
+                        <span class="leaf-icon">🍃</span>
+                        <span class="like-count" id="likeCount">1.2k</span>
+                    </button>
+                    <button class="action-btn write-btn" onclick="showWriteInterface()">
+                        ✍️ 续写分支
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 续写界面弹窗 -->
+    <div class="modal" id="writeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🐦 续写新分支</h3>
+                <span class="close" onclick="closeWriteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="write-interface">
+                    <div class="form-group">
+                        <label>分支标题</label>
+                        <input type="text" class="form-input" placeholder="为你的分支起个标题">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>创作内容</label>
+                        <textarea class="form-textarea" placeholder="在这里续写你的故事分支...&#10;&#10;小鸟正叼着树枝飞来，准备在这里搭建新的故事巢穴。"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>分支标签</label>
+                        <div class="tag-selector">
+                            <button class="tag-option" onclick="toggleTag(this)">诗歌</button>
+                            <button class="tag-option" onclick="toggleTag(this)">哲思</button>
+                            <button class="tag-option" onclick="toggleTag(this)">意象</button>
+                            <button class="tag-option" onclick="toggleTag(this)">科幻</button>
+                            <button class="tag-option" onclick="toggleTag(this)">悬疑</button>
+                            <button class="tag-option" onclick="toggleTag(this)">恋爱</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bird-nest-animation">
+                        <div class="flying-bird">🐦</div>
+                        <div class="branch-building">🌿</div>
+                        <div class="nest-text">小鸟正在搭建新的故事巢穴...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-action-btn" onclick="closeWriteModal()">取消</button>
+                <button class="modal-action-btn write-continue" onclick="submitBranch()">🚀 发布分支</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

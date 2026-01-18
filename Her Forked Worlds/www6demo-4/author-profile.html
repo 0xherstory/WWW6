@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作者主页 - 分叉叙事平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0F0F23 0%, #1A1A2E 50%, #16213E 100%);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 返回按钮 */
+        .back-to-following {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .back-to-following:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateX(-3px);
+        }
+
+        /* 作者头部信息 */
+        .author-header {
+            text-align: center;
+            padding: 80px 20px 40px;
+            position: relative;
+        }
+
+        .author-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .author-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8B5CF6, #EC4899);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .author-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .author-bio {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .author-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8B5CF6, #EC4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+
+        /* 章节列表 */
+        .chapters-section {
+            margin-top: 60px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .chapter-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .chapter-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(139, 92, 246, 0.2);
+        }
+
+        .chapter-story {
+            font-size: 0.85rem;
+            color: rgba(139, 92, 246, 0.8);
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chapter-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .chapter-excerpt {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .chapter-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .chapter-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chapter-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .empty-subtitle {
+            font-size: 1rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .author-avatar-large {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+
+            .author-name {
+                font-size: 2rem;
+            }
+
+            .author-stats {
+                gap: 20px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .chapters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回按钮 -->
+    <a href="following-page.html" class="back-to-following">
+        <span>←</span>
+        <span>返回关注列表</span>
+    </a>
+
+    <div class="container">
+        <!-- 作者头部信息 -->
+        <div class="author-header">
+            <div class="author-avatar-large" id="authorAvatar"></div>
+            <h1 class="author-name" id="authorName">加载中...</h1>
+            <p class="author-bio" id="authorBio">这位作者很神秘，暂未留下任何简介。</p>
+
+            <div class="author-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="storyCount">0</div>
+                    <div class="stat-label">参与故事</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="chapterCount">0</div>
+                    <div class="stat-label">创作章节</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="likesCount">0</div>
+                    <div class="stat-label">获得点赞</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 章节列表 -->
+        <div class="chapters-section">
+            <h2 class="section-title">创作的章节</h2>
+            <div class="chapters-grid" id="chaptersGrid">
+                <!-- 章节卡片将通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟作者数据
+        const authorsData = {
+            '李墨白': {
+                avatar: '李',
+                bio: '资深网文作者，擅长科幻与奇幻题材，致力于探索叙事的无限可能。',
+                stories: 3,
+                chapters: 12,
+                likes: 2456,
+                createdChapters: [
+                    {
+                        id: 1,
+                        storyName: '赛博朋克 2177',
+                        title: '觉醒之夜',
+                        excerpt: '霓虹灯闪烁的街道上，雨水混合着机油的味道弥漫在空气中。李墨在这座城市生活了二十年，直到那个雨夜，一切都变了...',
+                        date: '2天前',
+                        views: 1234,
+                        likes: 456
+                    },
+                    {
+                        id: 2,
+                        storyName: '赛博朋克 2177',
+                        title: '地下城之谜',
+                        excerpt: '地下城的深处隐藏着这座城市最大的秘密。当李墨踏入那扇生锈的铁门时，她还不知道自己即将揭开什么样的真相...',
+                        date: '5天前',
+                        views: 980,
+                        likes: 328
+                    },
+                    {
+                        id: 3,
+                        storyName: '星际殖民纪元',
+                        title: '新世界的黎明',
+                        excerpt: '飞船缓缓降落在这颗未知的星球上。透过舷窗，队员们看到了令人震撼的景象——双日悬空，紫色的植被覆盖着整片大地...',
+                        date: '1周前',
+                        views: 2134,
+                        likes: 789
+                    }
+                ]
+            },
+            '王小明': {
+                avatar: '王',
+                bio: '新锐作者，喜欢尝试不同的叙事风格和角度。',
+                stories: 2,
+                chapters: 8,
+                likes: 1234,
+                createdChapters: [
+                    {
+                        id: 4,
+                        storyName: '魔法学院编年史',
+                        title: '入学典礼',
+                        excerpt: '魔法学院的大门第一次为普通人家的孩子敞开。王小明站在宏伟的大厅里，周围都是来自贵族家庭的学生...',
+                        date: '1天前',
+                        views: 856,
+                        likes: 234
+                    },
+                    {
+                        id: 5,
+                        storyName: '魔法学院编年史',
+                        title: '禁忌的图书馆',
+                        excerpt: '学院深处有一座禁忌图书馆，传说中存放着最危险的魔法书籍。但王小明必须找到那本书，因为它是解开谜题的唯一线索...',
+                        date: '3天前',
+                        views: 723,
+                        likes: 201
+                    }
+                ]
+            },
+            '张三丰': {
+                avatar: '张',
+                bio: '武侠小说爱好者，致力于在现代背景下重塑武侠精神。',
+                stories: 2,
+                chapters: 10,
+                likes: 1876,
+                createdChapters: [
+                    {
+                        id: 6,
+                        storyName: '都市修仙录',
+                        title: '灵气复苏',
+                        excerpt: '21世纪的某一天，消失了千年的灵气突然回归地球。张三丰在一次意外中获得了修仙传承，从此踏上了与众不同的道路...',
+                        date: '1天前',
+                        views: 1456,
+                        likes: 567
+                    },
+                    {
+                        id: 7,
+                        storyName: '都市修仙录',
+                        title: '宗门试炼',
+                        excerpt: '为了获得更强大的力量，张三丰必须通过宗门的试炼。但这次试炼的难度远超想象，稍有不慎就会丧命...',
+                        date: '4天前',
+                        views: 1123,
+                        likes: 445
+                    }
+                ]
+            },
+            '陈小雨': {
+                avatar: '陈',
+                bio: '浪漫主义作者，相信每个故事都值得被温柔对待。',
+                stories: 1,
+                chapters: 5,
+                likes: 892,
+                createdChapters: [
+                    {
+                        id: 8,
+                        storyName: '午后玫瑰',
+                        title: '初遇',
+                        excerpt: '那是一个普通的午后，阳光透过咖啡馆的玻璃窗洒在桌面上。陈小雨第一次见到了那个改变她一生的人...',
+                        date: '2天前',
+                        views: 645,
+                        likes: 234
+                    }
+                ]
+            },
+            '林晓风': {
+                avatar: '林',
+                bio: '悬疑推理爱好者，擅长营造紧张刺激的氛围。',
+                stories: 2,
+                chapters: 9,
+                likes: 1567,
+                createdChapters: [
+                    {
+                        id: 9,
+                        storyName: '虚拟现实迷宫',
+                        title: '迷失',
+                        excerpt: '林晓风在游戏中迷失了。当他试图退出时，却发现退出按钮已经消失。更可怕的是，游戏中的死亡似乎会影响现实...',
+                        date: '3天前',
+                        views: 1234,
+                        likes: 489
+                    }
+                ]
+            },
+            '苏梦瑶': {
+                avatar: '苏',
+                bio: '奇幻冒险作者，创造充满想象力的魔法世界。',
+                stories: 2,
+                chapters: 7,
+                likes: 1345,
+                createdChapters: [
+                    {
+                        id: 10,
+                        storyName: '蒸汽朋克伦敦',
+                        title: '发条之心',
+                        excerpt: '维多利亚时代的伦敦，蒸汽机与魔法共存。苏梦瑶发明了一颗拥有感情的发条之心，却不知道这将带来什么后果...',
+                        date: '4天前',
+                        views: 987,
+                        likes: 378
+                    }
+                ]
+            }
+        };
+
+        // 获取URL参数
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // 初始化页面
+        function initPage() {
+            const authorName = getUrlParameter('name');
+            const authorData = authorsData[authorName];
+
+            if (!authorData) {
+                // 如果没有找到作者数据，显示默认信息
+                document.getElementById('authorName').textContent = authorName || '未知作者';
+                document.getElementById('authorAvatar').textContent = (authorName || '?')[0];
+                renderEmptyState();
+                return;
+            }
+
+            // 更新作者信息
+            document.getElementById('authorName').textContent = authorName;
+            document.getElementById('authorAvatar').textContent = authorData.avatar;
+            document.getElementById('authorBio').textContent = authorData.bio;
+            document.getElementById('storyCount').textContent = authorData.stories;
+            document.getElementById('chapterCount').textContent = authorData.chapters;
+            document.getElementById('likesCount').textContent = authorData.likes.toLocaleString();
+
+            // 渲染章节列表
+            renderChapters(authorData.createdChapters);
+        }
+
+        // 故事名称到ID的映射
+        const storyNameToId = {
+            '赛博朋克 2177': 1,
+            '魔法学院编年史': 2,
+            '星际殖民纪元': 3,
+            '午后玫瑰': 4,
+            '蒸汽朋克伦敦': 5,
+            '虚拟现实迷宫': 6,
+            '都市修仙录': 7
+        };
+
+        // 渲染章节列表
+        function renderChapters(chapters) {
+            const grid = document.getElementById('chaptersGrid');
+            grid.innerHTML = '';
+
+            if (!chapters || chapters.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            chapters.forEach(chapter => {
+                const card = document.createElement('a');
+                card.className = 'chapter-card';
+
+                // 根据故事名称获取story ID并生成跳转链接
+                const storyId = storyNameToId[chapter.storyName] || 1;
+                card.href = `../story-tree.html?id=${storyId}`;
+
+                card.innerHTML = `
+                    <div class="chapter-story">${chapter.storyName}</div>
+                    <div class="chapter-title">${chapter.title}</div>
+                    <div class="chapter-excerpt">${chapter.excerpt}</div>
+                    <div class="chapter-meta">
+                        <div class="chapter-date">
+                            <span>📅</span>
+                            <span>${chapter.date}</span>
+                        </div>
+                        <div class="chapter-stats">
+                            <div class="stat-badge">
+                                <span>👁️</span>
+                                <span>${chapter.views}</span>
+                            </div>
+                            <div class="stat-badge">
+                                <span>❤️</span>
+                                <span>${chapter.likes}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // 渲染空状态
+        function renderEmptyState() {
+            const grid = document.getElementById('chaptersGrid');
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-icon">📝</div>
+                    <div class="empty-title">还没有创作章节</div>
+                    <div class="empty-subtitle">这位作者还在酝酿精彩的故事中...</div>
+                </div>
+            `;
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

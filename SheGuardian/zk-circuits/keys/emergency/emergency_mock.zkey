@@ -1,0 +1,6 @@
+{
+  "type": "mock_zkey",
+  "circuit": "emergency",
+  "created": "2026-01-02T15:58:29.472Z",
+  "note": "This is a mock proving key for development only"
+}

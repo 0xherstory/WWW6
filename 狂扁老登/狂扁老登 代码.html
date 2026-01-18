@@ -1,0 +1,845 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">import React, { useState, useEffect, useRef, useCallback } from 'react';</p>
+<p class="p1">import { Hand, Sword, RefreshCw, Zap, Camera, CameraOff, Image as ImageIcon, Trash2, Wallet, Award, Loader, CheckCircle, AlertCircle, RefreshCcw, Flame, ExternalLink, Move, ZoomIn, Check, HeartHandshake, User, Users, MessageCircle } from 'lucide-react';</p>
+<p class="p2"><br></p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p1">// 常量与配置</p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p2"><br></p>
+<p class="p1">const MAX_HP = 1000;</p>
+<p class="p1">const MOTION_THRESHOLD = 3000;</p>
+<p class="p1">const MOTION_COOLDOWN = 200;</p>
+<p class="p1">const COMBO_TIMEOUT = 1200;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">// 1. 爹味语录库 (老登专用 - 男声)</p>
+<p class="p1">const OLD_DENG_QUOTES = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"别太任性，我这是为你好。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"我这人说话直，你别往心里去。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"女的适合稳定，别太拼。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"强势的女人命苦，真的。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"我说的都是真的，你爱信不信。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"你还想怎么样？",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"你这样真的很没意思。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"你怎么又生气了？至于吗？",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"我没什么好解释的。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"你要这样想我也没办法。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"你觉得是就是吧。",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"我错了，行了吧？",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"行行行，都是我的错，行了吧！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"这就受不了了？现在的年轻人啊...",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"能不能懂点事？"</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">// 2. 女性泄愤语录库 (连击专用 - 女声)</p>
+<p class="p1">const FEMALE_SHOUTS = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"去死吧！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"臭老登！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"老人味溢出屏幕啦！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"美女的事少管！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"给姐跪下！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"女人不需要男人，就像鱼不需要自行车！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"你卖水管的吗？管那么多！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"惹到我算是踢到钢板了！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"闭嘴吧你！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"下头男！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"收起你的爹味！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"滚远点！",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"别来沾边！"</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">const getFighterRank = (hp) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 0) return { title: "旧秩序崩塌 (Shattered)", color: "text-gray-500" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 150) return { title: "垂死挣扎 (Desperate)", color: "text-purple-900" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 300) return { title: "爹味泄露 (Leaking)", color: "text-pink-700" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 500) return { title: "逻辑崩坏 (Broken Logic)", color: "text-blue-600" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 700) return { title: "恼羞成怒 (Hysterical)", color: "text-orange-600" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 850) return { title: "迷之自信 (Overconfident)", color: "text-red-600" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return { title: "得意洋洋 (Smug Patriarch)", color: "text-yellow-700" };<span class="Apple-converted-space"> </span></p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">const MOVES = {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>slap: ['拒绝说教', '打破沉默', '我的身体我做主', '拒绝被定义', 'No Means No', '别指指点点'],<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>punch: ['粉碎偏见', '拒绝规训', '野蛮生长', 'Girls Help Girls', '夺回叙事权', '停止荡妇羞辱']<span class="Apple-converted-space"> </span></p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">const getExpression = (hp) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 0) return 'crying';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 100) return 'begging';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 200) return 'furious';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 400) return 'confused';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 600) return 'bleeding';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (hp &lt;= 800) return 'angry';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return 'smug';</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p1">// 音频系统</p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p2"><br></p>
+<p class="p1">const useAudioSystem = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [muted, setMuted] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const audioCtxRef = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [availableVoices, setAvailableVoices] = useState([]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const initAudio = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!audioCtxRef.current) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>initAudio();</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 确保语音列表加载完成</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const loadVoices = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const voices = window.speechSynthesis.getVoices();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (voices.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setAvailableVoices(voices);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>loadVoices();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.speechSynthesis.onvoiceschanged = loadVoices;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 兜底：有些浏览器 onvoiceschanged 不触发，定时检查一次</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const timer = setTimeout(loadVoices, 1000);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return () =&gt; clearTimeout(timer);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, []);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ensureAudioContext = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (audioCtxRef.current &amp;&amp; audioCtxRef.current.state === 'suspended') {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>audioCtxRef.current.resume();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const playHitSound = (isHeavy = false) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (muted || !audioCtxRef.current) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const ctx = audioCtxRef.current;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const osc = ctx.createOscillator();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const gainNode = ctx.createGain();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const filterNode = ctx.createBiquadFilter();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.connect(filterNode);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>filterNode.connect(gainNode);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gainNode.connect(ctx.destination);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.type = isHeavy ? 'square' : 'sawtooth';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>filterNode.type = 'lowpass';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>filterNode.frequency.setValueAtTime(isHeavy ? 100 : 300, ctx.currentTime);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.frequency.setValueAtTime(isHeavy ? 60 : 120, ctx.currentTime);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gainNode.gain.setValueAtTime(isHeavy ? 0.5 : 0.3, ctx.currentTime);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.start();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.stop(ctx.currentTime + 0.2);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const speak = useCallback((text, type = 'laodeng') =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (muted) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.speechSynthesis.cancel();<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const utterance = new SpeechSynthesisUtterance(text);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 始终使用最新的 voices 列表</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const voices = window.speechSynthesis.getVoices();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const zhVoices = voices.filter(v =&gt; v.lang.includes('zh') || v.lang.includes('CN'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let selectedVoice = null;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (type === 'laodeng') {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>selectedVoice = zhVoices.find(v =&gt; v.name.includes('Male') || v.name.includes('Shen')) || zhVoices.find(v =&gt; v.name.includes('Google')) || zhVoices[0];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>utterance.pitch = 0.7;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>utterance.rate = 0.85;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (type === 'girl') {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>selectedVoice = zhVoices.find(v =&gt; v.name.includes('Xiaoxiao') || v.name.includes('Yaoyao') || v.name.includes('Female')) || zhVoices[0];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>utterance.pitch = 1.2;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>utterance.rate = 1.3;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (selectedVoice) utterance.voice = selectedVoice;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>utterance.volume = 1.0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.speechSynthesis.speak(utterance);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, [muted]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return { muted, setMuted, playHitSound, speak, ensureAudioContext };</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p1">// 背景组件：愤怒的围攻</p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p1">const AngryCrowdBackground = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const crowd = Array.from({ length: 20 }).map((_, i) =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>id: i,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>x: Math.random() * 100,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>y: Math.random() * 100,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>scale: 0.5 + Math.random() * 0.5,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>rotation: (Math.random() - 0.5) * 30,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>color: Math.random() &gt; 0.5 ? '#be185d' : '#7e22ce'</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-slate-100"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="absolute inset-0 bg-gradient-to-b from-pink-100/50 to-purple-100/50"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{crowd.map((p) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (p.x &gt; 30 &amp;&amp; p.x &lt; 70 &amp;&amp; p.y &gt; 20 &amp;&amp; p.y &lt; 80) return null;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>key={p.id}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>className="absolute flex flex-col items-center opacity-30 animate-pulse"</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>style={{</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>left: `${p.x}%`, top: `${p.y}%`,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>transform: `scale(${p.scale}) rotate(${p.rotation}deg)`,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>color: p.color</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;Users size={64} strokeWidth={2.5} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div className="mt-1 text-xs font-black uppercase tracking-widest"&gt;Angry&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>})}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="absolute inset-0 overflow-hidden opacity-10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div className="absolute top-10 left-0 whitespace-nowrap animate-marquee text-4xl font-black text-red-500"&gt;拒绝说教 拒绝说教 拒绝说教 拒绝说教 拒绝说教&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div className="absolute bottom-20 left-0 whitespace-nowrap animate-marquee-reverse text-4xl font-black text-purple-500"&gt;GIRLS HELP GIRLS GIRLS HELP GIRLS GIRLS HELP GIRLS&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;style&gt;{`</p>
+<p class="p1"><span class="Apple-converted-space">                </span>@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }</p>
+<p class="p1"><span class="Apple-converted-space">                </span>@keyframes marquee-reverse { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }</p>
+<p class="p1"><span class="Apple-converted-space">                </span>.animate-marquee { animation: marquee 20s linear infinite; }</p>
+<p class="p1"><span class="Apple-converted-space">                </span>.animate-marquee-reverse { animation: marquee-reverse 25s linear infinite; }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`}&lt;/style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>);</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p1">// 老登脸部组件</p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p2"><br></p>
+<p class="p1">const OldDengFace = ({ hp, rotateX, rotateY, bloodLevel, bruises, customImage, imgConfig, containerRef }) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const expression = getExpression(hp);</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const renderFeatures = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const strokeWidth = customImage ? "8" : "6";<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const strokeColor = "#333";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const filter = customImage ? "url(#outline)" : "";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{/* 眉毛 */}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>switch (expression) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'smug': return &lt;path d="M70,90 Q90,80 110,90 M190,90 Q210,80 230,90" stroke={strokeColor} strokeWidth={strokeWidth} fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'angry':</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'bleeding':</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'furious': return &lt;path d="M70,85 Q90,100 110,95 M190,95 Q210,100 230,85" stroke={strokeColor} strokeWidth={strokeWidth} fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'confused': return &lt;path d="M70,90 Q90,80 110,90 M190,85 Q210,70 230,80" stroke={strokeColor} strokeWidth={strokeWidth} fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'begging': return &lt;path d="M70,95 Q90,85 110,95 M190,95 Q210,85 230,95" stroke={strokeColor} strokeWidth={strokeWidth} fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'crying': return &lt;path d="M60,100 Q90,80 120,100 M180,100 Q210,80 240,100" stroke={strokeColor} strokeWidth={strokeWidth} fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>default: return &lt;path d="M70,90 Q90,80 110,90 M190,90 Q210,80 230,90" stroke={strokeColor} strokeWidth={strokeWidth} fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>})()}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{/* 眼睛 */}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle cx="90" cy="120" r="18" fill="white" stroke="#333" strokeWidth="2" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle cx="90" cy="120" r={expression === 'confused' ? 4 : 6} fill="black" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle cx="210" cy="120" r="18" fill="white" stroke="#333" strokeWidth="2" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle cx="210" cy="120" r={expression === 'confused' ? 4 : 6} fill="black" /&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;line x1="110" y1="120" x2="190" y2="120" stroke="#d4af37" strokeWidth="4" filter={filter} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle cx="90" cy="120" r="28" stroke="#d4af37" strokeWidth="4" fill="none" opacity="0.9" filter={filter}/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle cx="210" cy="120" r="28" stroke="#d4af37" strokeWidth="4" fill="none" opacity="0.9" filter={filter}/&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>{expression === 'crying' &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M90,140 Q85,180 90,220" stroke="#60a5fa" strokeWidth="4" fill="none" opacity="0.8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;animate attributeName="d" values="M90,140 Q85,180 90,220; M90,140 Q95,180 90,220" dur="0.5s" repeatCount="indefinite"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/path&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M210,140 Q205,180 210,220" stroke="#60a5fa" strokeWidth="4" fill="none" opacity="0.8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;animate attributeName="d" values="M210,140 Q205,180 210,220; M210,140 Q215,180 210,220" dur="0.5s" repeatCount="indefinite"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/path&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/g&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{/* 嘴巴 */}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>switch (expression) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'smug': return &lt;path d="M120,180 Q150,190 180,175" stroke={strokeColor} strokeWidth="4" fill="none" filter={filter} /&gt;;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'angry':</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'bleeding': return &lt;path d="M120,190 Q150,170 180,190" stroke={strokeColor} strokeWidth="4" fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'confused': return &lt;circle cx="150" cy="190" r="12" stroke={strokeColor} strokeWidth="4" fill="none" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'furious': return &lt;path d="M120,180 Q150,160 180,180 Q150,210 120,180 Z" fill="#7f1d1d" stroke={strokeColor} strokeWidth="2" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'begging':</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case 'crying': return &lt;g filter={filter}&gt;&lt;path d="M110,180 Q150,220 190,180" stroke={strokeColor} strokeWidth="4" fill="#330000" /&gt;&lt;path d="M130,180 Q150,190 170,180" fill="pink" /&gt;&lt;/g&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>default: return &lt;path d="M130,180 L170,180" stroke={strokeColor} strokeWidth="4" filter={filter} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>})()}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const getFaceColor = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (expression === 'furious') return "#e0a0a0";<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (expression === 'bleeding') return "#f0c0c0";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (expression === 'confused') return "#f5e0c0";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return "#f5d0a9";<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>ref={containerRef}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>className="relative transition-transform duration-100 ease-out select-none pointer-events-none"</p>
+<p class="p1"><span class="Apple-converted-space">      </span>style={{<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>transform: `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>transformOrigin: 'center center',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>width: '300px',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>height: '350px'</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;svg viewBox="0 0 300 350" className="w-full h-full drop-shadow-2xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;defs&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;filter id="blurMe"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;feGaussianBlur in="SourceGraphic" stdDeviation="3" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/filter&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;filter id="outline"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;feMorphology operator="dilate" radius="2" in="SourceAlpha" result="thick"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;feComposite operator="out" in="thick" in2="SourceAlpha" result="blocked"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;feFlood floodColor="white" result="white"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;feComposite in="white" in2="blocked" operator="in" result="outline"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;feMerge&gt;&lt;feMergeNode in="outline"/&gt;&lt;feMergeNode in="SourceGraphic"/&gt;&lt;/feMerge&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/filter&gt;</p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;clipPath id="faceClip"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;ellipse cx="150" cy="160" rx="110" ry="130" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/clipPath&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/defs&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{!customImage &amp;&amp; &lt;path d="M50,150 Q150,-50 250,150" fill="#444" /&gt;}<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{customImage ? (</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;g clipPath="url(#faceClip)"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;ellipse cx="150" cy="160" rx="110" ry="130" fill="white" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;image<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>href={customImage}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>x="0" y="0"<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>width="300" height="300"<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>transform={`translate(${imgConfig.x}, ${imgConfig.y}) scale(${imgConfig.scale})`}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>style={{ transformOrigin: '150px 160px' }}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;ellipse cx="150" cy="160" rx="110" ry="130" fill={getFaceColor()} stroke="#333" strokeWidth="4" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>)}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;ellipse cx="150" cy="160" rx="110" ry="130" fill="none" stroke="#333" strokeWidth="4" /&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{!customImage &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M40,140 Q30,180 50,200 L55,190 Q40,170 45,140 Z" fill="#222" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M260,140 Q270,180 250,200 L245,190 Q260,170 255,140 Z" fill="#222" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M100,60 Q150,70 200,60" stroke="#b08d70" strokeWidth="2" fill="none" opacity="0.6"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M110,50 Q150,60 190,50" stroke="#b08d70" strokeWidth="2" fill="none" opacity="0.6"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M135,140 L125,170 L165,170 Z" fill="#eac099" opacity="0.8"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>)}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{renderFeatures()}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{bruises.map((b) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;g key={b.id} opacity={Math.max(0, 1 - (Date.now() - b.timestamp) / 5000)}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>{b.type === 'punch' ? (</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;circle cx={b.x} cy={b.y} r="25" fill="#500" fillOpacity="0.5" filter="url(#blurMe)" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;ellipse cx={b.x} cy={b.y} rx="35" ry="45" transform={`rotate(${b.rotation} ${b.x} ${b.y})`} fill="#a00" fillOpacity="0.4" filter="url(#blurMe)" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>))}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{hp &lt; 600 &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;g filter={customImage ? "url(#outline)" : ""}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;path d="M125,175 Q115,200 120,220" stroke="#a00" strokeWidth="3" fill="none" opacity="0.8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;path d="M190,200 Q195,230 190,250" stroke="#a00" strokeWidth={hp &lt; 400 ? "4" : "0"} fill="none" opacity="0.9" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>{hp &lt; 200 &amp;&amp; &lt;path d="M140,170 L145,200 L150,190" fill="#c00" /&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/g&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p1">// 主应用组件</p>
+<p class="p1">// -----------------------------------------------------------------------------</p>
+<p class="p2"><br></p>
+<p class="p1">export default function SlapTheOldGuy() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [gameStarted, setGameStarted] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [openingQuote, setOpeningQuote] = useState("");</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [hp, setHp] = useState(MAX_HP);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [rotateX, setRotateX] = useState(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [rotateY, setRotateY] = useState(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [bruises, setBruises] = useState([]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [lastPos, setLastPos] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [isDragging, setIsDragging] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [shake, setShake] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [feedbackText, setFeedbackText] = useState(null);</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [customImage, setCustomImage] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [imgConfig, setImgConfig] = useState({ x: 0, y: 0, scale: 1 });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [isEditingImage, setIsEditingImage] = useState(false);</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const fileInputRef = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const faceRef = useRef(null);</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Refs for loop access</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const hpRef = useRef(MAX_HP);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const hitCountRef = useRef(0);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lastInteractionRef = useRef(Date.now());<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const voiceThrottleRef = useRef(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const comboRef = useRef(0); // Combo Ref for immediate access</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [combo, setCombo] = useState(0); // State for UI</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const comboTimerRef = useRef(null);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [account, setAccount] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [walletType, setWalletType] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [walletError, setWalletError] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [showVictoryModal, setShowVictoryModal] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [isMinting, setIsMinting] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [hasMinted, setHasMinted] = useState(false);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [cameraActive, setCameraActive] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [permissionError, setPermissionError] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const videoRef = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const canvasRef = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lastFrameData = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lastMotionTime = useRef(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const rafId = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lastMotionX = useRef(null);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const { muted, setMuted, playHitSound, speak, ensureAudioContext } = useAudioSystem();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 指向最新函数的Ref</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const triggerHitRef = useRef(null);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const getRandomQuote = (quotesArray, lastIndexRef = {current: -1}) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let newIndex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>do {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>newIndex = Math.floor(Math.random() * quotesArray.length);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} while (quotesArray.length &gt; 1 &amp;&amp; newIndex === lastIndexRef.current);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>lastIndexRef.current = newIndex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return quotesArray[newIndex];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const startGame = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setGameStarted(true);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>ensureAudioContext();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>lastInteractionRef.current = Date.now();<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const randomQuote = getRandomQuote(OLD_DENG_QUOTES);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setOpeningQuote(randomQuote);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setTimeout(() =&gt; speak(randomQuote, 'laodeng'), 500);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const updateCombo = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (comboTimerRef.current) clearTimeout(comboTimerRef.current);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const newCombo = comboRef.current + 1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>comboRef.current = newCombo;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setCombo(newCombo);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>comboTimerRef.current = setTimeout(() =&gt; {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>comboRef.current = 0;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>setCombo(0);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>}, COMBO_TIMEOUT);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return newCombo;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const triggerHit = (screenX, screenY, type, damage, dirX, dirY, hitAngle = 0) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>lastInteractionRef.current = Date.now();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>setShake(true);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; setShake(false), 150);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const randomDmg = Math.floor(Math.random() * 4) + 2;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const finalDamage = damage &gt; 0 ? damage : randomDmg;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const newHp = Math.max(0, hpRef.current - finalDamage);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setHp(newHp);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>hpRef.current = newHp;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>hitCountRef.current += 1;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const centerX = window.innerWidth / 2;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const centerY = window.innerHeight / 2;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let targetRotY = dirX !== undefined ? dirX : (screenX &lt; centerX ? 25 : -25);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let targetRotX = dirY !== undefined ? dirY : (screenY &lt; centerY ? -20 : 20);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>setRotateY(targetRotY);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setRotateX(targetRotX);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; { setRotateY(0); setRotateX(0); }, 400);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>let svgX = 150;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let svgY = 160;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (faceRef.current) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const rect = faceRef.current.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const relX = screenX - rect.left;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const relY = screenY - rect.top;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>svgX = (relX / rect.width) * 300;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>svgY = (relY / rect.height) * 350;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Fallback or camera randomized</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (screenX === window.innerWidth/2) {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>svgX = 150 + (Math.random()-0.5) * 160;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>svgY = 160 + (Math.random()-0.5) * 200;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>svgX = 150 + (screenX - centerX);</p>
+<p class="p1"><span class="Apple-converted-space">             </span>svgY = 160 + (screenY - centerY);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Ellipse boundary constraint</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const dx = svgX - 150;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const dy = svgY - 160;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const normalizedDist = (dx * dx) / (110 * 110) + (dy * dy) / (130 * 130);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (normalizedDist &gt; 1.0) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const scale = 1 / Math.sqrt(normalizedDist);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>svgX = 150 + dx * scale;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>svgY = 160 + dy * scale;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>setBruises(prev =&gt; [...prev, {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>id: Date.now(),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>x: svgX, y: svgY, type,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>rotation: type === 'slap' ? hitAngle : (Math.random() * 30 - 15),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>timestamp: Date.now()</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const currentCombo = updateCombo();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let word = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let colorClass = "text-purple-600";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let specialEffect = false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const now = Date.now();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 语音逻辑</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (currentCombo &gt;= 2 &amp;&amp; now - voiceThrottleRef.current &gt; 400) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const shout = getRandomQuote(FEMALE_SHOUTS);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>word = shout;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>colorClass = "text-red-600";</p>
+<p class="p1"><span class="Apple-converted-space">        </span>specialEffect = true;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>speak(shout, 'girl');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>voiceThrottleRef.current = now;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const moveList = MOVES[type] || MOVES.punch;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>word = moveList[Math.floor(Math.random() * moveList.length)];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>playHitSound();<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 慢速状态下老登还嘴</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (hitCountRef.current % 2 === 0 &amp;&amp; newHp &gt; 100 &amp;&amp; currentCombo &lt; 2) {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const dengQuote = getRandomQuote(OLD_DENG_QUOTES);</p>
+<p class="p1"><span class="Apple-converted-space">             </span>setTimeout(() =&gt; speak(dengQuote, 'laodeng'), 300);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>setFeedbackText({ x: screenX, y: screenY, text: word, color: colorClass, special: specialEffect, id: Date.now() });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; setFeedbackText(null), specialEffect ? 1500 : 800);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (newHp === 0) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>speak("这个世界留给男人的福报不多啦", 'girl');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>setTimeout(() =&gt; setShowVictoryModal(true), 3500);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 更新Ref以便Camera使用</p>
+<p class="p1"><span class="Apple-converted-space">  </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>triggerHitRef.current = triggerHit;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, [hp, bruises, combo]); // Update whenever these change</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Camera Logic</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const startCamera = async () =&gt; { try { const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240, facingMode: 'user' }, audio: false }); if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.onloadedmetadata = () =&gt; { videoRef.current.play().then(() =&gt; { setCameraActive(true); detectMotion(); }).catch(e =&gt; { if (e.name !== 'AbortError') console.error(e); }); }; } } catch (e) { setPermissionError("摄像头启动失败：请点击右上角图标，在浏览器新标签页中打开以获取权限。"); } };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const stopCamera = () =&gt; { if(videoRef.current?.srcObject) videoRef.current.srcObject.getTracks().forEach(t=&gt;t.stop()); if(rafId.current) cancelAnimationFrame(rafId.current); setCameraActive(false); };</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const detectMotion = useCallback(() =&gt; {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(!videoRef.current || !canvasRef.current) return;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const ctx = canvasRef.current.getContext('2d');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (videoRef.current.readyState === 4) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const w = 50; const h = 40;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>ctx.drawImage(videoRef.current, 0, 0, w, h);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const data = ctx.getImageData(0,0,w,h).data;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>if(lastFrameData.current) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>let diff = 0;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>let motionXSum = 0;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>let count = 0;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>for(let i=0;i&lt;data.length;i+=4) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                  </span>if(Math.abs(data[i+1]-lastFrameData.current[i+1])&gt;30) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                      </span>diff += Math.abs(data[i+1]-lastFrameData.current[i+1]);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                      </span>motionXSum += (i/4) % w; count++;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                  </span>}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>}<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">              </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>if(diff &gt; MOTION_THRESHOLD &amp;&amp; Date.now() - lastMotionTime.current &gt; MOTION_COOLDOWN) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                  </span>if (hpRef.current &gt; 0) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                      </span>const currentAvgX = count &gt; 0 ? motionXSum / count : 25;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>let type = 'punch'; let damage = 20; let dirX = 0; let rotation = 0;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                      </span>if (lastMotionX.current !== null) {</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>const deltaX = currentAvgX - lastMotionX.current;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>if (Math.abs(deltaX) &gt; 3) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                              </span>type = 'slap'; damage = 15;</p>
+<p class="p1"><span class="Apple-converted-space">                              </span>dirX = deltaX &gt; 0 ? 25 : -25;</p>
+<p class="p1"><span class="Apple-converted-space">                              </span>rotation = deltaX &gt; 0 ? 90 : -90;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                          </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                              </span>type = 'punch'; damage = 25;</p>
+<p class="p1"><span class="Apple-converted-space">                              </span>dirX = 0; rotation = Math.random() * 30 - 15;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>lastMotionX.current = currentAvgX;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                      </span>// Call the latest triggerHit from ref</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>if (triggerHitRef.current) {</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>triggerHitRef.current(window.innerWidth/2, window.innerHeight/2, type, damage, dirX, 20, rotation);</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>lastMotionTime.current = Date.now();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                  </span>}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>if (diff &lt; MOTION_THRESHOLD * 0.5) lastMotionX.current = null;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>lastFrameData.current = data;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>rafId.current = requestAnimationFrame(detectMotion);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, []);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const handleStart = (e) =&gt; { if(!gameStarted) return; const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; setIsDragging(true); setLastPos({ x: clientX, y: clientY, time: Date.now() }); };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const handleMove = (e) =&gt; { if (!isDragging || !lastPos) return; const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; const now = Date.now(); const dx = clientX - lastPos.x; const dy = clientY - lastPos.y; if (isEditingImage &amp;&amp; customImage) { setImgConfig(prev =&gt; ({ ...prev, x: prev.x + dx, y: prev.y + dy })); setLastPos({ x: clientX, y: clientY, time: now }); return; } const dt = now - lastPos.time; if (Math.abs(dx) &lt; 5 &amp;&amp; Math.abs(dy) &lt; 5) return; const velocity = Math.sqrt(dx*dx + dy*dy) / (dt || 1); if (velocity &gt; 0.8) { const rY = dx &gt; 0 ? 30 : -30; const rX = dy &gt; 0 ? -20 : 20; const absDx = Math.abs(dx); const absDy = Math.abs(dy); const finalRY = absDx &gt; absDy * 0.5 ? rY : (rY * 0.5); const finalRX = absDy &gt; absDx * 0.5 ? rX : (rX * 0.5); const angle = Math.atan2(dy, dx) * (180 / Math.PI); const hitAngle = angle + 90; triggerHit(clientX, clientY, 'slap', Math.min(8, Math.ceil(velocity * 2)), finalRY, finalRX, hitAngle); setLastPos({ x: clientX, y: clientY, time: now }); } };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const handleEnd = (e) =&gt; { if (!isDragging) return; if (!isEditingImage) { const now = Date.now(); if (lastPos &amp;&amp; (now - lastPos.time &lt; 200)) { triggerHit(lastPos.x, lastPos.y, 'punch', 12, 0, -10); } } setIsDragging(false); setLastPos(null); };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const handleImageUpload = (e) =&gt; { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) =&gt; { setCustomImage(event.target.result); setImgConfig({ x: 0, y: 0, scale: 1 }); setIsEditingImage(true); }; reader.readAsDataURL(file); } };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const generateLocalWallet = () =&gt; { const randomHex = Array.from({length: 40}, () =&gt; Math.floor(Math.random()*16).toString(16)).join(''); const address = `0x${randomHex}`; setAccount(address); setWalletType('generated'); setWalletError(null); return address; };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const checkForEthereum = async () =&gt; { let attempts = 0; while (attempts &lt; 5) { if (typeof window.ethereum !== 'undefined') return window.ethereum; await new Promise(resolve =&gt; setTimeout(resolve, 300)); attempts++; } return null; };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>useEffect(() =&gt; { const initWallet = async () =&gt; { const ethereum = await checkForEthereum(); if (ethereum) { try { const accounts = await ethereum.request({ method: 'eth_accounts' }); if (accounts.length &gt; 0) { setAccount(accounts[0]); setWalletType('metamask'); } ethereum.on('accountsChanged', (newAccounts) =&gt; { setAccount(newAccounts.length &gt; 0 ? newAccounts[0] : null); if (newAccounts.length &gt; 0) setWalletType('metamask'); }); } catch (err) { console.log("Silent connect failed"); } } }; initWallet(); }, []);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const connectWallet = async () =&gt; { setWalletError(null); const ethereum = await checkForEthereum(); if (ethereum) { try { const accounts = await ethereum.request({ method: 'eth_requestAccounts' }); setAccount(accounts[0]); setWalletType('metamask'); return accounts[0]; } catch (error) { setWalletError("连接被拒绝。已为您生成临时游戏钱包。"); return generateLocalWallet(); } } else { setWalletError("未检测到插件。已为您生成临时游戏钱包。"); return generateLocalWallet(); } };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const formatAddress = (addr) =&gt; addr ? `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}` : '';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const handleMint = async () =&gt; { let currentAccount = account; if (!currentAccount) { currentAccount = await connectWallet(); if (!currentAccount) return; } setIsMinting(true); setWalletError(null); try { if (walletType === 'metamask' &amp;&amp; typeof window.ethereum !== 'undefined') { const message = `我已打破沉默！请求铸造“建设者勋章”。\n本次发泄已转化为公益力量。\n时间戳: ${Date.now()}`; await window.ethereum.request({ method: 'personal_sign', params: [message, currentAccount] }); } else { await new Promise(resolve =&gt; setTimeout(resolve, 1500)); } setTimeout(() =&gt; { setIsMinting(false); setHasMinted(true); }, 2000); } catch (err) { setIsMinting(false); setWalletError("签名失败"); } };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const resetGame = () =&gt; { setHp(MAX_HP); hpRef.current = MAX_HP; hitCountRef.current = 0; setBruises([]); setRotateX(0); setRotateY(0); comboRef.current = 0; setCombo(0); setShowVictoryModal(false); setHasMinted(false); setGameStarted(false); };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const fighterState = getFighterRank(hp);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>className={`min-h-screen bg-gray-100 flex flex-col items-center overflow-hidden touch-none select-none ${shake ? 'animate-shake' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>onMouseDown={handleStart} onMouseMove={handleMove} onMouseUp={handleEnd}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>onTouchStart={handleStart} onTouchMove={handleMove} onTouchEnd={handleEnd}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;AngryCrowdBackground /&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;style&gt;{`</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes shake { 0% { transform: translate(0, 0) rotate(0); } 20% { transform: translate(-5px, 5px) rotate(-2deg); } 40% { transform: translate(5px, -5px) rotate(2deg); } 60% { transform: translate(-5px, -5px) rotate(-1deg); } 80% { transform: translate(5px, 5px) rotate(1deg); } 100% { transform: translate(0, 0) rotate(0); } }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.animate-shake { animation: shake 0.2s linear; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.float-text { animation: floatUp 0.6s ease-out forwards; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes floatUp { 0% { opacity: 1; transform: scale(0.5) rotate(-10deg); } 50% { transform: scale(1.5) rotate(10deg); } 100% { opacity: 0; transform: translateY(-100px) scale(1); } }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.shine { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); background-size: 200% 100%; animation: shine 2s infinite; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes shine { 0% {background-position: -200%} 100% {background-position: 200%} }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.combo-fire { filter: drop-shadow(0 0 5px orange); }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`}&lt;/style&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* 顶部UI */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div className="w-full max-w-md p-4 flex justify-between items-center z-50 bg-white/90 backdrop-blur-sm shadow-sm rounded-b-xl fixed top-0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="flex flex-col w-40"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="flex justify-between items-end"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;span className="text-[10px] text-gray-500 font-bold tracking-wider uppercase"&gt;压迫值 (Oppression)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;span className={`text-[10px] font-black ${fighterState.color}`}&gt;{fighterState.title}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden border border-gray-300 mt-1 relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;div className={`h-full transition-all duration-200 ${hp &lt; 300 ? 'bg-purple-600' : hp &lt; 600 ? 'bg-pink-500' : 'bg-gray-700'}`} style={{ width: `${(hp/MAX_HP)*100}%` }}&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span className="text-xs font-bold text-gray-600 mt-1"&gt;{hp} / {MAX_HP}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="flex gap-2 items-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;button onClick={account ? ()=&gt;{} : connectWallet} className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-bold ${account ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-gray-50 border-gray-200 text-gray-600'}`}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;Wallet size={14}/&gt; {account ? (walletType === 'generated' ? '临时' : '连接') : '连接'}</p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;/button&gt;</p>
+<p class="p2"><span class="Apple-converted-space">           </span></p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;div className="relative flex gap-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>{customImage &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>onClick={(e) =&gt; { e.stopPropagation(); setIsEditingImage(!isEditingImage); }}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>className={`p-2 rounded-full border ${isEditingImage ? 'bg-purple-100 text-purple-600 border-purple-300' : 'bg-gray-100 text-gray-600'}`}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title="调整图片位置"</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;Move size={18} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">             </span>&lt;input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" onClick={(e) =&gt; { e.target.value = null }}/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>{customImage ? (</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onClick={(e) =&gt; { e.stopPropagation(); setCustomImage(null); setIsEditingImage(false); }} className="p-2 rounded-full border bg-gray-100 text-red-500"&gt;&lt;Trash2 size={18}/&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onClick={() =&gt; fileInputRef.current.click()} className="p-2 rounded-full border bg-gray-100 text-gray-600"&gt;&lt;ImageIcon size={18}/&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;button onClick={cameraActive ? stopCamera : startCamera} className={`p-2 rounded-full border ${cameraActive ? 'bg-red-100 text-red-500' : 'bg-gray-100'}`}&gt;&lt;Camera size={18}/&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;button onClick={resetGame} className="p-2 rounded-full border bg-gray-100"&gt;&lt;RefreshCw size={18}/&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* 连击显示器 */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{combo &gt; 1 &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="fixed top-24 left-4 z-20 flex flex-col items-center animate-bounce"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span className="text-4xl font-black text-purple-600 italic drop-shadow-md combo-fire"&gt;{combo} HITS!&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="flex gap-1 mt-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{[...Array(Math.min(5, combo))].map((_, i) =&gt; &lt;Zap key={i} size={16} className="text-yellow-400 fill-purple-600" /&gt;)}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>)}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* 错误提示 */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{(permissionError || walletError) &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="fixed top-24 left-1/2 -translate-x-1/2 bg-white/90 border border-red-400 text-red-700 px-4 py-2 rounded-lg z-50 flex flex-col items-center gap-2 shadow-xl animate-in slide-in-from-top-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="flex items-center gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;AlertCircle size={16} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span className="text-xs font-bold"&gt;{permissionError || walletError}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="text-[10px] text-gray-500 flex items-center gap-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>若在预览窗口受限，请尝试</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;ExternalLink size={10} className="inline"/&gt;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>在新标签页打开</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>)}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* 编辑模式滑杆 */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{isEditingImage &amp;&amp; customImage &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="fixed bottom-32 left-1/2 -translate-x-1/2 bg-white/90 p-4 rounded-xl shadow-lg border border-purple-200 z-50 flex flex-col items-center gap-2 w-64"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span className="text-xs font-bold text-purple-600 flex items-center gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;Move size={12}/&gt; 拖动画面调整位置</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="flex items-center gap-2 w-full"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;ZoomIn size={16} className="text-gray-500"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;input<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>type="range" min="0.5" max="3" step="0.1"<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>value={imgConfig.scale}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>onChange={(e) =&gt; setImgConfig(prev =&gt; ({...prev, scale: parseFloat(e.target.value)}))}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>className="w-full accent-purple-500"</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>onClick={() =&gt; setIsEditingImage(false)}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>className="mt-1 w-full bg-purple-500 text-white text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;Check size={14}/&gt; 完成调整</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>)}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* 游戏区域 */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div className="flex-1 w-full flex flex-col items-center justify-center relative z-10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="mt-10 relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>{/* 开场对白泡泡 */}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>{gameStarted &amp;&amp; openingQuote &amp;&amp; hp &gt; 800 &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 bg-white p-4 rounded-2xl shadow-xl border-2 border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-700 z-30"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-gray-800 rotate-45 transform"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;p className="text-sm font-bold text-gray-800 text-center"&gt;“{openingQuote}”&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>)}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>{isEditingImage &amp;&amp; &lt;div className="absolute inset-0 border-4 border-dashed border-purple-400 rounded-full z-20 pointer-events-none animate-pulse"&gt;&lt;/div&gt;}</p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;OldDengFace<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>containerRef={faceRef}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hp={hp}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>rotateX={rotateX}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>rotateY={rotateY}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bloodLevel={hp &lt; 600 ? (hp &lt; 300 ? 2 : 1) : 0}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bruises={bruises}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>customImage={customImage}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>imgConfig={imgConfig}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className={`fixed top-24 right-4 w-24 h-20 bg-black rounded border-2 border-white shadow-lg overflow-hidden transition-all ${cameraActive ? 'opacity-100' : 'opacity-0'}`}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;video ref={videoRef} className="w-full h-full object-cover scale-x-[-1]" playsInline muted /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;canvas ref={canvasRef} className="hidden" width="50" height="40" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>{feedbackText &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>className={`fixed float-text pointer-events-none z-50 font-black italic stroke-white text-center ${feedbackText.color}`}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>style={{<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>left: feedbackText.x, top: feedbackText.y,<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>fontSize: feedbackText.special ? '2rem' : '1.5rem',<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>textShadow: '2px 2px 0px white, -1px -1px 0px black',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>WebkitTextStroke: '1px white',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>width: '300px', marginLeft: '-150px'<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>}}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{feedbackText.text}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* 开始游戏遮罩 */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{!gameStarted &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl animate-in zoom-in"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;MessageCircle size={48} className="mx-auto text-yellow-600 mb-4" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;h2 className="text-2xl font-black text-gray-800 mb-2"&gt;当时你没敢骂回去&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;p className="text-gray-500 mb-6"&gt;现在你可以打回去&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>onClick={startGame}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>className="w-full py-4 bg-purple-600 text-white font-bold rounded-xl shadow-lg hover:bg-purple-700 active:scale-95 transition-all text-lg"</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>开始暴打</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>)}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* 胜利 &amp; Mint 弹窗 */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{showVictoryModal &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in zoom-in duration-300"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center shadow-2xl border-4 border-purple-400 relative overflow-hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="absolute top-0 left-0 w-full h-2 bg-purple-400"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{!hasMinted ? (</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div className="w-24 h-24 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-4"&gt;&lt;HeartHandshake size={48} className="text-purple-600" /&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 className="text-2xl font-black text-gray-800 mb-2"&gt;压迫已被粉碎！&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p className="text-gray-500 text-sm mb-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>愤怒不是终点，而是改变的燃料。&lt;br/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>将你的力量转化为现实中的支持。</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onClick={handleMint} disabled={isMinting} className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all relative overflow-hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>{isMinting ? &lt;&gt;&lt;Loader className="animate-spin" /&gt; {walletType === 'metamask' ? '请签名以确认捐赠...' : '正在生成...'}&lt;/&gt; : &lt;&gt;&lt;span className="absolute inset-0 shine"&gt;&lt;/span&gt; 铸造“建设者勋章” (NFT)&lt;/&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;div className="animate-in slide-in-from-bottom duration-500"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;div className="w-40 h-56 mx-auto bg-gradient-to-br from-purple-100 to-pink-50 border-4 border-purple-500 rounded-lg p-2 mb-4 shadow-xl flex flex-col items-center justify-center relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;Award size={64} className="text-purple-600 mb-2 drop-shadow-md" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;h3 className="font-black text-purple-800"&gt;女性力量勋章&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;span className="text-[10px] text-purple-600 mt-1"&gt;Impact #8888&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;div className="absolute -top-3 -right-3 bg-green-500 text-white rounded-full p-1 border-2 border-white"&gt;&lt;CheckCircle size={20} /&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;h3 className="text-xl font-bold text-gray-800 mb-2"&gt;转化成功！&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;p className="text-xs text-gray-500 mb-6"&gt;我们已记录您的贡献至链上 {formatAddress(account)}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;button onClick={resetGame} className="w-full py-3 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50"&gt;继续发声&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">           </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+</body>
+</html>

@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 260 30% 8%;
+    --foreground: 270 20% 95%;
+
+    --card: 260 25% 12%;
+    --card-foreground: 270 20% 95%;
+    --card-glass: 260 30% 15%;
+
+    --popover: 260 25% 12%;
+    --popover-foreground: 270 20% 95%;
+
+    --primary: 320 70% 65%;
+    --primary-foreground: 260 30% 8%;
+
+    --secondary: 270 40% 25%;
+    --secondary-foreground: 270 20% 95%;
+
+    --muted: 260 20% 18%;
+    --muted-foreground: 270 15% 65%;
+
+    --accent: 180 60% 55%;
+    --accent-foreground: 260 30% 8%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 270 20% 95%;
+
+    --border: 260 20% 20%;
+    --input: 260 20% 18%;
+    --ring: 320 70% 65%;
+
+    --radius: 1.25rem;
+
+    /* Custom MoMoverse colors */
+    --momo-pink: 320 70% 65%;
+    --momo-purple: 280 60% 55%;
+    --momo-lavender: 270 50% 70%;
+    --momo-peach: 25 80% 70%;
+    --momo-cyan: 180 60% 55%;
+    --momo-yellow: 45 90% 65%;
+    --momo-blue: 220 70% 60%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(320 70% 65%) 0%, hsl(280 60% 55%) 100%);
+    --gradient-soft: linear-gradient(135deg, hsl(260 30% 12%) 0%, hsl(280 25% 15%) 50%, hsl(320 20% 12%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(320 70% 65% / 0.15) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(260 30% 15% / 0.8) 0%, hsl(260 25% 10% / 0.9) 100%);
+    
+    /* Shadows */
+    --shadow-soft: 0 8px 32px hsl(260 50% 5% / 0.4);
+    --shadow-glow: 0 0 40px hsl(320 70% 65% / 0.2);
+    --shadow-card: 0 4px 24px hsl(260 50% 5% / 0.3);
+
+    --sidebar-background: 260 30% 10%;
+    --sidebar-foreground: 270 20% 95%;
+    --sidebar-primary: 320 70% 65%;
+    --sidebar-primary-foreground: 260 30% 8%;
+    --sidebar-accent: 260 25% 18%;
+    --sidebar-accent-foreground: 270 20% 95%;
+    --sidebar-border: 260 20% 20%;
+    --sidebar-ring: 320 70% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    cursor: none !important;
+  }
+
+  body {
+    @apply bg-background text-foreground font-nunito antialiased;
+    cursor: none !important;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-white/10 rounded-3xl shadow-soft;
+  }
+
+  .glass-panel {
+    @apply bg-card-glass/50 backdrop-blur-2xl border border-white/5 rounded-2xl;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-momo-pink via-momo-lavender to-momo-cyan bg-clip-text text-transparent;
+  }
+
+  .floating-orb {
+    @apply absolute rounded-full blur-3xl opacity-30 pointer-events-none;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .glow-button {
+    @apply relative overflow-hidden transition-all duration-300;
+  }
+
+  .glow-button::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-momo-pink to-momo-purple opacity-0 transition-opacity duration-300;
+  }
+
+  .glow-button:hover::before {
+    @apply opacity-100;
+  }
+
+  .soft-shadow {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .glow-shadow {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+@layer utilities {
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+@keyframes cursor-float {
+  0%, 100% {
+    transform: translateY(0) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(5deg);
+  }
+}
+
+.animate-cursor-float {
+  animation: cursor-float 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 8s ease-in-out infinite;
+  animation-delay: -2s;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s linear infinite;
+  background-size: 200% 100%;
+}

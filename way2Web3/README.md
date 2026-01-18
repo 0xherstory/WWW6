@@ -1,0 +1,10 @@
+
+
+这是一款可以帮助用户进入web3行业的软件
+
+非技术人员转化率高，非技术职业的岗位在web3有超过23000个，空缺大有市场
+预计未来三年在web3行业仍有 20 万 的人才缺口。
+
+网站 → 测试题自我定位 → 资料库：行业黑话翻译 → 差距诊断 → 学习制定 → 能力验证（收费） → 岗位匹配
+
+https://id-preview--916da079-a1b2-4472-87d7-214e3e108b81.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQzE4R1YxQjg1QVl6VVpTcmVVUHJXWjFDNkphMiIsInByb2plY3RfaWQiOiI5MTZkYTA3OS1hMWIyLTQ0NzItODdkNy0yMTRlM2UxMDhiODEiLCJub25jZSI6IjYyNGUzMTY5ZmYzMzIyOTIxZmI2OThkMGViNzFhZDliIiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI5MTZkYTA3OS1hMWIyLTQ0NzItODdkNy0yMTRlM2UxMDhiODEiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY4MDcwNDY5LCJuYmYiOjE3Njc0NjU2NjksImlhdCI6MTc2NzQ2NTY2OX0.EINuptuobB9FfEPuN89byJNlyTg0_4laMQwQKNPgwAI
